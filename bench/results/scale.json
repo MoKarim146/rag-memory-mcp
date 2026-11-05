@@ -15,36 +15,36 @@
       "baselineStartTokens": 2549,
       "baselineSearch": [
         {
-          "ms": 18.2,
+          "ms": 17.1,
           "tokens": 1228
         },
         {
-          "ms": 6,
+          "ms": 5.5,
           "tokens": 18
         },
         {
-          "ms": 7,
+          "ms": 5.4,
           "tokens": 24
         }
       ],
       "currentStartTokens": 1590,
-      "firstSearchMs": 19.7,
+      "firstSearchMs": 22.5,
       "currentSearch": [
         {
-          "ms": 2.8,
-          "tokens": 333
+          "ms": 10.2,
+          "tokens": 338
         },
         {
-          "ms": 2.9,
-          "tokens": 345
+          "ms": 3.6,
+          "tokens": 350
         },
         {
-          "ms": 2.9,
-          "tokens": 447
+          "ms": 3.1,
+          "tokens": 452
         }
       ],
-      "searchAfterOneEditMs": 2.4,
-      "rssGrowthMB": 3
+      "searchAfterOneEditMs": 2.5,
+      "rssGrowthMB": 11
     },
     {
       "vault": "~500 notes, logs x5",
@@ -53,36 +53,36 @@
       "baselineStartTokens": 7513,
       "baselineSearch": [
         {
-          "ms": 31.8,
+          "ms": 28.9,
           "tokens": 2751
         },
         {
-          "ms": 101.7,
+          "ms": 99.8,
           "tokens": 18
         },
         {
-          "ms": 120.2,
+          "ms": 126.5,
           "tokens": 24
         }
       ],
       "currentStartTokens": 1590,
-      "firstSearchMs": 274.9,
+      "firstSearchMs": 265.8,
       "currentSearch": [
         {
-          "ms": 21,
+          "ms": 20.2,
           "tokens": 251
         },
         {
-          "ms": 27.8,
-          "tokens": 431
+          "ms": 27.5,
+          "tokens": 436
         },
         {
-          "ms": 22.4,
+          "ms": 21.4,
           "tokens": 261
         }
       ],
-      "searchAfterOneEditMs": 24.3,
-      "rssGrowthMB": 0
+      "searchAfterOneEditMs": 25,
+      "rssGrowthMB": 2
     },
     {
       "vault": "~2,000 notes, logs x10",
@@ -91,36 +91,36 @@
       "baselineStartTokens": 13718,
       "baselineSearch": [
         {
-          "ms": 76.6,
+          "ms": 71.5,
           "tokens": 2575
         },
         {
-          "ms": 318.4,
+          "ms": 332.2,
           "tokens": 18
         },
         {
-          "ms": 293.5,
+          "ms": 295.7,
           "tokens": 24
         }
       ],
       "currentStartTokens": 1590,
-      "firstSearchMs": 736,
+      "firstSearchMs": 807.6,
       "currentSearch": [
         {
-          "ms": 66.1,
+          "ms": 63.5,
           "tokens": 251
         },
         {
-          "ms": 67.2,
-          "tokens": 431
+          "ms": 66.5,
+          "tokens": 436
         },
         {
-          "ms": 86.4,
+          "ms": 92.1,
           "tokens": 261
         }
       ],
-      "searchAfterOneEditMs": 62.1,
-      "rssGrowthMB": 3
+      "searchAfterOneEditMs": 61.1,
+      "rssGrowthMB": 4
     },
     {
       "vault": "~5,000 notes, logs x20",
@@ -129,36 +129,36 @@
       "baselineStartTokens": 26128,
       "baselineSearch": [
         {
-          "ms": 184.9,
+          "ms": 153.5,
           "tokens": 2335
         },
         {
-          "ms": 734.4,
+          "ms": 762.5,
           "tokens": 18
         },
         {
-          "ms": 736.2,
+          "ms": 688.4,
           "tokens": 24
         }
       ],
       "currentStartTokens": 1590,
-      "firstSearchMs": 1730.9,
+      "firstSearchMs": 2044.1,
       "currentSearch": [
         {
-          "ms": 154.7,
+          "ms": 149.4,
           "tokens": 251
         },
         {
-          "ms": 156.5,
-          "tokens": 431
+          "ms": 210.8,
+          "tokens": 436
         },
         {
-          "ms": 157.5,
+          "ms": 148.5,
           "tokens": 261
         }
       ],
-      "searchAfterOneEditMs": 145.8,
-      "rssGrowthMB": 20
+      "searchAfterOneEditMs": 153.6,
+      "rssGrowthMB": 22
     }
   ]
 }

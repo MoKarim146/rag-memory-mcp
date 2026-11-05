@@ -1,0 +1,5036 @@
+[
+  {
+    "variant": "baseline",
+    "label": "main before this work (frozen copy)",
+    "style": "keyword",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 831,
+      "fullListTokens": 1118,
+      "instructionsTokens": 55,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 95
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 61
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 88
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 104
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 113
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 144
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 103
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 123
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 2549,
+            "resultChars": 9765,
+            "wireTokens": 5284,
+            "isError": false,
+            "ms": 30.4
+          }
+        ],
+        "resultTokens": 2549,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "postgres",
+        "kind": "lookup",
+        "query": "Postgres",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Postgres"
+            },
+            "argTokens": 6,
+            "resultTokens": 180,
+            "resultChars": 667,
+            "wireTokens": 362,
+            "isError": false,
+            "ms": 31.9
+          }
+        ],
+        "resultTokens": 180,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "rate-limit",
+        "kind": "lookup",
+        "query": "rate limit",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "rate limit"
+            },
+            "argTokens": 6,
+            "resultTokens": 80,
+            "resultChars": 287,
+            "wireTokens": 169,
+            "isError": false,
+            "ms": 16.3
+          }
+        ],
+        "resultTokens": 80,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "timezone",
+        "kind": "lookup",
+        "query": "timezone",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "timezone"
+            },
+            "argTokens": 5,
+            "resultTokens": 76,
+            "resultChars": 203,
+            "wireTokens": 158,
+            "isError": false,
+            "ms": 16.1
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Sessions/2026-08-12_ChatGPT.md"
+            },
+            "argTokens": 16,
+            "resultTokens": 155,
+            "resultChars": 544,
+            "wireTokens": 329,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 231,
+        "argTokens": 21,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "delivery-fee",
+        "kind": "lookup",
+        "query": "delivery",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "delivery"
+            },
+            "argTokens": 5,
+            "resultTokens": 1228,
+            "resultChars": 4454,
+            "wireTokens": 2381,
+            "isError": false,
+            "ms": 18.5
+          }
+        ],
+        "resultTokens": 1228,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 5
+      },
+      {
+        "id": "contrast",
+        "kind": "lookup",
+        "query": "contrast",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "contrast"
+            },
+            "argTokens": 5,
+            "resultTokens": 383,
+            "resultChars": 1324,
+            "wireTokens": 758,
+            "isError": false,
+            "ms": 18.9
+          }
+        ],
+        "resultTokens": 383,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "restart",
+        "kind": "lookup",
+        "query": "restart",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restart"
+            },
+            "argTokens": 5,
+            "resultTokens": 318,
+            "resultChars": 1270,
+            "wireTokens": 628,
+            "isError": false,
+            "ms": 17.2
+          }
+        ],
+        "resultTokens": 318,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "welsh-file",
+        "kind": "lookup",
+        "query": "Welsh",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Welsh"
+            },
+            "argTokens": 6,
+            "resultTokens": 831,
+            "resultChars": 3219,
+            "wireTokens": 1607,
+            "isError": false,
+            "ms": 18.9
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/welsh-language.md"
+            },
+            "argTokens": 10,
+            "resultTokens": 224,
+            "resultChars": 971,
+            "wireTokens": 480,
+            "isError": false,
+            "ms": 2
+          }
+        ],
+        "resultTokens": 1055,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "csv-columns",
+        "kind": "lookup",
+        "query": "CSV",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "CSV"
+            },
+            "argTokens": 5,
+            "resultTokens": 239,
+            "resultChars": 873,
+            "wireTokens": 467,
+            "isError": false,
+            "ms": 15
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/menu-import.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 287,
+            "resultChars": 1117,
+            "wireTokens": 609,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 526,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "pause",
+        "kind": "lookup",
+        "query": "subscription",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "subscription"
+            },
+            "argTokens": 5,
+            "resultTokens": 526,
+            "resultChars": 2029,
+            "wireTokens": 1027,
+            "isError": false,
+            "ms": 21.2
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/subscriptions.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 239,
+            "resultChars": 1018,
+            "wireTokens": 510,
+            "isError": false,
+            "ms": 2.8
+          }
+        ],
+        "resultTokens": 765,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "secret-rotation",
+        "kind": "lookup",
+        "query": "webhook secret",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "webhook secret"
+            },
+            "argTokens": 7,
+            "resultTokens": 365,
+            "resultChars": 1307,
+            "wireTokens": 714,
+            "isError": false,
+            "ms": 16.9
+          }
+        ],
+        "resultTokens": 365,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "collect-window",
+        "kind": "lookup",
+        "query": "click and collect",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "click and collect"
+            },
+            "argTokens": 7,
+            "resultTokens": 173,
+            "resultChars": 628,
+            "wireTokens": 349,
+            "isError": false,
+            "ms": 15.1
+          }
+        ],
+        "resultTokens": 173,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "queue",
+        "kind": "lookup",
+        "query": "queue",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "queue"
+            },
+            "argTokens": 5,
+            "resultTokens": 281,
+            "resultChars": 933,
+            "wireTokens": 547,
+            "isError": false,
+            "ms": 14.7
+          }
+        ],
+        "resultTokens": 281,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "brand-green",
+        "kind": "lookup",
+        "query": "green",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "green"
+            },
+            "argTokens": 5,
+            "resultTokens": 296,
+            "resultChars": 1009,
+            "wireTokens": 590,
+            "isError": false,
+            "ms": 15.1
+          }
+        ],
+        "resultTokens": 296,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "load-test",
+        "kind": "lookup",
+        "query": "load test",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "load test"
+            },
+            "argTokens": 6,
+            "resultTokens": 290,
+            "resultChars": 968,
+            "wireTokens": 568,
+            "isError": false,
+            "ms": 16.1
+          }
+        ],
+        "resultTokens": 290,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 5
+      },
+      {
+        "id": "accounts",
+        "kind": "lookup",
+        "query": "accounts",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "accounts"
+            },
+            "argTokens": 5,
+            "resultTokens": 145,
+            "resultChars": 572,
+            "wireTokens": 291,
+            "isError": false,
+            "ms": 18.6
+          }
+        ],
+        "resultTokens": 145,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "smtp",
+        "kind": "lookup",
+        "query": "SMTP",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "SMTP"
+            },
+            "argTokens": 5,
+            "resultTokens": 62,
+            "resultChars": 220,
+            "wireTokens": 133,
+            "isError": false,
+            "ms": 15.8
+          }
+        ],
+        "resultTokens": 62,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "regression",
+        "kind": "lookup",
+        "query": "regression",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "regression"
+            },
+            "argTokens": 6,
+            "resultTokens": 91,
+            "resultChars": 331,
+            "wireTokens": 191,
+            "isError": false,
+            "ms": 16.5
+          }
+        ],
+        "resultTokens": 91,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "restore",
+        "kind": "lookup",
+        "query": "restore",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restore"
+            },
+            "argTokens": 5,
+            "resultTokens": 210,
+            "resultChars": 756,
+            "wireTokens": 415,
+            "isError": false,
+            "ms": 16.7
+          }
+        ],
+        "resultTokens": 210,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rollback",
+        "kind": "lookup",
+        "query": "roll back",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "roll back"
+            },
+            "argTokens": 6,
+            "resultTokens": 63,
+            "resultChars": 207,
+            "wireTokens": 132,
+            "isError": false,
+            "ms": 17.3
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Reference/runbook.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 222,
+            "resultChars": 877,
+            "wireTokens": 477,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 285,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "launch-date",
+        "kind": "lookup",
+        "query": "launch date",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "launch date"
+            },
+            "argTokens": 6,
+            "resultTokens": 70,
+            "resultChars": 240,
+            "wireTokens": 149,
+            "isError": false,
+            "ms": 16.3
+          }
+        ],
+        "resultTokens": 70,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "missing-products",
+        "kind": "lookup",
+        "query": "missing",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "missing"
+            },
+            "argTokens": 5,
+            "resultTokens": 189,
+            "resultChars": 728,
+            "wireTokens": 381,
+            "isError": false,
+            "ms": 15.9
+          }
+        ],
+        "resultTokens": 189,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "cut-off",
+        "kind": "lookup",
+        "query": "cut-off",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "cut-off"
+            },
+            "argTokens": 6,
+            "resultTokens": 263,
+            "resultChars": 841,
+            "wireTokens": 519,
+            "isError": false,
+            "ms": 15.6
+          }
+        ],
+        "resultTokens": 263,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "translator",
+        "kind": "lookup",
+        "query": "translator",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "translator"
+            },
+            "argTokens": 5,
+            "resultTokens": 534,
+            "resultChars": 2019,
+            "wireTokens": 1045,
+            "isError": false,
+            "ms": 17.8
+          }
+        ],
+        "resultTokens": 534,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 9
+      },
+      {
+        "id": "paraphrase-dropoff",
+        "kind": "lookup",
+        "query": "checkout",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "checkout"
+            },
+            "argTokens": 5,
+            "resultTokens": 889,
+            "resultChars": 3506,
+            "wireTokens": 1730,
+            "isError": false,
+            "ms": 17.1
+          }
+        ],
+        "resultTokens": 889,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 10
+      },
+      {
+        "id": "no-answer",
+        "kind": "lookup",
+        "query": "kubernetes",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "kubernetes"
+            },
+            "argTokens": 6,
+            "resultTokens": 15,
+            "resultChars": 44,
+            "wireTokens": 42,
+            "isError": false,
+            "ms": 14
+          }
+        ],
+        "resultTokens": 15,
+        "argTokens": 6,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Take a Litestream snapshot every 6 hours instead of every 24.",
+              "reason": "The restore drill showed that replaying a full day of WAL is slower than we want."
+            },
+            "argTokens": 39,
+            "resultTokens": 30,
+            "resultChars": 83,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.7
+          }
+        ],
+        "resultTokens": 30,
+        "argTokens": 39,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add seasonal start and end dates to the menu CSV import",
+              "priority": "medium",
+              "project": "menu"
+            },
+            "argTokens": 23,
+            "resultTokens": 31,
+            "resultChars": 85,
+            "wireTokens": 72,
+            "isError": false,
+            "ms": 1.9
+          }
+        ],
+        "resultTokens": 31,
+        "argTokens": 23,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Partial refunds API",
+              "content": "Started the partial refunds endpoint. The admin screen sends a list of order_item ids; the API sums their prices in pence, checks the total against the remaining capture and calls POST /v2/payments/{id}/partial-refunds. Sandbox refunds only work on payments from yesterday, so the tests use a fixture payment dated the day before. Next: the item picker in the admin screen."
+            },
+            "argTokens": 94,
+            "resultTokens": 36,
+            "resultChars": 100,
+            "wireTokens": 82,
+            "isError": false,
+            "ms": 2.7
+          }
+        ],
+        "resultTokens": 36,
+        "argTokens": 94,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 269,
+            "resultChars": 1125,
+            "wireTokens": 571,
+            "isError": false,
+            "ms": 2.3
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nLast updated by Claude on 2 November 2026.\n\n## Where we are\n\n- Partial refunds API is in progress: the endpoint sums order_item prices and calls PayLoop. The admin item picker is not started.\n- The Welsh launch is still waiting on the translator (allergen labels and email templates, due 6 November). Launch date: 13 November.\n- The basket button contrast fix is merged.\n\n## Watch out for\n\n- PayLoop sandbox partial refunds only work on payments from a previous day.\n- Staging and production share the VPS. Restart only fernhill-api-staging when testing.\n\n## Suggested next steps\n\n1. Build the item picker for partial refunds.\n2. Rerun the load test after refunds land.\n3. Ask Leo about Saturday deliveries to CF5.\n"
+            },
+            "argTokens": 185,
+            "resultTokens": 30,
+            "resultChars": 92,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.5
+          }
+        ],
+        "resultTokens": 299,
+        "argTokens": 186,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 25,
+      "answerableLookups": 24,
+      "answered": 23,
+      "answeredBySearchAlone": 19,
+      "lookupResultTokens": 8924,
+      "lookupCalls": 30,
+      "startTokens": 2549,
+      "startAnswersCovered": 10,
+      "writeResultTokens": 396,
+      "writesLanded": 4,
+      "argTokens": 531,
+      "sessionTotalTokens": 13286,
+      "meanReciprocalRank": 0.505
+    }
+  },
+  {
+    "variant": "baseline",
+    "label": "main before this work (frozen copy)",
+    "style": "question",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 831,
+      "fullListTokens": 1118,
+      "instructionsTokens": 55,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 95
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 61
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 88
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 104
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 113
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 144
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 103
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 123
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 2549,
+            "resultChars": 9765,
+            "wireTokens": 5284,
+            "isError": false,
+            "ms": 12
+          }
+        ],
+        "resultTokens": 2549,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "postgres",
+        "kind": "lookup",
+        "query": "Why did we choose SQLite instead of Postgres?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why did we choose SQLite instead of Postgres?"
+            },
+            "argTokens": 14,
+            "resultTokens": 22,
+            "resultChars": 79,
+            "wireTokens": 58,
+            "isError": false,
+            "ms": 15
+          }
+        ],
+        "resultTokens": 22,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "rate-limit",
+        "kind": "lookup",
+        "query": "What is the PayLoop API rate limit?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the PayLoop API rate limit?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 69,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 15.3
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "timezone",
+        "kind": "lookup",
+        "query": "What caused the pickup date bug around midnight and how was it fixed?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What caused the pickup date bug around midnight and how was it fixed?"
+            },
+            "argTokens": 18,
+            "resultTokens": 26,
+            "resultChars": 103,
+            "wireTokens": 66,
+            "isError": false,
+            "ms": 15.7
+          }
+        ],
+        "resultTokens": 26,
+        "argTokens": 18,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "delivery-fee",
+        "kind": "lookup",
+        "query": "How much does delivery cost when an order is under the free delivery threshold?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How much does delivery cost when an order is under the free delivery threshold?"
+            },
+            "argTokens": 19,
+            "resultTokens": 27,
+            "resultChars": 113,
+            "wireTokens": 68,
+            "isError": false,
+            "ms": 16.3
+          }
+        ],
+        "resultTokens": 27,
+        "argTokens": 19,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "contrast",
+        "kind": "lookup",
+        "query": "What is the contrast ratio of the Add to basket button?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the contrast ratio of the Add to basket button?"
+            },
+            "argTokens": 16,
+            "resultTokens": 24,
+            "resultChars": 89,
+            "wireTokens": 62,
+            "isError": false,
+            "ms": 13.6
+          }
+        ],
+        "resultTokens": 24,
+        "argTokens": 16,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "restart",
+        "kind": "lookup",
+        "query": "Which systemd service do we restart after a deploy?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which systemd service do we restart after a deploy?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 85,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 12.8
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "welsh-file",
+        "kind": "lookup",
+        "query": "Which file holds the Welsh translation strings?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which file holds the Welsh translation strings?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 81,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 13.1
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "csv-columns",
+        "kind": "lookup",
+        "query": "What columns does the menu CSV file have?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What columns does the menu CSV file have?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 75,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 13.7
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "pause",
+        "kind": "lookup",
+        "query": "How long can customers pause the sourdough subscription?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long can customers pause the sourdough subscription?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 90,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 13.4
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "secret-rotation",
+        "kind": "lookup",
+        "query": "When must the PayLoop webhook secret be rotated next?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When must the PayLoop webhook secret be rotated next?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 87,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 13.9
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "collect-window",
+        "kind": "lookup",
+        "query": "How long is the click and collect window?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is the click and collect window?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 75,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 12.7
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "queue",
+        "kind": "lookup",
+        "query": "What should I run when the job queue stalls?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What should I run when the job queue stalls?"
+            },
+            "argTokens": 14,
+            "resultTokens": 22,
+            "resultChars": 78,
+            "wireTokens": 58,
+            "isError": false,
+            "ms": 13
+          }
+        ],
+        "resultTokens": 22,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "brand-green",
+        "kind": "lookup",
+        "query": "What is the hex code of the brand green colour?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the hex code of the brand green colour?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 81,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 13.4
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "load-test",
+        "kind": "lookup",
+        "query": "What was the p95 latency in the last load test?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What was the p95 latency in the last load test?"
+            },
+            "argTokens": 16,
+            "resultTokens": 24,
+            "resultChars": 81,
+            "wireTokens": 62,
+            "isError": false,
+            "ms": 14.3
+          }
+        ],
+        "resultTokens": 24,
+        "argTokens": 16,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "accounts",
+        "kind": "lookup",
+        "query": "Do customers need an account to place an order?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do customers need an account to place an order?"
+            },
+            "argTokens": 14,
+            "resultTokens": 22,
+            "resultChars": 81,
+            "wireTokens": 58,
+            "isError": false,
+            "ms": 13.8
+          }
+        ],
+        "resultTokens": 22,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "smtp",
+        "kind": "lookup",
+        "query": "Which mail server sends order confirmation emails?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which mail server sends order confirmation emails?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 84,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 12.8
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "regression",
+        "kind": "lookup",
+        "query": "How many blocking bugs did the first regression pass find?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many blocking bugs did the first regression pass find?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 92,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 13.5
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "restore",
+        "kind": "lookup",
+        "query": "How long did the backup restore drill take?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long did the backup restore drill take?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 77,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 12.5
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "rollback",
+        "kind": "lookup",
+        "query": "How do we undo a bad release?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do we undo a bad release?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 63,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 13.9
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "launch-date",
+        "kind": "lookup",
+        "query": "When is the Welsh launch?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When is the Welsh launch?"
+            },
+            "argTokens": 10,
+            "resultTokens": 18,
+            "resultChars": 59,
+            "wireTokens": 50,
+            "isError": false,
+            "ms": 14.2
+          }
+        ],
+        "resultTokens": 18,
+        "argTokens": 10,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "missing-products",
+        "kind": "lookup",
+        "query": "What happens to products that are missing from the CSV import?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What happens to products that are missing from the CSV import?"
+            },
+            "argTokens": 16,
+            "resultTokens": 24,
+            "resultChars": 96,
+            "wireTokens": 62,
+            "isError": false,
+            "ms": 14.9
+          }
+        ],
+        "resultTokens": 24,
+        "argTokens": 16,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "cut-off",
+        "kind": "lookup",
+        "query": "What time do orders close?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What time do orders close?"
+            },
+            "argTokens": 10,
+            "resultTokens": 18,
+            "resultChars": 60,
+            "wireTokens": 50,
+            "isError": false,
+            "ms": 16.2
+          }
+        ],
+        "resultTokens": 18,
+        "argTokens": 10,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "translator",
+        "kind": "lookup",
+        "query": "Who translates our copy into Welsh?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who translates our copy into Welsh?"
+            },
+            "argTokens": 11,
+            "resultTokens": 19,
+            "resultChars": 69,
+            "wireTokens": 52,
+            "isError": false,
+            "ms": 17.2
+          }
+        ],
+        "resultTokens": 19,
+        "argTokens": 11,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "paraphrase-dropoff",
+        "kind": "lookup",
+        "query": "What share of shoppers abandon the purchase?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What share of shoppers abandon the purchase?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 78,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 13.1
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer",
+        "kind": "lookup",
+        "query": "What is the name of our Kubernetes cluster?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the name of our Kubernetes cluster?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 77,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 16.2
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Take a Litestream snapshot every 6 hours instead of every 24.",
+              "reason": "The restore drill showed that replaying a full day of WAL is slower than we want."
+            },
+            "argTokens": 39,
+            "resultTokens": 30,
+            "resultChars": 83,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.1
+          }
+        ],
+        "resultTokens": 30,
+        "argTokens": 39,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add seasonal start and end dates to the menu CSV import",
+              "priority": "medium",
+              "project": "menu"
+            },
+            "argTokens": 23,
+            "resultTokens": 31,
+            "resultChars": 85,
+            "wireTokens": 72,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 31,
+        "argTokens": 23,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Partial refunds API",
+              "content": "Started the partial refunds endpoint. The admin screen sends a list of order_item ids; the API sums their prices in pence, checks the total against the remaining capture and calls POST /v2/payments/{id}/partial-refunds. Sandbox refunds only work on payments from yesterday, so the tests use a fixture payment dated the day before. Next: the item picker in the admin screen."
+            },
+            "argTokens": 94,
+            "resultTokens": 36,
+            "resultChars": 100,
+            "wireTokens": 82,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 36,
+        "argTokens": 94,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 269,
+            "resultChars": 1125,
+            "wireTokens": 571,
+            "isError": false,
+            "ms": 3
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nLast updated by Claude on 2 November 2026.\n\n## Where we are\n\n- Partial refunds API is in progress: the endpoint sums order_item prices and calls PayLoop. The admin item picker is not started.\n- The Welsh launch is still waiting on the translator (allergen labels and email templates, due 6 November). Launch date: 13 November.\n- The basket button contrast fix is merged.\n\n## Watch out for\n\n- PayLoop sandbox partial refunds only work on payments from a previous day.\n- Staging and production share the VPS. Restart only fernhill-api-staging when testing.\n\n## Suggested next steps\n\n1. Build the item picker for partial refunds.\n2. Rerun the load test after refunds land.\n3. Ask Leo about Saturday deliveries to CF5.\n"
+            },
+            "argTokens": 185,
+            "resultTokens": 30,
+            "resultChars": 92,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.6
+          }
+        ],
+        "resultTokens": 299,
+        "argTokens": 186,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 25,
+      "answerableLookups": 24,
+      "answered": 0,
+      "answeredBySearchAlone": 0,
+      "lookupResultTokens": 546,
+      "lookupCalls": 25,
+      "startTokens": 2549,
+      "startAnswersCovered": 10,
+      "writeResultTokens": 396,
+      "writesLanded": 4,
+      "argTokens": 689,
+      "sessionTotalTokens": 5066,
+      "meanReciprocalRank": 0
+    }
+  },
+  {
+    "variant": "current",
+    "label": "this branch, default settings (FTS5 only)",
+    "style": "keyword",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1590,
+            "resultChars": 6590,
+            "wireTokens": 1704,
+            "isError": false,
+            "ms": 9.4
+          }
+        ],
+        "resultTokens": 1590,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "postgres",
+        "kind": "lookup",
+        "query": "Postgres",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Postgres"
+            },
+            "argTokens": 6,
+            "resultTokens": 217,
+            "resultChars": 818,
+            "wireTokens": 242,
+            "isError": false,
+            "ms": 32.2
+          }
+        ],
+        "resultTokens": 217,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rate-limit",
+        "kind": "lookup",
+        "query": "rate limit",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "rate limit"
+            },
+            "argTokens": 6,
+            "resultTokens": 200,
+            "resultChars": 726,
+            "wireTokens": 220,
+            "isError": false,
+            "ms": 4.1
+          }
+        ],
+        "resultTokens": 200,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "timezone",
+        "kind": "lookup",
+        "query": "timezone",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "timezone"
+            },
+            "argTokens": 5,
+            "resultTokens": 162,
+            "resultChars": 600,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 6.2
+          }
+        ],
+        "resultTokens": 162,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "delivery-fee",
+        "kind": "lookup",
+        "query": "delivery",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "delivery"
+            },
+            "argTokens": 5,
+            "resultTokens": 338,
+            "resultChars": 1264,
+            "wireTokens": 370,
+            "isError": false,
+            "ms": 6.9
+          }
+        ],
+        "resultTokens": 338,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "contrast",
+        "kind": "lookup",
+        "query": "contrast",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "contrast"
+            },
+            "argTokens": 5,
+            "resultTokens": 298,
+            "resultChars": 1079,
+            "wireTokens": 333,
+            "isError": false,
+            "ms": 6.4
+          }
+        ],
+        "resultTokens": 298,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "restart",
+        "kind": "lookup",
+        "query": "restart",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restart"
+            },
+            "argTokens": 5,
+            "resultTokens": 347,
+            "resultChars": 1398,
+            "wireTokens": 382,
+            "isError": false,
+            "ms": 6.4
+          }
+        ],
+        "resultTokens": 347,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "welsh-file",
+        "kind": "lookup",
+        "query": "Welsh",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Welsh"
+            },
+            "argTokens": 6,
+            "resultTokens": 263,
+            "resultChars": 1148,
+            "wireTokens": 294,
+            "isError": false,
+            "ms": 5.7
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/welsh-language.md"
+            },
+            "argTokens": 10,
+            "resultTokens": 215,
+            "resultChars": 994,
+            "wireTokens": 245,
+            "isError": false,
+            "ms": 2.7
+          }
+        ],
+        "resultTokens": 478,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "csv-columns",
+        "kind": "lookup",
+        "query": "CSV",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "CSV"
+            },
+            "argTokens": 5,
+            "resultTokens": 244,
+            "resultChars": 909,
+            "wireTokens": 275,
+            "isError": false,
+            "ms": 4.2
+          }
+        ],
+        "resultTokens": 244,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "pause",
+        "kind": "lookup",
+        "query": "subscription",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "subscription"
+            },
+            "argTokens": 5,
+            "resultTokens": 277,
+            "resultChars": 1122,
+            "wireTokens": 310,
+            "isError": false,
+            "ms": 5.1
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/subscriptions.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 229,
+            "resultChars": 1041,
+            "wireTokens": 260,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 506,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "secret-rotation",
+        "kind": "lookup",
+        "query": "webhook secret",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "webhook secret"
+            },
+            "argTokens": 7,
+            "resultTokens": 327,
+            "resultChars": 1256,
+            "wireTokens": 362,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 327,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "collect-window",
+        "kind": "lookup",
+        "query": "click and collect",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "click and collect"
+            },
+            "argTokens": 7,
+            "resultTokens": 276,
+            "resultChars": 1058,
+            "wireTokens": 311,
+            "isError": false,
+            "ms": 4.2
+          }
+        ],
+        "resultTokens": 276,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "queue",
+        "kind": "lookup",
+        "query": "queue",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "queue"
+            },
+            "argTokens": 5,
+            "resultTokens": 228,
+            "resultChars": 849,
+            "wireTokens": 251,
+            "isError": false,
+            "ms": 7.1
+          }
+        ],
+        "resultTokens": 228,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "brand-green",
+        "kind": "lookup",
+        "query": "green",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "green"
+            },
+            "argTokens": 5,
+            "resultTokens": 303,
+            "resultChars": 1071,
+            "wireTokens": 333,
+            "isError": false,
+            "ms": 4.5
+          }
+        ],
+        "resultTokens": 303,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "load-test",
+        "kind": "lookup",
+        "query": "load test",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "load test"
+            },
+            "argTokens": 6,
+            "resultTokens": 346,
+            "resultChars": 1365,
+            "wireTokens": 379,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 346,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "accounts",
+        "kind": "lookup",
+        "query": "accounts",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "accounts"
+            },
+            "argTokens": 5,
+            "resultTokens": 159,
+            "resultChars": 718,
+            "wireTokens": 182,
+            "isError": false,
+            "ms": 3.7
+          }
+        ],
+        "resultTokens": 159,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "smtp",
+        "kind": "lookup",
+        "query": "SMTP",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "SMTP"
+            },
+            "argTokens": 5,
+            "resultTokens": 104,
+            "resultChars": 429,
+            "wireTokens": 123,
+            "isError": false,
+            "ms": 3.7
+          }
+        ],
+        "resultTokens": 104,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "regression",
+        "kind": "lookup",
+        "query": "regression",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "regression"
+            },
+            "argTokens": 6,
+            "resultTokens": 152,
+            "resultChars": 626,
+            "wireTokens": 175,
+            "isError": false,
+            "ms": 3.8
+          }
+        ],
+        "resultTokens": 152,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "restore",
+        "kind": "lookup",
+        "query": "restore",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restore"
+            },
+            "argTokens": 5,
+            "resultTokens": 159,
+            "resultChars": 637,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 4
+          }
+        ],
+        "resultTokens": 159,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rollback",
+        "kind": "lookup",
+        "query": "roll back",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "roll back"
+            },
+            "argTokens": 6,
+            "resultTokens": 360,
+            "resultChars": 1478,
+            "wireTokens": 395,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 360,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "launch-date",
+        "kind": "lookup",
+        "query": "launch date",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "launch date"
+            },
+            "argTokens": 6,
+            "resultTokens": 390,
+            "resultChars": 1508,
+            "wireTokens": 428,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 390,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "missing-products",
+        "kind": "lookup",
+        "query": "missing",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "missing"
+            },
+            "argTokens": 5,
+            "resultTokens": 242,
+            "resultChars": 1032,
+            "wireTokens": 269,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 242,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "cut-off",
+        "kind": "lookup",
+        "query": "cut-off",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "cut-off"
+            },
+            "argTokens": 6,
+            "resultTokens": 211,
+            "resultChars": 734,
+            "wireTokens": 236,
+            "isError": false,
+            "ms": 4.1
+          }
+        ],
+        "resultTokens": 211,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "translator",
+        "kind": "lookup",
+        "query": "translator",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "translator"
+            },
+            "argTokens": 5,
+            "resultTokens": 294,
+            "resultChars": 1303,
+            "wireTokens": 332,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 294,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "paraphrase-dropoff",
+        "kind": "lookup",
+        "query": "checkout",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "checkout"
+            },
+            "argTokens": 5,
+            "resultTokens": 366,
+            "resultChars": 1569,
+            "wireTokens": 401,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 366,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "no-answer",
+        "kind": "lookup",
+        "query": "kubernetes",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "kubernetes"
+            },
+            "argTokens": 6,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 3.6
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 6,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Take a Litestream snapshot every 6 hours instead of every 24.",
+              "reason": "The restore drill showed that replaying a full day of WAL is slower than we want."
+            },
+            "argTokens": 39,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 2
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 39,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add seasonal start and end dates to the menu CSV import",
+              "priority": "medium",
+              "project": "menu"
+            },
+            "argTokens": 23,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.5
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 23,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Partial refunds API",
+              "content": "Started the partial refunds endpoint. The admin screen sends a list of order_item ids; the API sums their prices in pence, checks the total against the remaining capture and calls POST /v2/payments/{id}/partial-refunds. Sandbox refunds only work on payments from yesterday, so the tests use a fixture payment dated the day before. Next: the item picker in the admin screen."
+            },
+            "argTokens": 94,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 3.9
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 94,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 259,
+            "resultChars": 1147,
+            "wireTokens": 290,
+            "isError": false,
+            "ms": 2.8
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nLast updated by Claude on 2 November 2026.\n\n## Where we are\n\n- Partial refunds API is in progress: the endpoint sums order_item prices and calls PayLoop. The admin item picker is not started.\n- The Welsh launch is still waiting on the translator (allergen labels and email templates, due 6 November). Launch date: 13 November.\n- The basket button contrast fix is merged.\n\n## Watch out for\n\n- PayLoop sandbox partial refunds only work on payments from a previous day.\n- Staging and production share the VPS. Restart only fernhill-api-staging when testing.\n\n## Suggested next steps\n\n1. Build the item picker for partial refunds.\n2. Rerun the load test after refunds land.\n3. Ask Leo about Saturday deliveries to CF5.\n"
+            },
+            "argTokens": 185,
+            "resultTokens": 14,
+            "resultChars": 57,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 3.2
+          }
+        ],
+        "resultTokens": 273,
+        "argTokens": 186,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 25,
+      "answerableLookups": 24,
+      "answered": 24,
+      "answeredBySearchAlone": 22,
+      "lookupResultTokens": 6711,
+      "lookupCalls": 27,
+      "startTokens": 1590,
+      "startAnswersCovered": 5,
+      "writeResultTokens": 305,
+      "writesLanded": 4,
+      "argTokens": 499,
+      "sessionTotalTokens": 9663,
+      "meanReciprocalRank": 0.736
+    }
+  },
+  {
+    "variant": "current",
+    "label": "this branch, default settings (FTS5 only)",
+    "style": "question",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1590,
+            "resultChars": 6590,
+            "wireTokens": 1704,
+            "isError": false,
+            "ms": 6.9
+          }
+        ],
+        "resultTokens": 1590,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "postgres",
+        "kind": "lookup",
+        "query": "Why did we choose SQLite instead of Postgres?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why did we choose SQLite instead of Postgres?"
+            },
+            "argTokens": 14,
+            "resultTokens": 278,
+            "resultChars": 1054,
+            "wireTokens": 309,
+            "isError": false,
+            "ms": 25
+          }
+        ],
+        "resultTokens": 278,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rate-limit",
+        "kind": "lookup",
+        "query": "What is the PayLoop API rate limit?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the PayLoop API rate limit?"
+            },
+            "argTokens": 13,
+            "resultTokens": 329,
+            "resultChars": 1385,
+            "wireTokens": 364,
+            "isError": false,
+            "ms": 5.9
+          }
+        ],
+        "resultTokens": 329,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "timezone",
+        "kind": "lookup",
+        "query": "What caused the pickup date bug around midnight and how was it fixed?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What caused the pickup date bug around midnight and how was it fixed?"
+            },
+            "argTokens": 18,
+            "resultTokens": 469,
+            "resultChars": 1746,
+            "wireTokens": 505,
+            "isError": false,
+            "ms": 8.8
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Sessions/2026-08-12_ChatGPT.md"
+            },
+            "argTokens": 16,
+            "resultTokens": 162,
+            "resultChars": 594,
+            "wireTokens": 179,
+            "isError": false,
+            "ms": 1.6
+          }
+        ],
+        "resultTokens": 631,
+        "argTokens": 34,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "delivery-fee",
+        "kind": "lookup",
+        "query": "How much does delivery cost when an order is under the free delivery threshold?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How much does delivery cost when an order is under the free delivery threshold?"
+            },
+            "argTokens": 19,
+            "resultTokens": 437,
+            "resultChars": 1598,
+            "wireTokens": 473,
+            "isError": false,
+            "ms": 6
+          }
+        ],
+        "resultTokens": 437,
+        "argTokens": 19,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "contrast",
+        "kind": "lookup",
+        "query": "What is the contrast ratio of the Add to basket button?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the contrast ratio of the Add to basket button?"
+            },
+            "argTokens": 16,
+            "resultTokens": 452,
+            "resultChars": 1697,
+            "wireTokens": 490,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 452,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "restart",
+        "kind": "lookup",
+        "query": "Which systemd service do we restart after a deploy?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which systemd service do we restart after a deploy?"
+            },
+            "argTokens": 15,
+            "resultTokens": 396,
+            "resultChars": 1500,
+            "wireTokens": 434,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 396,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "welsh-file",
+        "kind": "lookup",
+        "query": "Which file holds the Welsh translation strings?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which file holds the Welsh translation strings?"
+            },
+            "argTokens": 12,
+            "resultTokens": 354,
+            "resultChars": 1613,
+            "wireTokens": 392,
+            "isError": false,
+            "ms": 7.1
+          }
+        ],
+        "resultTokens": 354,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "csv-columns",
+        "kind": "lookup",
+        "query": "What columns does the menu CSV file have?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What columns does the menu CSV file have?"
+            },
+            "argTokens": 13,
+            "resultTokens": 352,
+            "resultChars": 1392,
+            "wireTokens": 390,
+            "isError": false,
+            "ms": 6.5
+          }
+        ],
+        "resultTokens": 352,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "pause",
+        "kind": "lookup",
+        "query": "How long can customers pause the sourdough subscription?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long can customers pause the sourdough subscription?"
+            },
+            "argTokens": 15,
+            "resultTokens": 322,
+            "resultChars": 1319,
+            "wireTokens": 361,
+            "isError": false,
+            "ms": 6.5
+          }
+        ],
+        "resultTokens": 322,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "secret-rotation",
+        "kind": "lookup",
+        "query": "When must the PayLoop webhook secret be rotated next?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When must the PayLoop webhook secret be rotated next?"
+            },
+            "argTokens": 15,
+            "resultTokens": 360,
+            "resultChars": 1404,
+            "wireTokens": 394,
+            "isError": false,
+            "ms": 6.2
+          }
+        ],
+        "resultTokens": 360,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 5
+      },
+      {
+        "id": "collect-window",
+        "kind": "lookup",
+        "query": "How long is the click and collect window?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is the click and collect window?"
+            },
+            "argTokens": 13,
+            "resultTokens": 220,
+            "resultChars": 826,
+            "wireTokens": 252,
+            "isError": false,
+            "ms": 5.6
+          }
+        ],
+        "resultTokens": 220,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "queue",
+        "kind": "lookup",
+        "query": "What should I run when the job queue stalls?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What should I run when the job queue stalls?"
+            },
+            "argTokens": 14,
+            "resultTokens": 246,
+            "resultChars": 995,
+            "wireTokens": 270,
+            "isError": false,
+            "ms": 4.9
+          }
+        ],
+        "resultTokens": 246,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "brand-green",
+        "kind": "lookup",
+        "query": "What is the hex code of the brand green colour?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the hex code of the brand green colour?"
+            },
+            "argTokens": 15,
+            "resultTokens": 219,
+            "resultChars": 792,
+            "wireTokens": 246,
+            "isError": false,
+            "ms": 4.5
+          }
+        ],
+        "resultTokens": 219,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "load-test",
+        "kind": "lookup",
+        "query": "What was the p95 latency in the last load test?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What was the p95 latency in the last load test?"
+            },
+            "argTokens": 16,
+            "resultTokens": 280,
+            "resultChars": 1061,
+            "wireTokens": 309,
+            "isError": false,
+            "ms": 7.3
+          }
+        ],
+        "resultTokens": 280,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "accounts",
+        "kind": "lookup",
+        "query": "Do customers need an account to place an order?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do customers need an account to place an order?"
+            },
+            "argTokens": 14,
+            "resultTokens": 379,
+            "resultChars": 1565,
+            "wireTokens": 416,
+            "isError": false,
+            "ms": 6.9
+          }
+        ],
+        "resultTokens": 379,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "smtp",
+        "kind": "lookup",
+        "query": "Which mail server sends order confirmation emails?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which mail server sends order confirmation emails?"
+            },
+            "argTokens": 12,
+            "resultTokens": 516,
+            "resultChars": 1947,
+            "wireTokens": 562,
+            "isError": false,
+            "ms": 8
+          }
+        ],
+        "resultTokens": 516,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "regression",
+        "kind": "lookup",
+        "query": "How many blocking bugs did the first regression pass find?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many blocking bugs did the first regression pass find?"
+            },
+            "argTokens": 15,
+            "resultTokens": 248,
+            "resultChars": 995,
+            "wireTokens": 279,
+            "isError": false,
+            "ms": 5.7
+          }
+        ],
+        "resultTokens": 248,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "restore",
+        "kind": "lookup",
+        "query": "How long did the backup restore drill take?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long did the backup restore drill take?"
+            },
+            "argTokens": 13,
+            "resultTokens": 159,
+            "resultChars": 637,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 159,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rollback",
+        "kind": "lookup",
+        "query": "How do we undo a bad release?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do we undo a bad release?"
+            },
+            "argTokens": 12,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 3.5
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "launch-date",
+        "kind": "lookup",
+        "query": "When is the Welsh launch?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When is the Welsh launch?"
+            },
+            "argTokens": 10,
+            "resultTokens": 271,
+            "resultChars": 1178,
+            "wireTokens": 302,
+            "isError": false,
+            "ms": 4.5
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/welsh-language.md"
+            },
+            "argTokens": 10,
+            "resultTokens": 215,
+            "resultChars": 994,
+            "wireTokens": 245,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 486,
+        "argTokens": 20,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "missing-products",
+        "kind": "lookup",
+        "query": "What happens to products that are missing from the CSV import?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What happens to products that are missing from the CSV import?"
+            },
+            "argTokens": 16,
+            "resultTokens": 332,
+            "resultChars": 1370,
+            "wireTokens": 369,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 332,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "cut-off",
+        "kind": "lookup",
+        "query": "What time do orders close?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What time do orders close?"
+            },
+            "argTokens": 10,
+            "resultTokens": 468,
+            "resultChars": 1768,
+            "wireTokens": 505,
+            "isError": false,
+            "ms": 5.6
+          }
+        ],
+        "resultTokens": 468,
+        "argTokens": 10,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "translator",
+        "kind": "lookup",
+        "query": "Who translates our copy into Welsh?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who translates our copy into Welsh?"
+            },
+            "argTokens": 11,
+            "resultTokens": 364,
+            "resultChars": 1628,
+            "wireTokens": 404,
+            "isError": false,
+            "ms": 4.8
+          }
+        ],
+        "resultTokens": 364,
+        "argTokens": 11,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "paraphrase-dropoff",
+        "kind": "lookup",
+        "query": "What share of shoppers abandon the purchase?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What share of shoppers abandon the purchase?"
+            },
+            "argTokens": 12,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 3.5
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer",
+        "kind": "lookup",
+        "query": "What is the name of our Kubernetes cluster?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the name of our Kubernetes cluster?"
+            },
+            "argTokens": 13,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 3.1
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 13,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Take a Litestream snapshot every 6 hours instead of every 24.",
+              "reason": "The restore drill showed that replaying a full day of WAL is slower than we want."
+            },
+            "argTokens": 39,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.5
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 39,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add seasonal start and end dates to the menu CSV import",
+              "priority": "medium",
+              "project": "menu"
+            },
+            "argTokens": 23,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.2
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 23,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Partial refunds API",
+              "content": "Started the partial refunds endpoint. The admin screen sends a list of order_item ids; the API sums their prices in pence, checks the total against the remaining capture and calls POST /v2/payments/{id}/partial-refunds. Sandbox refunds only work on payments from yesterday, so the tests use a fixture payment dated the day before. Next: the item picker in the admin screen."
+            },
+            "argTokens": 94,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 94,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 259,
+            "resultChars": 1147,
+            "wireTokens": 290,
+            "isError": false,
+            "ms": 1.9
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nLast updated by Claude on 2 November 2026.\n\n## Where we are\n\n- Partial refunds API is in progress: the endpoint sums order_item prices and calls PayLoop. The admin item picker is not started.\n- The Welsh launch is still waiting on the translator (allergen labels and email templates, due 6 November). Launch date: 13 November.\n- The basket button contrast fix is merged.\n\n## Watch out for\n\n- PayLoop sandbox partial refunds only work on payments from a previous day.\n- Staging and production share the VPS. Restart only fernhill-api-staging when testing.\n\n## Suggested next steps\n\n1. Build the item picker for partial refunds.\n2. Rerun the load test after refunds land.\n3. Ask Leo about Saturday deliveries to CF5.\n"
+            },
+            "argTokens": 185,
+            "resultTokens": 14,
+            "resultChars": 57,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 273,
+        "argTokens": 186,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 25,
+      "answerableLookups": 24,
+      "answered": 21,
+      "answeredBySearchAlone": 20,
+      "lookupResultTokens": 7840,
+      "lookupCalls": 27,
+      "startTokens": 1590,
+      "startAnswersCovered": 5,
+      "writeResultTokens": 305,
+      "writesLanded": 4,
+      "argTokens": 715,
+      "sessionTotalTokens": 11008,
+      "meanReciprocalRank": 0.685
+    }
+  },
+  {
+    "variant": "current-ngram",
+    "label": "this branch, FTS5 + built-in character n-gram vectors",
+    "style": "keyword",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1590,
+            "resultChars": 6590,
+            "wireTokens": 1704,
+            "isError": false,
+            "ms": 7
+          }
+        ],
+        "resultTokens": 1590,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "postgres",
+        "kind": "lookup",
+        "query": "Postgres",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Postgres"
+            },
+            "argTokens": 6,
+            "resultTokens": 217,
+            "resultChars": 818,
+            "wireTokens": 242,
+            "isError": false,
+            "ms": 35.4
+          }
+        ],
+        "resultTokens": 217,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rate-limit",
+        "kind": "lookup",
+        "query": "rate limit",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "rate limit"
+            },
+            "argTokens": 6,
+            "resultTokens": 200,
+            "resultChars": 726,
+            "wireTokens": 220,
+            "isError": false,
+            "ms": 4.9
+          }
+        ],
+        "resultTokens": 200,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "timezone",
+        "kind": "lookup",
+        "query": "timezone",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "timezone"
+            },
+            "argTokens": 5,
+            "resultTokens": 162,
+            "resultChars": 600,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 4.1
+          }
+        ],
+        "resultTokens": 162,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "delivery-fee",
+        "kind": "lookup",
+        "query": "delivery",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "delivery"
+            },
+            "argTokens": 5,
+            "resultTokens": 381,
+            "resultChars": 1372,
+            "wireTokens": 415,
+            "isError": false,
+            "ms": 5
+          }
+        ],
+        "resultTokens": 381,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "contrast",
+        "kind": "lookup",
+        "query": "contrast",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "contrast"
+            },
+            "argTokens": 5,
+            "resultTokens": 298,
+            "resultChars": 1079,
+            "wireTokens": 333,
+            "isError": false,
+            "ms": 4.8
+          }
+        ],
+        "resultTokens": 298,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "restart",
+        "kind": "lookup",
+        "query": "restart",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restart"
+            },
+            "argTokens": 5,
+            "resultTokens": 347,
+            "resultChars": 1398,
+            "wireTokens": 382,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 347,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "welsh-file",
+        "kind": "lookup",
+        "query": "Welsh",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Welsh"
+            },
+            "argTokens": 6,
+            "resultTokens": 263,
+            "resultChars": 1148,
+            "wireTokens": 294,
+            "isError": false,
+            "ms": 4.8
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/welsh-language.md"
+            },
+            "argTokens": 10,
+            "resultTokens": 215,
+            "resultChars": 994,
+            "wireTokens": 245,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 478,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "csv-columns",
+        "kind": "lookup",
+        "query": "CSV",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "CSV"
+            },
+            "argTokens": 5,
+            "resultTokens": 244,
+            "resultChars": 909,
+            "wireTokens": 275,
+            "isError": false,
+            "ms": 4.4
+          }
+        ],
+        "resultTokens": 244,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "pause",
+        "kind": "lookup",
+        "query": "subscription",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "subscription"
+            },
+            "argTokens": 5,
+            "resultTokens": 277,
+            "resultChars": 1122,
+            "wireTokens": 310,
+            "isError": false,
+            "ms": 4.7
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/subscriptions.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 229,
+            "resultChars": 1041,
+            "wireTokens": 260,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 506,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "secret-rotation",
+        "kind": "lookup",
+        "query": "webhook secret",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "webhook secret"
+            },
+            "argTokens": 7,
+            "resultTokens": 327,
+            "resultChars": 1256,
+            "wireTokens": 362,
+            "isError": false,
+            "ms": 4.9
+          }
+        ],
+        "resultTokens": 327,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "collect-window",
+        "kind": "lookup",
+        "query": "click and collect",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "click and collect"
+            },
+            "argTokens": 7,
+            "resultTokens": 276,
+            "resultChars": 1058,
+            "wireTokens": 311,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 276,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "queue",
+        "kind": "lookup",
+        "query": "queue",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "queue"
+            },
+            "argTokens": 5,
+            "resultTokens": 228,
+            "resultChars": 849,
+            "wireTokens": 251,
+            "isError": false,
+            "ms": 6.7
+          }
+        ],
+        "resultTokens": 228,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "brand-green",
+        "kind": "lookup",
+        "query": "green",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "green"
+            },
+            "argTokens": 5,
+            "resultTokens": 303,
+            "resultChars": 1071,
+            "wireTokens": 333,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 303,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "load-test",
+        "kind": "lookup",
+        "query": "load test",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "load test"
+            },
+            "argTokens": 6,
+            "resultTokens": 346,
+            "resultChars": 1365,
+            "wireTokens": 379,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 346,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "accounts",
+        "kind": "lookup",
+        "query": "accounts",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "accounts"
+            },
+            "argTokens": 5,
+            "resultTokens": 159,
+            "resultChars": 718,
+            "wireTokens": 182,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 159,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "smtp",
+        "kind": "lookup",
+        "query": "SMTP",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "SMTP"
+            },
+            "argTokens": 5,
+            "resultTokens": 104,
+            "resultChars": 429,
+            "wireTokens": 123,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 104,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "regression",
+        "kind": "lookup",
+        "query": "regression",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "regression"
+            },
+            "argTokens": 6,
+            "resultTokens": 152,
+            "resultChars": 626,
+            "wireTokens": 175,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 152,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "restore",
+        "kind": "lookup",
+        "query": "restore",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restore"
+            },
+            "argTokens": 5,
+            "resultTokens": 159,
+            "resultChars": 637,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 159,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rollback",
+        "kind": "lookup",
+        "query": "roll back",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "roll back"
+            },
+            "argTokens": 6,
+            "resultTokens": 360,
+            "resultChars": 1478,
+            "wireTokens": 395,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 360,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "launch-date",
+        "kind": "lookup",
+        "query": "launch date",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "launch date"
+            },
+            "argTokens": 6,
+            "resultTokens": 390,
+            "resultChars": 1508,
+            "wireTokens": 428,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 390,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "missing-products",
+        "kind": "lookup",
+        "query": "missing",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "missing"
+            },
+            "argTokens": 5,
+            "resultTokens": 242,
+            "resultChars": 1032,
+            "wireTokens": 269,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 242,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "cut-off",
+        "kind": "lookup",
+        "query": "cut-off",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "cut-off"
+            },
+            "argTokens": 6,
+            "resultTokens": 211,
+            "resultChars": 734,
+            "wireTokens": 236,
+            "isError": false,
+            "ms": 4.1
+          }
+        ],
+        "resultTokens": 211,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "translator",
+        "kind": "lookup",
+        "query": "translator",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "translator"
+            },
+            "argTokens": 5,
+            "resultTokens": 294,
+            "resultChars": 1303,
+            "wireTokens": 332,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 294,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "paraphrase-dropoff",
+        "kind": "lookup",
+        "query": "checkout",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "checkout"
+            },
+            "argTokens": 5,
+            "resultTokens": 366,
+            "resultChars": 1569,
+            "wireTokens": 401,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 366,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "no-answer",
+        "kind": "lookup",
+        "query": "kubernetes",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "kubernetes"
+            },
+            "argTokens": 6,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 5.8
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 6,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Take a Litestream snapshot every 6 hours instead of every 24.",
+              "reason": "The restore drill showed that replaying a full day of WAL is slower than we want."
+            },
+            "argTokens": 39,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 39,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add seasonal start and end dates to the menu CSV import",
+              "priority": "medium",
+              "project": "menu"
+            },
+            "argTokens": 23,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.2
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 23,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Partial refunds API",
+              "content": "Started the partial refunds endpoint. The admin screen sends a list of order_item ids; the API sums their prices in pence, checks the total against the remaining capture and calls POST /v2/payments/{id}/partial-refunds. Sandbox refunds only work on payments from yesterday, so the tests use a fixture payment dated the day before. Next: the item picker in the admin screen."
+            },
+            "argTokens": 94,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 1.6
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 94,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 259,
+            "resultChars": 1147,
+            "wireTokens": 290,
+            "isError": false,
+            "ms": 1.8
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nLast updated by Claude on 2 November 2026.\n\n## Where we are\n\n- Partial refunds API is in progress: the endpoint sums order_item prices and calls PayLoop. The admin item picker is not started.\n- The Welsh launch is still waiting on the translator (allergen labels and email templates, due 6 November). Launch date: 13 November.\n- The basket button contrast fix is merged.\n\n## Watch out for\n\n- PayLoop sandbox partial refunds only work on payments from a previous day.\n- Staging and production share the VPS. Restart only fernhill-api-staging when testing.\n\n## Suggested next steps\n\n1. Build the item picker for partial refunds.\n2. Rerun the load test after refunds land.\n3. Ask Leo about Saturday deliveries to CF5.\n"
+            },
+            "argTokens": 185,
+            "resultTokens": 14,
+            "resultChars": 57,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 2.5
+          }
+        ],
+        "resultTokens": 273,
+        "argTokens": 186,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 25,
+      "answerableLookups": 24,
+      "answered": 24,
+      "answeredBySearchAlone": 22,
+      "lookupResultTokens": 6754,
+      "lookupCalls": 27,
+      "startTokens": 1590,
+      "startAnswersCovered": 5,
+      "writeResultTokens": 305,
+      "writesLanded": 4,
+      "argTokens": 499,
+      "sessionTotalTokens": 9706,
+      "meanReciprocalRank": 0.722
+    }
+  },
+  {
+    "variant": "current-ngram",
+    "label": "this branch, FTS5 + built-in character n-gram vectors",
+    "style": "question",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1590,
+            "resultChars": 6590,
+            "wireTokens": 1704,
+            "isError": false,
+            "ms": 7.3
+          }
+        ],
+        "resultTokens": 1590,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "postgres",
+        "kind": "lookup",
+        "query": "Why did we choose SQLite instead of Postgres?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why did we choose SQLite instead of Postgres?"
+            },
+            "argTokens": 14,
+            "resultTokens": 278,
+            "resultChars": 1054,
+            "wireTokens": 309,
+            "isError": false,
+            "ms": 24.5
+          }
+        ],
+        "resultTokens": 278,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rate-limit",
+        "kind": "lookup",
+        "query": "What is the PayLoop API rate limit?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the PayLoop API rate limit?"
+            },
+            "argTokens": 13,
+            "resultTokens": 329,
+            "resultChars": 1385,
+            "wireTokens": 364,
+            "isError": false,
+            "ms": 8.3
+          }
+        ],
+        "resultTokens": 329,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "timezone",
+        "kind": "lookup",
+        "query": "What caused the pickup date bug around midnight and how was it fixed?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What caused the pickup date bug around midnight and how was it fixed?"
+            },
+            "argTokens": 18,
+            "resultTokens": 470,
+            "resultChars": 1739,
+            "wireTokens": 507,
+            "isError": false,
+            "ms": 6.6
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Sessions/2026-08-12_ChatGPT.md"
+            },
+            "argTokens": 16,
+            "resultTokens": 162,
+            "resultChars": 594,
+            "wireTokens": 179,
+            "isError": false,
+            "ms": 2
+          }
+        ],
+        "resultTokens": 632,
+        "argTokens": 34,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "delivery-fee",
+        "kind": "lookup",
+        "query": "How much does delivery cost when an order is under the free delivery threshold?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How much does delivery cost when an order is under the free delivery threshold?"
+            },
+            "argTokens": 19,
+            "resultTokens": 437,
+            "resultChars": 1598,
+            "wireTokens": 473,
+            "isError": false,
+            "ms": 6.2
+          }
+        ],
+        "resultTokens": 437,
+        "argTokens": 19,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "contrast",
+        "kind": "lookup",
+        "query": "What is the contrast ratio of the Add to basket button?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the contrast ratio of the Add to basket button?"
+            },
+            "argTokens": 16,
+            "resultTokens": 444,
+            "resultChars": 1689,
+            "wireTokens": 481,
+            "isError": false,
+            "ms": 5.6
+          }
+        ],
+        "resultTokens": 444,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "restart",
+        "kind": "lookup",
+        "query": "Which systemd service do we restart after a deploy?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which systemd service do we restart after a deploy?"
+            },
+            "argTokens": 15,
+            "resultTokens": 396,
+            "resultChars": 1500,
+            "wireTokens": 434,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 396,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "welsh-file",
+        "kind": "lookup",
+        "query": "Which file holds the Welsh translation strings?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which file holds the Welsh translation strings?"
+            },
+            "argTokens": 12,
+            "resultTokens": 343,
+            "resultChars": 1541,
+            "wireTokens": 380,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 343,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "csv-columns",
+        "kind": "lookup",
+        "query": "What columns does the menu CSV file have?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What columns does the menu CSV file have?"
+            },
+            "argTokens": 13,
+            "resultTokens": 365,
+            "resultChars": 1543,
+            "wireTokens": 402,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 365,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "pause",
+        "kind": "lookup",
+        "query": "How long can customers pause the sourdough subscription?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long can customers pause the sourdough subscription?"
+            },
+            "argTokens": 15,
+            "resultTokens": 298,
+            "resultChars": 1238,
+            "wireTokens": 333,
+            "isError": false,
+            "ms": 5.3
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/subscriptions.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 229,
+            "resultChars": 1041,
+            "wireTokens": 260,
+            "isError": false,
+            "ms": 2
+          }
+        ],
+        "resultTokens": 527,
+        "argTokens": 23,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "secret-rotation",
+        "kind": "lookup",
+        "query": "When must the PayLoop webhook secret be rotated next?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When must the PayLoop webhook secret be rotated next?"
+            },
+            "argTokens": 15,
+            "resultTokens": 380,
+            "resultChars": 1534,
+            "wireTokens": 414,
+            "isError": false,
+            "ms": 5.9
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/payments.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 355,
+            "resultChars": 1530,
+            "wireTokens": 391,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 735,
+        "argTokens": 23,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "collect-window",
+        "kind": "lookup",
+        "query": "How long is the click and collect window?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is the click and collect window?"
+            },
+            "argTokens": 13,
+            "resultTokens": 220,
+            "resultChars": 826,
+            "wireTokens": 252,
+            "isError": false,
+            "ms": 4.5
+          }
+        ],
+        "resultTokens": 220,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "queue",
+        "kind": "lookup",
+        "query": "What should I run when the job queue stalls?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What should I run when the job queue stalls?"
+            },
+            "argTokens": 14,
+            "resultTokens": 357,
+            "resultChars": 1464,
+            "wireTokens": 390,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 357,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "brand-green",
+        "kind": "lookup",
+        "query": "What is the hex code of the brand green colour?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the hex code of the brand green colour?"
+            },
+            "argTokens": 15,
+            "resultTokens": 418,
+            "resultChars": 1651,
+            "wireTokens": 455,
+            "isError": false,
+            "ms": 5.8
+          }
+        ],
+        "resultTokens": 418,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "load-test",
+        "kind": "lookup",
+        "query": "What was the p95 latency in the last load test?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What was the p95 latency in the last load test?"
+            },
+            "argTokens": 16,
+            "resultTokens": 346,
+            "resultChars": 1365,
+            "wireTokens": 379,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 346,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "accounts",
+        "kind": "lookup",
+        "query": "Do customers need an account to place an order?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do customers need an account to place an order?"
+            },
+            "argTokens": 14,
+            "resultTokens": 379,
+            "resultChars": 1565,
+            "wireTokens": 416,
+            "isError": false,
+            "ms": 6.2
+          }
+        ],
+        "resultTokens": 379,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "smtp",
+        "kind": "lookup",
+        "query": "Which mail server sends order confirmation emails?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which mail server sends order confirmation emails?"
+            },
+            "argTokens": 12,
+            "resultTokens": 516,
+            "resultChars": 1947,
+            "wireTokens": 562,
+            "isError": false,
+            "ms": 6.8
+          }
+        ],
+        "resultTokens": 516,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "regression",
+        "kind": "lookup",
+        "query": "How many blocking bugs did the first regression pass find?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many blocking bugs did the first regression pass find?"
+            },
+            "argTokens": 15,
+            "resultTokens": 248,
+            "resultChars": 995,
+            "wireTokens": 279,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 248,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "restore",
+        "kind": "lookup",
+        "query": "How long did the backup restore drill take?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long did the backup restore drill take?"
+            },
+            "argTokens": 13,
+            "resultTokens": 159,
+            "resultChars": 637,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 159,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "rollback",
+        "kind": "lookup",
+        "query": "How do we undo a bad release?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do we undo a bad release?"
+            },
+            "argTokens": 12,
+            "resultTokens": 107,
+            "resultChars": 435,
+            "wireTokens": 126,
+            "isError": false,
+            "ms": 4.1
+          }
+        ],
+        "resultTokens": 107,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "launch-date",
+        "kind": "lookup",
+        "query": "When is the Welsh launch?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When is the Welsh launch?"
+            },
+            "argTokens": 10,
+            "resultTokens": 271,
+            "resultChars": 1178,
+            "wireTokens": 302,
+            "isError": false,
+            "ms": 5.3
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "01_CURRENT_WORK.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 197,
+            "resultChars": 875,
+            "wireTokens": 225,
+            "isError": false,
+            "ms": 1.9
+          }
+        ],
+        "resultTokens": 468,
+        "argTokens": 18,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "missing-products",
+        "kind": "lookup",
+        "query": "What happens to products that are missing from the CSV import?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What happens to products that are missing from the CSV import?"
+            },
+            "argTokens": 16,
+            "resultTokens": 344,
+            "resultChars": 1497,
+            "wireTokens": 381,
+            "isError": false,
+            "ms": 8.3
+          }
+        ],
+        "resultTokens": 344,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "cut-off",
+        "kind": "lookup",
+        "query": "What time do orders close?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What time do orders close?"
+            },
+            "argTokens": 10,
+            "resultTokens": 452,
+            "resultChars": 1652,
+            "wireTokens": 487,
+            "isError": false,
+            "ms": 5.6
+          }
+        ],
+        "resultTokens": 452,
+        "argTokens": 10,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "translator",
+        "kind": "lookup",
+        "query": "Who translates our copy into Welsh?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who translates our copy into Welsh?"
+            },
+            "argTokens": 11,
+            "resultTokens": 364,
+            "resultChars": 1628,
+            "wireTokens": 404,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 364,
+        "argTokens": 11,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 5
+      },
+      {
+        "id": "paraphrase-dropoff",
+        "kind": "lookup",
+        "query": "What share of shoppers abandon the purchase?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What share of shoppers abandon the purchase?"
+            },
+            "argTokens": 12,
+            "resultTokens": 240,
+            "resultChars": 956,
+            "wireTokens": 266,
+            "isError": false,
+            "ms": 4.7
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Sessions/2026-08-26_Claude.md"
+            },
+            "argTokens": 15,
+            "resultTokens": 120,
+            "resultChars": 434,
+            "wireTokens": 137,
+            "isError": false,
+            "ms": 1.4
+          }
+        ],
+        "resultTokens": 360,
+        "argTokens": 27,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer",
+        "kind": "lookup",
+        "query": "What is the name of our Kubernetes cluster?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the name of our Kubernetes cluster?"
+            },
+            "argTokens": 13,
+            "resultTokens": 207,
+            "resultChars": 810,
+            "wireTokens": 226,
+            "isError": false,
+            "ms": 4
+          }
+        ],
+        "resultTokens": 207,
+        "argTokens": 13,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Take a Litestream snapshot every 6 hours instead of every 24.",
+              "reason": "The restore drill showed that replaying a full day of WAL is slower than we want."
+            },
+            "argTokens": 39,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 39,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add seasonal start and end dates to the menu CSV import",
+              "priority": "medium",
+              "project": "menu"
+            },
+            "argTokens": 23,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.6
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 23,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Partial refunds API",
+              "content": "Started the partial refunds endpoint. The admin screen sends a list of order_item ids; the API sums their prices in pence, checks the total against the remaining capture and calls POST /v2/payments/{id}/partial-refunds. Sandbox refunds only work on payments from yesterday, so the tests use a fixture payment dated the day before. Next: the item picker in the admin screen."
+            },
+            "argTokens": 94,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 94,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 259,
+            "resultChars": 1147,
+            "wireTokens": 290,
+            "isError": false,
+            "ms": 2.1
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nLast updated by Claude on 2 November 2026.\n\n## Where we are\n\n- Partial refunds API is in progress: the endpoint sums order_item prices and calls PayLoop. The admin item picker is not started.\n- The Welsh launch is still waiting on the translator (allergen labels and email templates, due 6 November). Launch date: 13 November.\n- The basket button contrast fix is merged.\n\n## Watch out for\n\n- PayLoop sandbox partial refunds only work on payments from a previous day.\n- Staging and production share the VPS. Restart only fernhill-api-staging when testing.\n\n## Suggested next steps\n\n1. Build the item picker for partial refunds.\n2. Rerun the load test after refunds land.\n3. Ask Leo about Saturday deliveries to CF5.\n"
+            },
+            "argTokens": 185,
+            "resultTokens": 14,
+            "resultChars": 57,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 3.5
+          }
+        ],
+        "resultTokens": 273,
+        "argTokens": 186,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 25,
+      "answerableLookups": 24,
+      "answered": 21,
+      "answeredBySearchAlone": 19,
+      "lookupResultTokens": 9431,
+      "lookupCalls": 30,
+      "startTokens": 1590,
+      "startAnswersCovered": 5,
+      "writeResultTokens": 305,
+      "writesLanded": 4,
+      "argTokens": 744,
+      "sessionTotalTokens": 12628,
+      "meanReciprocalRank": 0.654
+    }
+  }
+]
