@@ -219,11 +219,48 @@ Recall@5 by question type, 5 results per search, same run. 95% bootstrap interva
 | synonym | 16 | 0.125 (0.00 to 0.31) | 0.750 (0.50 to 0.94) | 0.813 (0.56 to 1.00) | 0.063 (0.00 to 0.19) |
 <!-- /generated -->
 
+## What the results show
+
+Numbers below are from the tables above; differences are paired, on the same questions, with 95% intervals.
+
+- **Keyword search is a strong baseline on both outside datasets.** On SciFact, vectors alone were not
+  distinguishable from keyword search (Recall@5 +0.012, interval −0.035 to 0.059), even though the model has
+  probably seen these abstracts in training. On LongMemEval-S, keyword search put a session that holds the answer
+  among the first five results for most answerable questions (Recall@5 0.852), and showed the evidence turn itself
+  for 72.7% of them.
+- **Keywords and vectors together (hybrid) did best on SciFact and on the paraphrase set.** SciFact: Recall@5
+  +0.058 over keyword search (0.030 to 0.089) and nDCG@10 0.712 against 0.655. Paraphrase set: +0.297 (0.188 to
+  0.406).
+- **Vectors help most with questions worded unlike the note**, and still miss most that share no word with it.
+  On the paraphrase set, synonym questions: keyword search found 2 of 16 targets in the first five results,
+  vectors 12 of 16; low-overlap questions: 0 of 16 and 5 of 16. Planted facts in books asked with no shared word:
+  0 of 10 with keywords, 3 of 10 (Moby Dick) and 4 of 10 (Emma) with hybrid ([book-benchmark.md](book-benchmark.md)).
+- **Regressions.** On the paraphrase set, vectors alone found fewer of the date questions than keyword search
+  (2 of 8 against 3 of 8; too few to be sure), and hybrid ranked the target lower on average than vectors alone
+  (MRR −0.062, interval −0.150 to 0.027, so possibly chance). On SciFact, hybrid ranked better than vectors alone
+  (MRR +0.048, 0.017 to 0.079).
+- **LongMemEval-S by question type**, with keyword search: weakest on preferences (single-session-preference,
+  0.583 over 24 questions), then temporal reasoning (0.793) and multi-session questions (0.804); strongest on
+  what the assistant said (1.000) and on updated facts (0.940).
+- **The old server is far behind** on every dataset (Recall@5 −0.297 on SciFact, −0.263 on LongMemEval-S),
+  mainly because it can only look for one exact word.
+- **Embedding is the cost.** SciFact's 27,691 passages took 518 seconds to embed on two cores (about 53 per
+  second) and roughly 174 MB more memory; the keyword index took 6.2 seconds. A search with vectors compares the
+  query with every stored vector, so it took about 455 to 480 ms on SciFact against about 273 ms with keywords
+  alone. Tokens per search were similar for all three (359 to 418 for 5 results).
+- **Nothing was tuned on these results, and no default changed because of them.** Keyword search stays the default
+  without a model, and hybrid the default with one, as before these runs.
+
 ## Not measured
 
 - **Whether an AI answers correctly** with these results. That needs a model, a fixed prompt and a budget; the
   harness for it is described in [agent-evaluation.md](agent-evaluation.md).
 - **Other embedding models** (for example `nomic-embed-text`, the server's default Ollama model). Only
   all-MiniLM-L6-v2 was available here.
-- **Reranking.** No reranking model was evaluated.
+- **Reranking and query rewriting.** Neither is implemented, so there is no overhead to report.
+- **Ollama itself.** The model ran in a stand-in for Ollama's API; Ollama's own GGUF weights can give slightly
+  different vectors.
+- **Comparison with published scores.** The setup differs from the published BEIR and LongMemEval baselines
+  (passages, short snippets, a score cut-off, at most 2 results per note), and the published tables could not be
+  checked from where these runs were made, so no comparison is made.
 - **The development splits** were not used to tune anything in this round, so no development results are reported.
