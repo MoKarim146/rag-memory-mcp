@@ -1,0 +1,70 @@
+{
+  "groups": {
+    "longmemeval-s/evaluation-dense/bm25/limit-5": {
+      "msMean": 30.7,
+      "msP95": 69.5,
+      "indexMsMean": 161.7,
+      "indexMsP95": 212.8
+    },
+    "longmemeval-s/evaluation-dense/bm25/limit-5/abstention": {
+      "msMean": 30.3,
+      "msP95": 56.9,
+      "indexMsMean": 167.1,
+      "indexMsP95": 204.4
+    },
+    "longmemeval-s/evaluation-dense/bm25/limit-10": {
+      "msMean": 31.5,
+      "msP95": 65.3
+    },
+    "longmemeval-s/evaluation-dense/bm25/limit-10/abstention": {
+      "msMean": 29.3,
+      "msP95": 50.6
+    },
+    "longmemeval-s/evaluation-dense/dense/limit-5": {
+      "msMean": 31.8,
+      "msP95": 45.8,
+      "indexMsMean": 36864.5,
+      "indexMsP95": 43628.9
+    },
+    "longmemeval-s/evaluation-dense/dense/limit-5/abstention": {
+      "msMean": 34.3,
+      "msP95": 46.1,
+      "indexMsMean": 36005,
+      "indexMsP95": 42272.4
+    },
+    "longmemeval-s/evaluation-dense/dense/limit-10": {
+      "msMean": 26.3,
+      "msP95": 40.6
+    },
+    "longmemeval-s/evaluation-dense/dense/limit-10/abstention": {
+      "msMean": 27.5,
+      "msP95": 34.5
+    },
+    "longmemeval-s/evaluation-dense/hybrid/limit-5": {
+      "msMean": 55,
+      "msP95": 94,
+      "indexMsMean": 1393.7,
+      "indexMsP95": 1655.3
+    },
+    "longmemeval-s/evaluation-dense/hybrid/limit-5/abstention": {
+      "msMean": 45.5,
+      "msP95": 59.3,
+      "indexMsMean": 1301.7,
+      "indexMsP95": 1401.1
+    },
+    "longmemeval-s/evaluation-dense/hybrid/limit-10": {
+      "msMean": 53.4,
+      "msP95": 86.8
+    },
+    "longmemeval-s/evaluation-dense/hybrid/limit-10/abstention": {
+      "msMean": 47.7,
+      "msP95": 73.9
+    }
+  },
+  "other": {
+    "bm25/rssGrowthMBMean": 0.5,
+    "dense/rssGrowthMBMean": -6.2,
+    "hybrid/rssGrowthMBMean": 2.8,
+    "minutes": 65.3
+  }
+}

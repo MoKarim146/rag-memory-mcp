@@ -1,0 +1,259 @@
+{
+  "benchmark": "eval-longmemeval-s",
+  "runId": "20261105T063832Z-1bd2c4b",
+  "startedAt": "2026-11-05T06:38:32.374Z",
+  "git": {
+    "commit": "1bd2c4b6bb7c47f3be4d0cfee322755fca15106e",
+    "dirty": false,
+    "dirtyFiles": []
+  },
+  "environment": {
+    "node": "v22.23.4",
+    "platform": "linux 6.18.44-fc-v236",
+    "arch": "x64",
+    "cpuModel": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "logicalCpus": 4,
+    "cpuAffinity": "0-1",
+    "memoryGB": 16.9,
+    "timeZone": "UTC",
+    "TZ": "UTC",
+    "packageLockSha256": "f124fefbec3ac18e0ba2d6cda1887b5950d28ecd10d71549a67716feb92aa549"
+  },
+  "config": {
+    "about": "Retrieval evaluation (bench/eval/run.ts) through the MCP server's search_memory tool. Queries are the dataset's text, unchanged.",
+    "dataset": "longmemeval-s",
+    "split": "evaluation-dense",
+    "quick": null,
+    "quickSeed": null,
+    "limits": [
+      5,
+      10
+    ],
+    "systems": {
+      "bm25": {
+        "about": "this server, keyword search only (FTS5 BM25)",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+          "RAG_RETRIEVAL": "keyword"
+        }
+      },
+      "dense": {
+        "about": "this server, vectors only",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+          "RAG_EMBEDDINGS": "ollama",
+          "RAG_OLLAMA_MODEL": "all-minilm",
+          "RAG_RETRIEVAL": "dense"
+        }
+      },
+      "hybrid": {
+        "about": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+          "RAG_EMBEDDINGS": "ollama",
+          "RAG_OLLAMA_MODEL": "all-minilm",
+          "RAG_RETRIEVAL": "hybrid"
+        }
+      }
+    },
+    "embeddingModel": {
+      "ollamaModel": "all-minilm",
+      "note": "all-MiniLM-L6-v2 ONNX (Chroma package, SHA-256 913d7300...) served by bench/tools/ollama_compatible.py on 127.0.0.1:11434 with 2 threads on cores 2-3; not Ollama itself",
+      "formatting": "none (all-minilm takes no query or document prefix)"
+    },
+    "tokenizer": "o200k_base",
+    "timeZone": "UTC"
+  },
+  "data": {
+    "dataset": "longmemeval-s",
+    "split": "evaluation-dense",
+    "sources": [
+      "longmemevalS"
+    ],
+    "splitFile": "bench/eval/splits/longmemeval-s.json",
+    "meanSessionsPerQuestion": 48
+  },
+  "plan": [
+    {
+      "name": "longmemeval-s/evaluation-dense/bm25/limit-5",
+      "queries": 95,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/bm25/limit-5/abstention",
+      "queries": 6,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 5,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/bm25/limit-10",
+      "queries": 95,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/bm25/limit-10/abstention",
+      "queries": 6,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 10,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/dense/limit-5",
+      "queries": 95,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "dense",
+        "systemAbout": "this server, vectors only",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/dense/limit-5/abstention",
+      "queries": 6,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "dense",
+        "systemAbout": "this server, vectors only",
+        "limit": 5,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/dense/limit-10",
+      "queries": 95,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "dense",
+        "systemAbout": "this server, vectors only",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/dense/limit-10/abstention",
+      "queries": 6,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "dense",
+        "systemAbout": "this server, vectors only",
+        "limit": 10,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/hybrid/limit-5",
+      "queries": 95,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "hybrid",
+        "systemAbout": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/hybrid/limit-5/abstention",
+      "queries": 6,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "hybrid",
+        "systemAbout": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "limit": 5,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/hybrid/limit-10",
+      "queries": 95,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "hybrid",
+        "systemAbout": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation-dense/hybrid/limit-10/abstention",
+      "queries": 6,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation-dense",
+        "system": "hybrid",
+        "systemAbout": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "limit": 10,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    }
+  ],
+  "finishedAt": "2026-11-05T07:43:50.432Z",
+  "facts": {
+    "embeddingIncomplete": 202
+  }
+}

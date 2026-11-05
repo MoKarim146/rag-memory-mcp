@@ -30,9 +30,10 @@ is made.
 | A short chat uses fewer tokens than pasting the notes or the old server (README table) | Three small fake vaults written for this project; sets 1 and 2 were used for tuning, set 3 once |
 | Pasting every note is cheaper when one chat asks every question on these small vaults | Same three vaults |
 | The answer reached the AI for 82.3% of 10,570 SQuAD questions | One configuration, keyword search; SQuAD questions often share words with their paragraph ([book-benchmark.md](book-benchmark.md)) |
-| Planted facts in Moby Dick: 20 of 20 found with the fact's words, 0 of 10 with no shared word (keyword search) | 20 facts written for this project |
+| Planted facts in Moby Dick: 20 of 20 found with the fact's words, 0 of 10 with no shared word (keyword search); with hybrid search 3 of 10 (Moby Dick) and 4 of 10 (Emma) with no shared word | 20 facts written for this project; 10 questions per kind; one embedding model through a stand-in |
 | Results on BEIR SciFact, LongMemEval-S and the paraphrase set ([evaluation.md](evaluation.md)) | One embedding model (`all-MiniLM-L6-v2`), served by a stand-in rather than Ollama; SciFact abstracts are probably in that model's training data; dense and hybrid on LongMemEval-S use a 101-question subset; the paraphrase set (64 evaluation questions) was written for this project |
-| Hybrid search finds questions worded unlike the note more often than keyword search | Paraphrase set only, with the intervals shown there; on other data the difference may be smaller or reversed |
+| Hybrid search finds questions worded unlike the note more often than keyword search | Paraphrase set and planted facts, written for this project; on SciFact and LongMemEval-S the gain is smaller, and vectors alone were no better than keyword search there |
+| With vectors alone, the evidence turn is shown less often on long chat histories | One dataset (LongMemEval-S, 95 questions), one model |
 | Search, index and embedding times | One run on one machine, pinned to two cores; not compared across runs ([benchmarks.md](benchmarks.md)) |
 | The three setup steps work from a fresh clone, and Claude Code connects | Checked once by hand on Linux with Node.js 22.23.4 and Claude Code 2.1.318 (README, "What has been tested") |
 | The skill improves what an AI does | The skill's rules come from the measurements above, but no model has been evaluated with or without it |

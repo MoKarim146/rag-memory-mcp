@@ -168,11 +168,46 @@ Recall@5 by question type, 5 results per search, same run. 95% bootstrap interva
 ### LongMemEval-S, evaluation-dense subset (101 questions), all three ranking methods
 
 <!-- generated: retrieval eval-longmemeval-s evaluation-dense -->
-_No clean run of eval-longmemeval-s (evaluation-dense) yet._
+Run `bench/runs/eval-longmemeval-s/20261105T063832Z-1bd2c4b` (commit `1bd2c4b`). Recall@5 interval: 95% bootstrap over questions (2,000 resamples, seed 1). Warm search: one search once the index is built. Cold start: building the index, with embedding for dense and hybrid. Memory: growth of the benchmark process's resident memory while the index was built, a rough reading that garbage collection can make negative.
+
+| System | Results | Questions | Recall@5 | Recall@5, 95% interval | Recall@10 | nDCG@10 | MRR | Evidence shown | Answer present | Without vectors | Tokens (mean) | Warm search ms (mean) | Cold start ms (mean) | Memory MB (rough) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| bm25 | 5 | 95 | 0.853 | 0.788 to 0.910 |  |  | 0.854 | 69.5% | 28.4% | 0 | 330 | 30.7 | 162 | 0.5 |
+| bm25 (no-answer questions) | 5 | 6 | 0.917 |  |  |  | 1 | 66.7% | 0% | 0 | 388 | 30.3 | 167 | 0.5 |
+| bm25 | 10 | 95 | 0.859 | 0.794 to 0.917 | 0.870 | 0.836 | 0.854 | 71.6% | 29.5% | 0 | 415 | 31.5 |  | 0.5 |
+| bm25 (no-answer questions) | 10 | 6 | 0.917 |  | 0.917 | 0.922 | 1 | 66.7% | 0% | 0 | 522 | 29.3 |  | 0.5 |
+| dense | 5 | 95 | 0.817 | 0.745 to 0.882 |  |  | 0.874 | 42.1% | 21.1% | 0 | 235 | 31.8 | 36,865 | -6.2 |
+| dense (no-answer questions) | 5 | 6 | 0.333 |  |  |  | 0.500 | 33.3% | 0% | 0 | 146 | 34.3 | 36,005 | -6.2 |
+| dense | 10 | 95 | 0.820 | 0.748 to 0.883 | 0.820 | 0.821 | 0.874 | 43.2% | 21.1% | 0 | 253 | 26.3 |  | -6.2 |
+| dense (no-answer questions) | 10 | 6 | 0.333 |  | 0.333 | 0.371 | 0.500 | 33.3% | 0% | 0 | 146 | 27.5 |  | -6.2 |
+| hybrid | 5 | 95 | 0.898 | 0.847 to 0.942 |  |  | 0.917 | 72.6% | 28.4% | 0 | 355 | 55 | 1,394 | 2.8 |
+| hybrid (no-answer questions) | 5 | 6 | 0.917 |  |  |  | 0.917 | 66.7% | 0% | 0 | 384 | 45.5 | 1,302 | 2.8 |
+| hybrid | 10 | 95 | 0.911 | 0.860 to 0.954 | 0.917 | 0.897 | 0.917 | 72.6% | 31.6% | 0 | 454 | 53.4 |  | 2.8 |
+| hybrid (no-answer questions) | 10 | 6 | 0.917 |  | 0.917 | 0.871 | 0.917 | 66.7% | 0% | 0 | 531 | 47.7 |  | 2.8 |
+
+Paired differences on the same questions (95% bootstrap interval of the mean difference, 2,000 resamples, seed 1). An interval that includes 0 means the difference may be chance.
+
+| Difference | Results | Same questions | Recall@5 | Recall@5, 95% interval | MRR | MRR, 95% interval |
+|---|---:|---:|---:|---:|---:|---:|
+| dense minus bm25 | 5 | 95 | -0.036 | -0.099 to 0.026 | +0.020 | -0.042 to 0.084 |
+| hybrid minus bm25 | 5 | 95 | +0.044 | 0.009 to 0.089 | +0.063 | 0.027 to 0.107 |
+| hybrid minus dense | 5 | 95 | +0.081 | 0.039 to 0.129 | +0.043 | 0.003 to 0.089 |
+| dense minus bm25 | 10 | 95 | -0.040 | -0.105 to 0.023 | +0.020 | -0.042 to 0.084 |
+| hybrid minus bm25 | 10 | 95 | +0.051 | 0.018 to 0.094 | +0.063 | 0.027 to 0.107 |
+| hybrid minus dense | 10 | 95 | +0.091 | 0.047 to 0.142 | +0.043 | 0.003 to 0.089 |
 <!-- /generated -->
 
 <!-- generated: retrieval-by eval-longmemeval-s evaluation-dense 5 -->
-_No clean run of eval-longmemeval-s (evaluation-dense) yet._
+Recall@5 by question type, 5 results per search, same run. 95% bootstrap interval over that type's questions (2,000 resamples, seed 1).
+
+| Question type | Questions | bm25 Recall@5 | dense Recall@5 | hybrid Recall@5 |
+|---|---:|---:|---:|---:|
+| knowledge-update | 15 | 0.933 (0.83 to 1.00) | 0.967 (0.90 to 1.00) | 0.967 (0.90 to 1.00) |
+| multi-session | 24 | 0.920 (0.85 to 0.98) | 0.764 (0.60 to 0.90) | 0.906 (0.82 to 0.97) |
+| single-session-assistant | 11 | 1.000 (1.00 to 1.00) | 1.000 (1.00 to 1.00) | 1.000 (1.00 to 1.00) |
+| single-session-preference | 6 | 0.500 (0.17 to 0.83) | 0.667 (0.33 to 1.00) | 0.833 (0.50 to 1.00) |
+| single-session-user | 13 | 1.000 (1.00 to 1.00) | 1.000 (1.00 to 1.00) | 1.000 (1.00 to 1.00) |
+| temporal-reasoning | 26 | 0.692 (0.53 to 0.83) | 0.646 (0.49 to 0.79) | 0.770 (0.64 to 0.89) |
 <!-- /generated -->
 
 ### Paraphrase set, evaluation split (16 groups, 64 questions)
@@ -228,9 +263,18 @@ Numbers below are from the tables above; differences are paired, on the same que
   probably seen these abstracts in training. On LongMemEval-S, keyword search put a session that holds the answer
   among the first five results for most answerable questions (Recall@5 0.852), and showed the evidence turn itself
   for 72.7% of them.
-- **Keywords and vectors together (hybrid) did best on SciFact and on the paraphrase set.** SciFact: Recall@5
-  +0.058 over keyword search (0.030 to 0.089) and nDCG@10 0.712 against 0.655. Paraphrase set: +0.297 (0.188 to
-  0.406).
+- **Keywords and vectors together (hybrid) did best on all three.** SciFact: Recall@5 +0.058 over keyword search
+  (0.030 to 0.089) and nDCG@10 0.712 against 0.655. LongMemEval-S subset (95 answerable questions): +0.044 (0.009
+  to 0.089), 0.898 against 0.853. Paraphrase set: +0.297 (0.188 to 0.406).
+- **Vectors alone were not better than keyword search on either outside dataset** (SciFact +0.012, −0.035 to
+  0.059; LongMemEval-S subset −0.036, −0.099 to 0.026).
+- **Vectors alone often found the right session but not the evidence in it.** On the LongMemEval-S subset the
+  evidence turn itself reached the AI for 42.1% of questions with vectors alone, against 69.5% with keywords and
+  72.6% with hybrid. Counted from the run's records: vectors alone listed a right session for 85 of the 95
+  questions, but for 45 of those the turn with the answer was not in what was shown (keywords: 22 of 88; hybrid:
+  22 of 91). A result shows the passage closest in meaning to the question, and in a long chat that is often
+  another turn of the same session. Vectors alone also returned fewer results (2.84 per search against 3.81),
+  as weaker matches are dropped by the similarity and score cut-offs.
 - **Vectors help most with questions worded unlike the note**, and still miss most that share no word with it.
   On the paraphrase set, synonym questions: keyword search found 2 of 16 targets in the first five results,
   vectors 12 of 16; low-overlap questions: 0 of 16 and 5 of 16. Planted facts in books asked with no shared word:
@@ -241,11 +285,16 @@ Numbers below are from the tables above; differences are paired, on the same que
   (MRR +0.048, 0.017 to 0.079).
 - **LongMemEval-S by question type**, with keyword search: weakest on preferences (single-session-preference,
   0.583 over 24 questions), then temporal reasoning (0.793) and multi-session questions (0.804); strongest on
-  what the assistant said (1.000) and on updated facts (0.940).
+  what the assistant said (1.000) and on updated facts (0.940). In the subset, vectors alone were weaker than
+  keywords on multi-session questions (0.764 against 0.920 over 24), and hybrid was not (0.906).
+- **The subset is representative of the split for keyword search**: Recall@5 0.853 on its 95 answerable
+  questions, 0.852 on all 377.
 - **The old server is far behind** on every dataset (Recall@5 −0.297 on SciFact, −0.263 on LongMemEval-S),
   mainly because it can only look for one exact word.
 - **Embedding is the cost.** SciFact's 27,691 passages took 518 seconds to embed on two cores (about 53 per
-  second) and roughly 174 MB more memory; the keyword index took 6.2 seconds. A search with vectors compares the
+  second) and roughly 174 MB more memory; the keyword index took 6.2 seconds. On LongMemEval-S, where every
+  question has its own history, building the index took about 37 seconds per question with vectors against
+  0.16 seconds without. A search with vectors compares the
   query with every stored vector, so it took about 455 to 480 ms on SciFact against about 273 ms with keywords
   alone. Tokens per search were similar for all three (359 to 418 for 5 results).
 - **Nothing was tuned on these results, and no default changed because of them.** Keyword search stays the default
