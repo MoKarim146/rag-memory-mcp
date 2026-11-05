@@ -1,8 +1,7 @@
 # Security report
 
 What was attacked, what got through, what was fixed, and what is still open. Written in plain English; the
-exact results are in `security/` and the tests are in `tests/security-audit.test.ts` (IDs PI, MP, RP, PT, AB,
-SL, FP) and `tests/security-attacks.test.ts` (the original project's attacks).
+exact results are in `security/`.
 
 **Who did what.** The original project, including its first 27 attack tests and the fix for websites calling
 the server (G7), was written with Codex; Mohamed Karim designed it, directed the work and tested it. Claude
@@ -10,21 +9,26 @@ Code wrote the work in this report at his direction: the new attack tests, the f
 
 ## Summary
 
-| | Result |
-|---|---|
-| New attack tests (38), run on the code **before** any fix | 17 passed, 20 failed (of the first 37) |
-| Same tests **after** the fixes | 37 passed, 0 failed, plus 1 new false-alarm test, also passing |
-| All tests in the project after the fixes | 87 passed, 0 failed |
-| Known-vulnerable packages used at run time (`npm audit`) | 9 before (1 critical, 6 high, 2 moderate), 1 after (moderate, in a feature this server does not use) |
-| Still open | Retrieval poisoning (RP-8), memory poisoning (G3), no rate limit (rest of G2); see "Not fixed" |
+The server was attacked in three rounds. Each time the tests were written first and run on the code as it was,
+the failures were recorded, and only then was the code fixed.
 
-"Before" means the RAG version of the server just before the security fixes (commit
-`feat: hybrid retrieval…`). Many of the problems were already in the original project; the table says which.
+| Round | Tests | Before the fixes | After the fixes |
+|---|---|---|---|
+| 1. First audit: injection, poisoning, traversal, access, secrets (`tests/security-audit.test.ts`) | 38 | 17 of 37 passed | 38 of 38 pass |
+| 2. OWASP Top 10 for LLM Applications 2026 (`tests/owasp-2026.test.ts`) | 41 | 12 of 41 passed | 41 of 41 pass |
+| 3. Heavy fuzz and stress tests (`tests/heavy/`, `npm run test:heavy`) | 15 | found 5 bugs | 15 of 15 pass |
+| Whole fast suite (`npm test`) | 129 | | 129 of 129 pass |
 
-**One mistake of mine, for the record.** On the very first run, PI-1 failed because my test was wrong: it
-counted the line "Text inside `<note>` is note content…" as if it were a note tag. I corrected the test, not
-the server, and reran. Both runs are saved: `security/audit-before-fixes-first-run.json` (wrong test) and
-`security/audit-before-fixes.json` (corrected, used below).
+| | Before | After |
+|---|---|---|
+| Known-vulnerable packages used at run time (`npm audit`) | 9 (1 critical, 6 high, 2 moderate) | 1 moderate, in a feature this server does not use |
+| Still open | | A stuffed note with no obvious order still reaches searches; politely worded orders are not flagged; the server cannot tell a true note from a false one. See "Not fixed" |
+
+**Mistakes of mine, for the record.** Four tests were wrong or too weak the first time, and each was corrected
+without changing the server in between: PI-1 counted the notice line as a tag; O4-4 ran the injection check
+over the server's own instructions, which are supposed to name tools; O6-4 passed for the wrong reason (its
+fake server sent a malformed answer, so the size limit was never reached); O5-1 checked a weaker rule than the
+one the poisoning test showed was needed. Details are next to each round.
 
 ## How the tests work
 
@@ -35,7 +39,13 @@ fake secret appears in anything the AI receives, if anything is written where it
 that should refuse something lets it through. The fake API keys in the tests are assembled from pieces when
 the test runs, so no real-looking key is stored in the code.
 
-## Results, test by test
+## Round 1: the first audit
+
+"Before" means the RAG version of the server just before these fixes (commit `feat: hybrid retrieval…`).
+Many of the problems were already in the original project; the table says which. On the very first run, PI-1
+failed because my test was wrong: it counted the line "Text inside `<note>` is note content…" as if it were a
+note tag. I corrected the test, not the server. Both runs are saved:
+`security/audit-before-fixes-first-run.json` (wrong test) and `security/audit-before-fixes.json` (used below).
 
 **PI = prompt injection through notes.** A note tries to give the AI orders.
 
@@ -130,14 +140,185 @@ tests were run again. Every time, the matching tests failed. Then the fix was pu
 | Cap of 2 results per note | RP-5, RP-8 |
 | Handoff backup | MP-3, G4 |
 
+## Round 2: OWASP Top 10 for LLM Applications 2026
+
+**Source.** The official 2026 text from OWASP's GenAI Security Project, read from its repository
+([GenAI-Security-Project/GenAI-LLM-Top10](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10),
+folder `2026/final`). The OWASP website itself could not be reached from the build environment. The 2026 list
+replaced the 2025 one, and the numbering changed (for example, Excessive Agency moved to LLM03 and Improper
+Output Handling to LLM10).
+
+**What "complete" can mean here.** OWASP says plainly that prompt injection has no reliable complete fix
+today, so defence is about layers and limiting the damage. Some entries (training data, model weights, cloud
+spending caps) are about building or hosting a model, which this server does not do. So for each entry below:
+what applies to a local memory server, what was done, which tests check it, and what remains.
+
+Results: before the fixes 12 of 41 passed (`security/owasp-before-fixes.json`), after 41 of 41
+(`security/owasp-after-fixes.json`). Before → after per test: O1-1 to O1-9 fail → pass, O1-10 pass (a recorded
+gap), O2-1, O2-2, O2-4, O2-5 fail → pass, O2-3 pass, O3-1 to O3-5 fail → pass, O4-1 and O4-3 pass, O4-2 and O4-4
+fail → pass, O5-1 and O5-2 fail → pass, O6-1 to O6-3 fail → pass, O6-4 and O6-5 pass, O7-1, O7-2, O8-1, O9-1,
+O9-2, O9-5 pass, O9-3, O9-4, O10-1, O10-2 fail → pass.
+
+Three tests changed after the first run, and they are described honestly here: **O4-4** (test mistake:
+the server's own instructions say "Use search_memory…", which the detector treats as an order in a note; tool
+names are now blanked before the check), **O6-4** (passed for the wrong reason; it now streams a valid 40 MB
+answer, fails on the old code and passes on the new), **O5-1** (first checked "flagged notes rank last"; the
+poisoning test showed that was not enough, so it now checks the stricter rule below).
+
+### LLM01:2026 Prompt Injection
+
+*Text the AI reads is taken as an order.* For this server: orders hidden in notes.
+
+- Done: invisible characters removed, including the variation selectors OWASP names (O1-3); hidden HTML
+  (`hidden`, `display:none`, zero font size, white text), unrendered comment links `[//]: # (...)`, HTML and
+  Obsidian comments removed (O1-1, O1-2, PI-2, PI-3); terminal control codes removed (O1-9); orders written with
+  look-alike Cyrillic or Greek letters (O1-4) or hidden in base64 (O1-5) are still flagged; note text is wrapped
+  in labelled `<note>` blocks the note cannot close (PI-1, PI-7).
+- Done, OWASP control 9 "treat agent memory writes as privileged": a write that looks like instructions is
+  **not saved** but held in `AI Review/pending.md` for the owner (O1-6). `AI_MEMORY_WRITE_REVIEW=all` holds
+  every write (O1-7). An AI cannot write text the owner would not see in Obsidian (O1-8).
+- OWASP control 8, "Rule of Two": this server gives an AI (A) untrusted input (notes), (B) sensitive data
+  (notes) and (C) the ability to change state (writes), all three. It has no way to send anything over the
+  network. To drop to two of three, use read-only mode (`AI_MEMORY_WRITE_ENABLED=false`) or a read token; or keep
+  writes but hold them for review (`AI_MEMORY_WRITE_REVIEW=all`).
+- Remains: the check is a list of patterns. Politely worded orders are not flagged (O1-10, a recorded gap), and
+  an attacker who reads this code can word around it, as OWASP warns.
+
+### LLM02:2026 Sensitive Information Disclosure
+
+- Done: 22 masking rules for secrets (some cover several key types), including Slack and Discord webhooks, npm, PyPI, Hugging Face, GitLab,
+  SendGrid, Twilio and Azure keys (O2-1, SL-1); email addresses, phone numbers and card numbers (checked with the
+  Luhn checksum) masked by default, switchable with `MASK_EMAILS` and `MASK_PHONE_NUMBERS` (O2-2, O2-3);
+  secrets an AI tries to save are masked before they reach the disk (O2-4); notes marked `ai_private: true` or
+  `#ai-private` are never read, searched, summarised or embedded (O2-5, O9-4); per-session call limit against
+  probing (O6-1); no secrets in the server's own instructions (O8-1).
+- Remains: pattern-based. OWASP recommends classifiers on top of patterns; there is none. "The password is
+  hunter2" is not caught. A key glued straight after a letter ("Ask-…") is not masked, on purpose, so words like
+  "task-assignment-…" are not damaged (tested in the heavy suite).
+
+### LLM03:2026 Excessive Agency
+
+- Done: no delete, no shell, no web fetch; write tools only append to fixed files or replace the handoff;
+  `AI_MEMORY_TOOLS` offers only the tools you list (O3-1); read-only mode and read tokens (AB-2, AB-3); replacing
+  the handoff is marked "destructive" so clients that honour the hint ask you first (O3-2); at most 20 writes per
+  10 minutes per session and the same write refused after two repeats, as a circuit breaker for looping agents
+  (O3-3, O3-4); every write, held write and refused write recorded in `.history/audit.jsonl` with time, session,
+  tool, file, size and hash, never the text (O3-5).
+- Remains: whether the client really asks you before a "destructive" call is up to the client.
+
+### LLM04:2026 Supply Chain
+
+- Done: every dependency comes from the npm registry with an integrity hash (O4-1); a CycloneDX software bill of
+  materials, `sbom.cdx.json`, lists all 94 runtime packages at their locked versions (O4-2, regenerate with
+  `npm run sbom`); the container installs without running package scripts (O4-3); the server's own tool
+  descriptions contain no hidden characters or tricks (O4-4); CI (`.github/workflows/ci.yml`) runs the tests and
+  `npm audit` on every push, with GitHub Actions pinned to exact commits; 9 known vulnerabilities down to 1.
+- Remains: the Ollama model is not pinned or signature-checked by this server; the SBOM is not signed.
+
+### LLM05:2026 Data and Model Poisoning
+
+*Bad data planted so it gets retrieved later.* There is no model training here; this is about the notes.
+
+- Done: instruction-like writes held for review (O1-6); hidden text cannot be indexed (RP-1); AI-written text
+  labelled (MP-5); the old handoff kept on every replace (MP-3); **source scoring**: a note flagged for
+  instruction-like text is only returned by search when no clean note matches (O5-1). A planted, stuffed note
+  with an order in it reached up to 25 of 25 test searches before; now at most 4 of 25, and only when nothing
+  clean matched (O5-2, `bench/results/poisoning.json`).
+- Measured and not adopted: OWASP suggests flagging content that matches an unusually wide range of searches.
+  On the two test vaults, real sections appeared in up to 23% of searches and planted ones in 18% to 30%, too
+  close to tell apart without hiding real notes.
+- Remains: a stuffed note **without** an obvious order is not flagged and still reaches up to 20 of 25 searches
+  (see "Not fixed").
+
+### LLM06:2026 Unbounded Consumption
+
+- Done: at most 120 tool calls per minute per session (O6-1); at most 32 open sessions, idle ones closed after
+  30 minutes, request timeouts of 10 seconds for headers and 30 for the body (O6-2); the index takes at most
+  20,000 notes (`RAG_MAX_NOTES`) and 200 MB, and skips folders more than 32 deep (O6-3); answers from the
+  embedding server are cut off at 8 MB (O6-4); text cleaning stays fast on inputs built to make the patterns
+  slow (O6-5); the MCP library caps a batch at 100 messages; plus the earlier input size limits and 2 MB file cap.
+- Remains: no cap on the total size of the vault folder on disk.
+
+### LLM07:2026 Misinformation
+
+- Done: every search hit says which note and section it came from; weak matches say `match="partial"` (O7-1);
+  AI-written notes and entries are labelled; `RAG_SHOW_DATES=true` adds last-change dates so an AI can prefer
+  newer notes (O7-2, off by default because it adds 8.4% to search output); tool inputs are checked before any
+  write.
+- Remains: the server cannot know whether a note is true.
+
+### LLM08:2026 Hidden Context Exposure
+
+*Assume anything in the AI's context can be seen.* The server's instructions and tool descriptions are not
+secret, and no security depends on them.
+
+- Done: tool descriptions, instructions, the health check and error messages contain no file paths, tokens
+  or settings (O8-1, SL-4); permissions are enforced in code (path checks, read-only mode, tokens), never by
+  asking the AI to behave (AB-3).
+
+### LLM09:2026 Vector and Embedding Weaknesses
+
+- Done: the index only holds notes `read_note` may read, with private notes left out (PT-1, O2-5); each vault
+  has its own index (O9-1); changing the embedding settings starts a new index (O9-2); vectors of a different
+  size are rejected, so models are never mixed (O9-3); private notes and secrets are never sent to the embedding
+  server (O9-4, SL-3); no similarity scores are returned, and vectors of deleted notes are dropped (O9-5);
+  hidden text is removed before embedding; the embedding server must be on this computer, redirects refused
+  (AB-5, AB-6).
+- Remains: retrieval logs (what was searched and returned) are not kept, on purpose, because queries can be
+  private. Only writes are logged.
+
+### LLM10:2026 Improper Output Handling
+
+*Model output used without checks.* Here: what an AI writes into notes you open later, and what notes hand
+to the AI.
+
+- Done: remote images (`![…](https://…)`, `<img src=…>`), iframes, scripts and other embedded content in notes
+  are replaced by a short label before the AI sees them, so a note cannot steer the AI into repeating an image
+  link that leaks data when rendered (O10-1); an AI cannot save remote images, embedded pages, scripts,
+  `javascript:` links or event handlers into your notes (O10-2); control codes removed (O1-9); every tool input
+  is schema-checked.
+- Remains: what the AI writes in its own chat window is up to the AI app.
+
+## Round 3: heavy tests, and the bugs they found
+
+`npm run test:heavy` (also run by CI) has two files:
+
+- `tests/heavy/fuzz.test.ts`: property-based tests with fast-check. It generates about 22,000 inputs with a fixed
+  seed: 3,000 hostile file paths, 5,000 notes for the text cleaner (twice), 5,000 for the chunker, 2,000 texts for
+  the write check, 2,000 search queries. For each it checks a rule: the canary never leaks, cleaned text never
+  contains hidden or invisible content, cleaning twice gives the same result, chunks stay within size, search
+  never crashes.
+- `tests/heavy/stress.test.ts`: 20 clients writing over HTTP at once (every write saved exactly once, no broken
+  lines); 200 searches while notes are created, renamed and deleted; a 10,000-note vault; a 1 MB one-line note, a
+  100,000-line note and a note with 20,000 headings; folders 200 deep; 200 sessions opened at once; 500 calls at
+  once in one session; 20 random 200 KB markup strings.
+
+Bugs found, all fixed:
+
+| # | Found by | Bug | Fix |
+|---|---|---|---|
+| H1 | fuzz | A key glued after a digit or underscore ("0sk-…", "token_sk-…") was not masked | Key patterns only require no letter right before them |
+| H2 | fuzz | Masking was not repeatable: "password: x" cleaned twice became "[secret removed] removed]" | Already-masked values are skipped |
+| H3 | fuzz | A single `%%` was accepted on write. Obsidian hides everything after an unclosed `%%`, so later notes could be hidden from you | Any `%%` in a write is refused |
+| H4 | fuzz | `DB_PASSWORD=…` and `…apassword: b` leaked their values | The password rule runs first, finds the key anywhere, and stops each value at the next key |
+| H5 | stress | Every search failed with "not found" if a note was deleted while the vault was being read | Notes and folders that vanish halfway are skipped |
+
+The stress test that found H5 matters for daily use: you edit notes in Obsidian while an AI searches them.
+
+## Do the tests really catch problems? (round 2 and 3)
+
+Besides the round 1 checks above, O6-4 was confirmed by running the new test against the old code (it failed:
+the old code read the whole 40 MB answer) and the new code (it passed). The fuzz tests are checks in themselves:
+each of the bugs above made a fuzz test fail before it was fixed.
+
 ## The original project's gaps
 
 | Gap | What it was | Status now |
 |---|---|---|
 | G1 | No size limit on tool input | **Fixed** (MP-2) |
-| G2 | A looping AI could fill the disk | **Partly fixed**: input limits and a 2 MB cap per file. **Still open**: no rate limit, and a new session file can be started under another model name (test "GAP G2 (rest)") |
-| G3 | Memory poisoning: planted orders are stored and served to the next AI | **Reduced, still open**: AI-written entries are marked and instruction-like text gets a warning, but it is still stored and served |
-| G4 | `update_handoff_summary` could wipe the handoff | **Reduced**: it still replaces the file, but every old version is kept in `.history/` |
+| G2 | A looping AI could fill the disk | **Fixed in practice**: input limits, a 2 MB cap per file, at most 20 writes per 10 minutes per session, and repeated identical writes refused |
+| G3 | Memory poisoning: planted orders are stored and served to the next AI | **Reduced**: instruction-like writes are held for your review instead of saved; AI-written entries are marked. **Still open** for false statements with no instruction-like words (test "GAP G3 (rest)") |
+| G4 | `update_handoff_summary` could wipe the handoff | **Reduced**: it still replaces the file, but every old version is kept in `.history/`, and the tool is marked destructive |
 | G5 | Line breaks in short fields forged extra lines | **Fixed** (MP-1) |
 | G6 | Error messages showed where the vault is on disk | **Fixed** (SL-4) |
 | G7 | Any website could read and write notes | Fixed in the original project; its tests still pass |
@@ -154,33 +335,28 @@ version; moving to 2.x would mean overriding the SDK's own requirement, so it wa
 
 ## Not fixed
 
-1. **Retrieval poisoning (RP-8).** A note written to match many searches still gets into the results.
-   `bench/poisoning.mts` plants one in the full test vault, in three styles, and counts how many of the 25
-   benchmark searches it reaches (results in `bench/results/poisoning.json`):
+1. **A stuffed note with no obvious order.** `bench/poisoning.mts` plants a note stuffed with words into the
+   test vault and counts how many of 25 searches it reaches (`bench/results/poisoning.json`):
 
-   | Stuffing style | Keyword searches reached | Question searches reached | Ranked first |
-   |---|---:|---:|---:|
-   | Every word of the vault once | 16/25 | 15/25 | 0 |
-   | The 25 benchmark questions, 3 times | 12/25 | **25/25** | 2 and 7 |
-   | The 25 benchmark keywords, 10 times | **25/25** | 5/25 | 12 and 0 |
+   | Stuffing | With "Ignore previous instructions" in it | Without |
+   |---|---:|---:|
+   | Every word of the vault, once | 0/25 keyword, 0/25 question | 8/25, 5/25 |
+   | The 25 test questions, 3 times | 1/25, 4/25 | 4/25, **20/25** |
+   | The 25 test keywords, 10 times | 1/25, 0/25 | **20/25**, 2/25 |
 
-   What limits the damage: at most 2 of the 5 results come from that note, and in this test every one of its
-   hits carried the warning. Why it is not fixed: I measured simple signs of stuffing (few common words like
-   "the", repeated phrases). Real notes failed them too (the task list scored as "stuffed" as the attack), and
-   a note made of copied questions looked completely normal. A rule that hid real notes would be worse than
-   the problem, so none was added. The warning also only appears if the planted note uses phrases the check
-   knows; politely worded orders are not flagged.
-2. **Memory poisoning (G3).** The server cannot know whether a stored sentence is true. It marks what an AI
-   wrote and warns about obvious orders, but a careful lie is stored and served like any other note.
-3. **Prompt injection in general.** The labels and warnings help the AI, but nothing on the server can force
-   an AI to ignore what it reads. The real-agent test from the original project (SECURITY_TESTS.md, Part 2) was
-   not repeated for this version.
-4. **No rate limit** (rest of G2).
+   With an order in it, the note is flagged and kept out of search unless nothing clean matches. Without one,
+   it is just stuffed text: nothing marks it, so it still gets into results, at most 2 of 5. Its harm then
+   depends on a second, politely worded order inside it, which the patterns also miss (O1-10). Checks for
+   stuffing itself (few common words, repeated phrases, matching too many searches) were measured and could not
+   tell real notes from planted ones, so none was added.
+2. **Politely worded orders** are not flagged (O1-10).
+3. **The server cannot tell a true note from a false one** (G3 rest, LLM07).
+4. **The real-agent test** from the original project (SECURITY_TESTS.md, Part 2) was not repeated for this
+   version.
 5. **Token login is off by default**, so any program on the computer can use the tools. Turn it on
    (`MCP_AUTH_REQUIRED=true`) before using a tunnel or sharing the machine.
-6. **Pattern-based checks have limits.** Secret masking only knows common formats (a password written as
-   "the password is hunter2" is not caught), and it could mask an ordinary string that looks like a key.
-   Comment removal also removes comments inside code blocks.
+6. **Pattern limits:** secrets in unusual formats or prose are not caught; a key glued straight after a letter
+   is not masked; comment removal also removes comments inside code blocks.
 7. **Not tested:** hard links pointing outside the vault (an AI cannot create them through the tools), a file
    swapped for a symlink in the instant between the check and the read, the Docker setup, and whether
    `localhost` on your machine really points to your own computer (it normally does).
@@ -189,4 +365,8 @@ version; moving to 2.x would mean overriding the SDK's own requirement, so it wa
 
 ```bash
 npm test
+```
+
+```bash
+npm run test:heavy
 ```

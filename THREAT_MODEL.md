@@ -58,14 +58,16 @@
 - Hidden folders (such as `.trash`) off limits; error messages without file system paths.
 - Search index kept in memory only; embedding server must be on the same computer.
 
+- OWASP Top 10 for LLM Applications 2026 controls: instruction-like writes held for owner review, hidden
+  HTML and remote images removed, email/phone/card masking, private notes, tool allowlist, per-session rate
+  limits and loop breaker, session caps and timeouts, write audit log, SBOM and CI.
+
 Details and test results: SECURITY_REPORT.md.
 
 ## Still Planned
 
-- Audit logging without note-body disclosure.
-- Rate limits on write tools.
-- Email and phone-number masking.
 - CI checks for sample-vault-only demo data.
+- A semantic check for politely worded instructions (today the check is pattern-based).
 
 ## Residual Risks
 

@@ -1,50 +1,110 @@
 [
   {
     "stuffing": "every word in the vault, once",
+    "containsOrder": true,
     "queries": "keyword",
-    "reachedTop5": "16/25",
+    "reachedTop5": "0/25",
     "rankedFirst": 0,
-    "maxHitsInOneSearch": 2,
+    "maxHitsInOneSearch": 0,
     "alwaysFlagged": true
   },
   {
     "stuffing": "every word in the vault, once",
+    "containsOrder": true,
     "queries": "question",
-    "reachedTop5": "15/25",
+    "reachedTop5": "0/25",
+    "rankedFirst": 0,
+    "maxHitsInOneSearch": 0,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "every word in the vault, once",
+    "containsOrder": false,
+    "queries": "keyword",
+    "reachedTop5": "8/25",
     "rankedFirst": 0,
     "maxHitsInOneSearch": 2,
-    "alwaysFlagged": true
+    "alwaysFlagged": false
   },
   {
-    "stuffing": "the 25 benchmark questions, 3 times",
-    "queries": "keyword",
-    "reachedTop5": "12/25",
-    "rankedFirst": 2,
-    "maxHitsInOneSearch": 2,
-    "alwaysFlagged": true
-  },
-  {
-    "stuffing": "the 25 benchmark questions, 3 times",
-    "queries": "question",
-    "reachedTop5": "25/25",
-    "rankedFirst": 7,
-    "maxHitsInOneSearch": 2,
-    "alwaysFlagged": true
-  },
-  {
-    "stuffing": "the 25 benchmark keywords, 10 times",
-    "queries": "keyword",
-    "reachedTop5": "25/25",
-    "rankedFirst": 12,
-    "maxHitsInOneSearch": 2,
-    "alwaysFlagged": true
-  },
-  {
-    "stuffing": "the 25 benchmark keywords, 10 times",
+    "stuffing": "every word in the vault, once",
+    "containsOrder": false,
     "queries": "question",
     "reachedTop5": "5/25",
     "rankedFirst": 0,
+    "maxHitsInOneSearch": 1,
+    "alwaysFlagged": false
+  },
+  {
+    "stuffing": "the 25 benchmark questions, 3 times",
+    "containsOrder": true,
+    "queries": "keyword",
+    "reachedTop5": "1/25",
+    "rankedFirst": 1,
+    "maxHitsInOneSearch": 1,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark questions, 3 times",
+    "containsOrder": true,
+    "queries": "question",
+    "reachedTop5": "4/25",
+    "rankedFirst": 4,
     "maxHitsInOneSearch": 2,
     "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark questions, 3 times",
+    "containsOrder": false,
+    "queries": "keyword",
+    "reachedTop5": "4/25",
+    "rankedFirst": 1,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": false
+  },
+  {
+    "stuffing": "the 25 benchmark questions, 3 times",
+    "containsOrder": false,
+    "queries": "question",
+    "reachedTop5": "20/25",
+    "rankedFirst": 7,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": false
+  },
+  {
+    "stuffing": "the 25 benchmark keywords, 10 times",
+    "containsOrder": true,
+    "queries": "keyword",
+    "reachedTop5": "1/25",
+    "rankedFirst": 1,
+    "maxHitsInOneSearch": 1,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark keywords, 10 times",
+    "containsOrder": true,
+    "queries": "question",
+    "reachedTop5": "0/25",
+    "rankedFirst": 0,
+    "maxHitsInOneSearch": 0,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark keywords, 10 times",
+    "containsOrder": false,
+    "queries": "keyword",
+    "reachedTop5": "20/25",
+    "rankedFirst": 3,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": false
+  },
+  {
+    "stuffing": "the 25 benchmark keywords, 10 times",
+    "containsOrder": false,
+    "queries": "question",
+    "reachedTop5": "2/25",
+    "rankedFirst": 0,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": false
   }
 ]

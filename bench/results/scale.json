@@ -15,11 +15,11 @@
       "baselineStartTokens": 2549,
       "baselineSearch": [
         {
-          "ms": 17.1,
+          "ms": 14.3,
           "tokens": 1228
         },
         {
-          "ms": 5.5,
+          "ms": 5.7,
           "tokens": 18
         },
         {
@@ -27,24 +27,24 @@
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1590,
-      "firstSearchMs": 22.5,
+      "currentStartTokens": 1868,
+      "firstSearchMs": 47.6,
       "currentSearch": [
         {
-          "ms": 10.2,
-          "tokens": 338
+          "ms": 4.6,
+          "tokens": 318
         },
         {
-          "ms": 3.6,
-          "tokens": 350
+          "ms": 4.1,
+          "tokens": 312
         },
         {
           "ms": 3.1,
-          "tokens": 452
+          "tokens": 346
         }
       ],
-      "searchAfterOneEditMs": 2.5,
-      "rssGrowthMB": 11
+      "searchAfterOneEditMs": 2.8,
+      "rssGrowthMB": 8
     },
     {
       "vault": "~500 notes, logs x5",
@@ -53,35 +53,35 @@
       "baselineStartTokens": 7513,
       "baselineSearch": [
         {
-          "ms": 28.9,
+          "ms": 25.3,
           "tokens": 2751
         },
         {
-          "ms": 99.8,
+          "ms": 96.4,
           "tokens": 18
         },
         {
-          "ms": 126.5,
+          "ms": 120.9,
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1590,
-      "firstSearchMs": 265.8,
+      "currentStartTokens": 1868,
+      "firstSearchMs": 441.6,
       "currentSearch": [
         {
-          "ms": 20.2,
-          "tokens": 251
+          "ms": 35.7,
+          "tokens": 394
         },
         {
-          "ms": 27.5,
-          "tokens": 436
+          "ms": 50.4,
+          "tokens": 347
         },
         {
-          "ms": 21.4,
-          "tokens": 261
+          "ms": 39.7,
+          "tokens": 511
         }
       ],
-      "searchAfterOneEditMs": 25,
+      "searchAfterOneEditMs": 24.9,
       "rssGrowthMB": 2
     },
     {
@@ -91,36 +91,36 @@
       "baselineStartTokens": 13718,
       "baselineSearch": [
         {
-          "ms": 71.5,
+          "ms": 72.7,
           "tokens": 2575
         },
         {
-          "ms": 332.2,
+          "ms": 317.3,
           "tokens": 18
         },
         {
-          "ms": 295.7,
+          "ms": 299.2,
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1590,
-      "firstSearchMs": 807.6,
+      "currentStartTokens": 1868,
+      "firstSearchMs": 1270.1,
       "currentSearch": [
         {
-          "ms": 63.5,
-          "tokens": 251
+          "ms": 74,
+          "tokens": 394
         },
         {
-          "ms": 66.5,
-          "tokens": 436
+          "ms": 90.5,
+          "tokens": 293
         },
         {
-          "ms": 92.1,
-          "tokens": 261
+          "ms": 99.2,
+          "tokens": 511
         }
       ],
-      "searchAfterOneEditMs": 61.1,
-      "rssGrowthMB": 4
+      "searchAfterOneEditMs": 67.6,
+      "rssGrowthMB": 7
     },
     {
       "vault": "~5,000 notes, logs x20",
@@ -129,36 +129,36 @@
       "baselineStartTokens": 26128,
       "baselineSearch": [
         {
-          "ms": 153.5,
+          "ms": 153.2,
           "tokens": 2335
         },
         {
-          "ms": 762.5,
+          "ms": 842.5,
           "tokens": 18
         },
         {
-          "ms": 688.4,
+          "ms": 734.2,
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1590,
-      "firstSearchMs": 2044.1,
+      "currentStartTokens": 1868,
+      "firstSearchMs": 2984.1,
       "currentSearch": [
         {
-          "ms": 149.4,
-          "tokens": 251
+          "ms": 158,
+          "tokens": 394
         },
         {
-          "ms": 210.8,
-          "tokens": 436
+          "ms": 195.2,
+          "tokens": 293
         },
         {
-          "ms": 148.5,
-          "tokens": 261
+          "ms": 201.6,
+          "tokens": 511
         }
       ],
-      "searchAfterOneEditMs": 153.6,
-      "rssGrowthMB": 22
+      "searchAfterOneEditMs": 172.8,
+      "rssGrowthMB": 29
     }
   ]
 }

@@ -20,9 +20,15 @@ Current server error logs include operational error messages such as failed requ
 The server does not log note text or search queries. Unexpected errors are logged by error code only.
 
 Secret-looking strings (API keys, tokens, passwords, private keys) are replaced with `[secret removed]` in
-everything the AI reads. This is pattern-based and does not catch every secret. Email and phone-number masking
-are not implemented. The search index is kept in memory and never written to disk. With `RAG_EMBEDDINGS=ollama`,
-cleaned note text is sent to the Ollama server on the same computer, and only to a loopback address.
+everything the AI reads, and before anything an AI writes is saved. Email addresses, phone numbers and card
+numbers are masked in everything the AI reads (switch off with `MASK_EMAILS=false` or `MASK_PHONE_NUMBERS=false`).
+All of this is pattern-based and does not catch every case. Notes marked `ai_private: true` or `#ai-private` are
+never read, searched or sent anywhere. The search index is kept in memory and never written to disk. With
+`RAG_EMBEDDINGS=ollama`, cleaned note text is sent to the Ollama server on the same computer, and only to a
+loopback address.
+
+The audit log, `.history/audit.jsonl`, records every write attempt: time, session id, tool, file, outcome, size
+and a SHA-256 hash. It never contains note text or search queries.
 
 ## Data That Must Never Be Committed
 
