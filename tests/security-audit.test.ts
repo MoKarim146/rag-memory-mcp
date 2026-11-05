@@ -715,4 +715,40 @@ describe("FP: no false alarms on ordinary notes", () => {
       expect(looksLikeInjection(line), line).toBe(true);
     }
   });
+
+  // Technical notes are full of long numbers and hex strings. Masking them would hide the very details the memory
+  // is for, so ordinary ids stay, while real phone numbers, cards, emails and keys are still removed.
+  it("FP-3 hashes, ids, addresses, dates, ISBNs, prices and timestamps are not masked or flagged; real personal data and keys still are", async () => {
+    const { prepareNoteText } = await import("../src/safety.js");
+    const ordinary = [
+      "Fixed in commit 5c2aa41ed83d3d5cca59769f12192cea5923c029 on main.",
+      "Short hash 5c2aa41 and tag v1.32.2.",
+      "Request id 3f2b8c1e-9a4d-4e2b-8f1a-2c3d4e5f6a7b failed.",
+      "The server listens on 127.0.0.1:8787 and staging on 10.0.4.12:6432.",
+      "Order 2026-11-05-0042 shipped; invoice INV-2026-000123.",
+      "Build 20261105.3 took 4m 12s; p95 latency 182 ms.",
+      "ISBN 978-0-14-143951-8 is the Penguin Moby-Dick.",
+      "Coordinates 51.5072, -0.1276 for the London office.",
+      "The SHA-256 of the model file is 913d7300ee6b3f3c3e8c6b2f0a7b9d1e2c4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b.",
+      "Price is £1,234.56 or 123456 pence. Timestamp 1730793600 is in seconds.",
+      "The env var is named OPENAI_API_KEY but we do not use it. Ticket TM-429 and PR #1234.",
+      "You are now able to book online. From now on, bookings open at 7:00. Act as the duty manager when Sam is away.",
+    ];
+    for (const line of ordinary) {
+      const prepared = prepareNoteText(line);
+      expect(prepared.text, line).toBe(line);
+      expect(prepared.suspicious, line).toBe(false);
+    }
+    const personal: [string, string][] = [
+      ["Call +44 20 7946 0958 after 5.", "[phone removed]"],
+      ["(555) 010-4477 is the desk.", "[phone removed]"],
+      ["Card 4111 1111 1111 1111 on file.", "[card number removed]"],
+      ["Mail sam@example.com today.", "[email removed]"],
+      ["key AKIAIOSFODNN7EXAMPLE here", "[secret removed]"],
+      ["token ghp_aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789 here", "[secret removed]"],
+    ];
+    for (const [line, mask] of personal) {
+      expect(prepareNoteText(line).text, line).toContain(mask);
+    }
+  });
 });
