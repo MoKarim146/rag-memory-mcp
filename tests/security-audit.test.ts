@@ -389,8 +389,8 @@ describe("RP: retrieval poisoning", () => {
         expect(text).toMatch(/<note path="Projects\/zz-poison.md"[^>]*warning="/);
       }
     }
-    // Recorded, not fixed: see SECURITY_REPORT.md, RP-8.
-    console.info(`RP-8: stuffed note reached the results for ${reached} of ${tasks.lookups.length} questions`);
+    // Recorded, not fixed: see SECURITY_REPORT.md, RP-8, and bench/poisoning.mts for the numbers.
+    // If this ever reaches 0, the gap may be closed and the report needs updating.
     expect(reached).toBeGreaterThan(0);
   });
 });
@@ -662,5 +662,25 @@ describe("SL: secret leakage", () => {
       expect((await call(f.client, "search_memory", { query, limit: 10 })).text).not.toContain(CANARY);
     }
     expect((await call(f.client, "read_main_context")).text).not.toContain(CANARY);
+  });
+});
+
+describe("FP: no false alarms on ordinary notes", () => {
+  it("FP-1 the 32 benchmark notes and the sample vault get no warnings, no masking and no removed text", async () => {
+    const { prepareNoteText } = await import("../src/safety.js");
+    const roots = [path.join(__dirname, "..", "bench", "fixture-vault"), path.join(__dirname, "..", "examples", "sample-vault")];
+    let checked = 0;
+    for (const root of roots) {
+      for (const file of await listAll(root)) {
+        if (!file.endsWith(".md")) continue;
+        const raw = await readFile(file, "utf8");
+        const prepared = prepareNoteText(raw);
+        expect(prepared.suspicious, file).toBe(false);
+        expect(prepared.secretsRemoved, file).toBe(0);
+        expect(prepared.text, file).toBe(raw.replace(/\r\n?/g, "\n"));
+        checked += 1;
+      }
+    }
+    expect(checked).toBe(37);
   });
 });

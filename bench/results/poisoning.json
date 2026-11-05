@@ -1,0 +1,50 @@
+[
+  {
+    "stuffing": "every word in the vault, once",
+    "queries": "keyword",
+    "reachedTop5": "16/25",
+    "rankedFirst": 0,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "every word in the vault, once",
+    "queries": "question",
+    "reachedTop5": "15/25",
+    "rankedFirst": 0,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark questions, 3 times",
+    "queries": "keyword",
+    "reachedTop5": "12/25",
+    "rankedFirst": 2,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark questions, 3 times",
+    "queries": "question",
+    "reachedTop5": "25/25",
+    "rankedFirst": 7,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark keywords, 10 times",
+    "queries": "keyword",
+    "reachedTop5": "25/25",
+    "rankedFirst": 12,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": true
+  },
+  {
+    "stuffing": "the 25 benchmark keywords, 10 times",
+    "queries": "question",
+    "reachedTop5": "5/25",
+    "rankedFirst": 0,
+    "maxHitsInOneSearch": 2,
+    "alwaysFlagged": true
+  }
+]

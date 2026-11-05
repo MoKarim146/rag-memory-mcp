@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import type { Server } from "node:http";
 import express, { type Request, type Response } from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -6,9 +6,19 @@ import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import type { MemoryConfig } from "./memory.js";
 import { createObsidianMemoryMcpServer } from "./mcpServer.js";
 
+type Role = "read" | "write" | "open"; // "open": login is off, every caller may use every tool
+
 interface ActiveSession {
   server: ReturnType<typeof createObsidianMemoryMcpServer>;
   transport: StreamableHTTPServerTransport;
+  role: Role;
+}
+
+// Optional token login. With a write token a client can use every tool; with a read token it only gets
+// the four read tools. Leave both unset to turn login off (the default, for local use).
+export interface AuthOptions {
+  readToken?: string;
+  writeToken?: string;
 }
 
 export interface HttpServerOptions {
@@ -17,6 +27,41 @@ export interface HttpServerOptions {
   port: number;
   allowedHosts?: string[];
   allowedOrigins?: string[];
+  auth?: AuthOptions;
+}
+
+const MIN_TOKEN_LENGTH = 32;
+
+// Reads MCP_AUTH_REQUIRED, MCP_READ_TOKEN and MCP_WRITE_TOKEN. Returns undefined when login is off.
+// Refuses to start with no token, a short token, the example value from .env.example, or the same value
+// for both tokens.
+export function parseAuthEnv(env: NodeJS.ProcessEnv): AuthOptions | undefined {
+  const required = (env.MCP_AUTH_REQUIRED ?? "false").trim().toLowerCase();
+  if (required !== "true" && required !== "false") {
+    throw new Error("MCP_AUTH_REQUIRED must be true or false");
+  }
+  if (required === "false") {
+    return undefined;
+  }
+
+  const readToken = env.MCP_READ_TOKEN?.trim() || undefined;
+  const writeToken = env.MCP_WRITE_TOKEN?.trim() || undefined;
+  if (!readToken && !writeToken) {
+    throw new Error("MCP_AUTH_REQUIRED=true needs MCP_WRITE_TOKEN, MCP_READ_TOKEN or both");
+  }
+  for (const [name, token] of [["MCP_READ_TOKEN", readToken], ["MCP_WRITE_TOKEN", writeToken]] as const) {
+    if (token === undefined) continue;
+    if (token.length < MIN_TOKEN_LENGTH) {
+      throw new Error(`${name} must be at least ${MIN_TOKEN_LENGTH} characters (use: openssl rand -hex 32)`);
+    }
+    if (token.startsWith("replace-with")) {
+      throw new Error(`${name} is still the example value from .env.example`);
+    }
+  }
+  if (readToken && readToken === writeToken) {
+    throw new Error("MCP_READ_TOKEN and MCP_WRITE_TOKEN must be different");
+  }
+  return { readToken, writeToken };
 }
 
 const DEFAULT_ALLOWED_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
@@ -25,6 +70,7 @@ const DEFAULT_ALLOWED_SUFFIXES = [".ngrok-free.app", ".ngrok.app", ".trycloudfla
 export function createHttpApp(options: HttpServerOptions): express.Express {
   const app = express();
   const sessions = new Map<string, ActiveSession>();
+  const authenticate = authenticator(options.auth);
 
   app.disable("x-powered-by");
   app.use(express.json({ limit: "1mb" }));
@@ -33,22 +79,25 @@ export function createHttpApp(options: HttpServerOptions): express.Express {
 
   app.get("/health", (_req, res) => {
     res.json({
-      name: "obsidian-memory-mcp",
+      name: "rag-memory-mcp",
       status: "ok",
       mcpEndpoint: "/mcp",
     });
   });
 
   app.post("/mcp", async (req, res) => {
-    await handleMcpPost(req, res, options.config, sessions);
+    const role = authenticate(req, res);
+    if (role) await handleMcpPost(req, res, options.config, sessions, role);
   });
 
   app.get("/mcp", async (req, res) => {
-    await handleExistingSessionRequest(req, res, sessions);
+    const role = authenticate(req, res);
+    if (role) await handleExistingSessionRequest(req, res, sessions, role);
   });
 
   app.delete("/mcp", async (req, res) => {
-    await handleExistingSessionRequest(req, res, sessions);
+    const role = authenticate(req, res);
+    if (role) await handleExistingSessionRequest(req, res, sessions, role);
   });
 
   app.use((_req, res) => {
@@ -75,12 +124,17 @@ async function handleMcpPost(
   res: Response,
   config: MemoryConfig,
   sessions: Map<string, ActiveSession>,
+  role: Role,
 ): Promise<void> {
   try {
     const sessionId = getHeader(req, "mcp-session-id");
     const existingSession = sessionId ? sessions.get(sessionId) : undefined;
 
     if (existingSession) {
+      if (existingSession.role !== role) {
+        sendJsonRpcError(res, 403, -32000, "This session was opened with a different token");
+        return;
+      }
       await existingSession.transport.handleRequest(req, res, req.body);
       return;
     }
@@ -105,8 +159,10 @@ async function handleMcpPost(
       },
     });
 
-    const mcpServer = createObsidianMemoryMcpServer(config);
-    activeSession = { server: mcpServer, transport };
+    // A read token gets a server without write tools, whatever AI_MEMORY_WRITE_ENABLED says.
+    const sessionConfig = role === "read" ? { ...config, writeEnabled: false } : config;
+    const mcpServer = createObsidianMemoryMcpServer(sessionConfig);
+    activeSession = { server: mcpServer, transport, role };
 
     transport.onclose = () => {
       const closedSessionId = transport.sessionId;
@@ -129,6 +185,7 @@ async function handleExistingSessionRequest(
   req: Request,
   res: Response,
   sessions: Map<string, ActiveSession>,
+  role: Role,
 ): Promise<void> {
   try {
     const sessionId = getHeader(req, "mcp-session-id");
@@ -142,6 +199,10 @@ async function handleExistingSessionRequest(
       res.status(404).send("Unknown MCP session ID");
       return;
     }
+    if (activeSession.role !== role) {
+      res.status(403).send("This session was opened with a different token");
+      return;
+    }
 
     await activeSession.transport.handleRequest(req, res);
   } catch (error) {
@@ -150,6 +211,30 @@ async function handleExistingSessionRequest(
       res.status(500).send("Internal server error");
     }
   }
+}
+
+// Checks "Authorization: Bearer <token>" when login is on. Tokens are compared as SHA-256 digests with
+// a constant-time comparison, so response timing does not reveal how much of a guess was right.
+function authenticator(auth: AuthOptions | undefined) {
+  const digest = (value: string) => createHash("sha256").update(value, "utf8").digest();
+  const writeDigest = auth?.writeToken ? digest(auth.writeToken) : undefined;
+  const readDigest = auth?.readToken ? digest(auth.readToken) : undefined;
+
+  return (req: Request, res: Response): Role | undefined => {
+    if (!writeDigest && !readDigest) {
+      return "open";
+    }
+    const header = getHeader(req, "authorization") ?? "";
+    const match = /^Bearer\s+(\S+)$/i.exec(header.trim());
+    if (match) {
+      const presented = digest(match[1]);
+      if (writeDigest && timingSafeEqual(presented, writeDigest)) return "write";
+      if (readDigest && timingSafeEqual(presented, readDigest)) return "read";
+    }
+    res.setHeader("WWW-Authenticate", 'Bearer realm="rag-memory-mcp"');
+    res.status(401).json({ error: "Missing or invalid token" });
+    return undefined;
+  };
 }
 
 // Browsers attach an Origin header to requests from web pages; MCP clients such as Claude Code send none.
@@ -176,7 +261,7 @@ function originGuard(extraAllowedOrigins: string[] = []) {
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Content-Type, Accept, mcp-session-id, mcp-protocol-version, last-event-id",
+      "Content-Type, Accept, Authorization, mcp-session-id, mcp-protocol-version, last-event-id",
     );
     res.setHeader("Access-Control-Expose-Headers", "mcp-session-id");
 

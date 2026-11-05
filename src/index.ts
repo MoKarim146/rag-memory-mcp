@@ -1,5 +1,5 @@
 import { ensureMemoryLayout, getMemoryConfig } from "./memory.js";
-import { startHttpServer } from "./httpServer.js";
+import { parseAuthEnv, startHttpServer } from "./httpServer.js";
 
 const DEFAULT_PORT = 8787;
 const DEFAULT_HOST = "127.0.0.1";
@@ -12,6 +12,7 @@ async function main(): Promise<void> {
   const host = process.env.HOST || DEFAULT_HOST;
   const allowedHosts = parseList(process.env.ALLOWED_HOSTS);
   const allowedOrigins = parseList(process.env.ALLOWED_ORIGINS);
+  const auth = parseAuthEnv(process.env);
 
   const server = await startHttpServer({
     config,
@@ -19,9 +20,17 @@ async function main(): Promise<void> {
     port,
     allowedHosts,
     allowedOrigins,
+    auth,
   });
 
-  console.log(`obsidian-memory-mcp listening on http://${host}:${port}/mcp`);
+  console.log(`rag-memory-mcp listening on http://${host}:${port}/mcp`);
+  console.log(
+    [
+      auth ? "token login: on" : "token login: off (any program on this computer can use the tools)",
+      config.writeEnabled === false ? "writes: off (read-only)" : "writes: on",
+      `search: keywords${config.embeddings ? ` + ${config.embeddings.provider} vectors` : ""}`,
+    ].join(", "),
+  );
 
   const shutdown = async () => {
     await new Promise<void>((resolve, reject) => {
@@ -71,6 +80,6 @@ function parseList(value: string | undefined): string[] {
 
 main().catch((error) => {
   const detail = error instanceof Error ? error.message : "Unknown startup error";
-  console.error(`Failed to start obsidian-memory-mcp: ${detail}`);
+  console.error(`Failed to start rag-memory-mcp: ${detail}`);
   process.exit(1);
 });

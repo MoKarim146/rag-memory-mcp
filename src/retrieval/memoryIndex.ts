@@ -10,6 +10,7 @@
 import { DatabaseSync } from "node:sqlite";
 import { createHash } from "node:crypto";
 import { listNoteFiles, readNoteText, type MemoryConfig } from "../memory.js";
+import { prepareNoteText } from "../safety.js";
 import { chunkMarkdown, MAX_CHUNK_CHARS } from "./chunker.js";
 import { createEmbedder, dot, type Embedder } from "./embeddings.js";
 
@@ -29,6 +30,7 @@ export interface SearchHit {
   text: string; // the whole chunk
   snippet: string; // what search_memory shows: the matching lines of the chunk
   ordinal: number;
+  suspicious: boolean; // the note contains instruction-like text somewhere
 }
 
 // Search output size. The best hit shows its whole section (up to MAX_CHUNK_CHARS); the others show only
@@ -90,7 +92,7 @@ export class MemoryIndex {
   ) {
     this.db = new DatabaseSync(":memory:");
     this.db.exec(`
-      CREATE TABLE files (path TEXT PRIMARY KEY, mtime REAL NOT NULL, size INTEGER NOT NULL);
+      CREATE TABLE files (path TEXT PRIMARY KEY, mtime REAL NOT NULL, size INTEGER NOT NULL, suspicious INTEGER NOT NULL);
       CREATE TABLE chunks (
         id INTEGER PRIMARY KEY,
         path TEXT NOT NULL,
@@ -139,11 +141,13 @@ export class MemoryIndex {
     const vectorIds = this.embedder ? await this.vectorSearch(query) : [];
     const ranked = vectorIds.length > 0 ? fuse([keywordIds, vectorIds]) : keywordIds;
 
-    const getChunk = this.db.prepare("SELECT id, path, ordinal, heading, text, hash FROM chunks WHERE id = ?");
+    const getChunk = this.db.prepare(
+      "SELECT c.id, c.path, c.ordinal, c.heading, c.text, c.hash, f.suspicious FROM chunks c JOIN files f ON f.path = c.path WHERE c.id = ?",
+    );
     const perFile = new Map<string, number>();
     const hits: SearchHit[] = [];
     for (const id of ranked) {
-      const row = getChunk.get(id) as ChunkRow | undefined;
+      const row = getChunk.get(id) as (ChunkRow & { suspicious: number }) | undefined;
       if (!row) {
         continue;
       }
@@ -159,6 +163,7 @@ export class MemoryIndex {
         text: row.text,
         snippet: makeSnippet(row.text, marked.get(id), cap),
         ordinal: row.ordinal,
+        suspicious: row.suspicious === 1,
       });
       if (hits.length >= limit) {
         break;
@@ -232,8 +237,11 @@ export class MemoryIndex {
     }
   }
 
-  private replaceFile(path: string, mtime: number, size: number, text: string): void {
-    const chunks = chunkMarkdown(text);
+  private replaceFile(path: string, mtime: number, size: number, raw: string): void {
+    // Only cleaned text is indexed: hidden comments, invisible characters and secrets never enter the
+    // index, so they cannot be searched for, used to push a note up the results, or sent to an embedder.
+    const prepared = prepareNoteText(raw);
+    const chunks = chunkMarkdown(prepared.text);
     const title = `${path.replace(/\.md$/, "").replace(/[/_-]+/g, " ")}`;
     const insertChunk = this.db.prepare(
       "INSERT INTO chunks (path, ordinal, heading, text, hash) VALUES (?, ?, ?, ?, ?)",
@@ -243,7 +251,9 @@ export class MemoryIndex {
     this.db.exec("BEGIN");
     try {
       this.deleteChunks(path);
-      this.db.prepare("INSERT OR REPLACE INTO files (path, mtime, size) VALUES (?, ?, ?)").run(path, mtime, size);
+      this.db
+        .prepare("INSERT OR REPLACE INTO files (path, mtime, size, suspicious) VALUES (?, ?, ?, ?)")
+        .run(path, mtime, size, prepared.suspicious ? 1 : 0);
       for (const chunk of chunks) {
         const hash = createHash("sha256").update(chunk.text).digest("hex");
         const result = insertChunk.run(path, chunk.ordinal, chunk.heading, chunk.text, hash);
