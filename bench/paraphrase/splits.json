@@ -1,0 +1,33 @@
+{
+ "about": "Frozen before any run on the paraphrase set. Groups stay whole. Do not edit.",
+ "seed": 2027,
+ "method": "seeded shuffle of the sorted group ids; the first 8 groups are development, the other 16 evaluation",
+ "development": [
+  "g01",
+  "g02",
+  "g04",
+  "g13",
+  "g16",
+  "g17",
+  "g22",
+  "g23"
+ ],
+ "evaluation": [
+  "g03",
+  "g05",
+  "g06",
+  "g07",
+  "g08",
+  "g09",
+  "g10",
+  "g11",
+  "g12",
+  "g14",
+  "g15",
+  "g18",
+  "g19",
+  "g20",
+  "g21",
+  "g24"
+ ]
+}

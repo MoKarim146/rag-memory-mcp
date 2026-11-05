@@ -1,0 +1,822 @@
+{
+  "about": "Paraphrase set for bench/eval/run.ts paraphrase. Each group: one target note that answers its questions, one distractor note that shares words with it but does not answer them (it says something different or the opposite), and questions of four kinds: lexical (the note's own words, the control), synonym (key words replaced by synonyms), low-overlap (no content word in common with the target note), and negation or date (a negated question, or a date written another way). Groups stay whole in one split. Written by the project's AI coding agent (Claude Code), checked against the criteria in bench/paraphrase/check.ts; not reviewed by an independent person.",
+  "groups": [
+    {
+      "id": "g01",
+      "target": {
+        "path": "Office/Kitchen.md",
+        "text": "# Kitchen\n\nThe dishwasher is run every evening at 6 pm by whoever leaves the office last. It is never run during working hours. Detergent tablets are in the cupboard under the sink.\n"
+      },
+      "distractor": {
+        "path": "Home/Kitchen.md",
+        "text": "# Home kitchen\n\nAt home the dishwasher runs on the eco cycle overnight. Detergent tablets are bought in bulk once a month.\n"
+      },
+      "answer": "6 pm",
+      "queries": [
+        {
+          "id": "g01-lex",
+          "kind": "lexical",
+          "text": "When is the office dishwasher run?"
+        },
+        {
+          "id": "g01-syn",
+          "kind": "synonym",
+          "text": "At what hour does the workplace dish machine get started?"
+        },
+        {
+          "id": "g01-low",
+          "kind": "low-overlap",
+          "text": "What time do cups and plates get washed at our workplace?"
+        },
+        {
+          "id": "g01-neg",
+          "kind": "negation",
+          "text": "When is the office dishwasher not run?",
+          "answer": "during working hours"
+        }
+      ]
+    },
+    {
+      "id": "g02",
+      "target": {
+        "path": "Office/Parking.md",
+        "text": "# Parking\n\nThe staff car park is not open on Sundays. On every other day it opens at 7 am.\n"
+      },
+      "distractor": {
+        "path": "Events/Summer fair.md",
+        "text": "# Summer fair\n\nDuring the summer fair the car park is open all weekend, including Sunday, for visitors.\n"
+      },
+      "answer": "Sundays",
+      "queries": [
+        {
+          "id": "g02-lex",
+          "kind": "lexical",
+          "text": "Is the staff car park open on Sundays?"
+        },
+        {
+          "id": "g02-syn",
+          "kind": "synonym",
+          "text": "Which day is the employee parking lot shut?"
+        },
+        {
+          "id": "g02-low",
+          "kind": "low-overlap",
+          "text": "When can't we leave vehicles near work?"
+        },
+        {
+          "id": "g02-neg",
+          "kind": "negation",
+          "text": "On which day is staff parking not available?"
+        }
+      ]
+    },
+    {
+      "id": "g03",
+      "target": {
+        "path": "Admin/Lease.md",
+        "text": "# Lease\n\nThe office lease must be renewed by 14 March 2027. The landlord needs three months' notice.\n"
+      },
+      "distractor": {
+        "path": "Admin/Insurance.md",
+        "text": "# Insurance\n\nThe office insurance must be renewed by 14 May 2027. The broker sends a reminder in April.\n"
+      },
+      "answer": "14 March 2027",
+      "queries": [
+        {
+          "id": "g03-lex",
+          "kind": "lexical",
+          "text": "By when must the office lease be renewed?"
+        },
+        {
+          "id": "g03-syn",
+          "kind": "synonym",
+          "text": "What is the deadline to extend the rental agreement for our premises?"
+        },
+        {
+          "id": "g03-low",
+          "kind": "low-overlap",
+          "text": "How long do we have to keep renting this building?"
+        },
+        {
+          "id": "g03-date",
+          "kind": "date",
+          "text": "What has to be done before 2027-03-14?"
+        }
+      ]
+    },
+    {
+      "id": "g04",
+      "target": {
+        "path": "People/Priya Nair.md",
+        "text": "# Priya Nair\n\nPriya is vegetarian and does not eat fish. Order her the mushroom risotto at team lunches.\n"
+      },
+      "distractor": {
+        "path": "People/Priya Shah.md",
+        "text": "# Priya Shah\n\nPriya Shah eats everything and likes the fish of the day at team lunches.\n"
+      },
+      "answer": "mushroom risotto",
+      "queries": [
+        {
+          "id": "g04-lex",
+          "kind": "lexical",
+          "text": "What should we order Priya Nair at team lunches?"
+        },
+        {
+          "id": "g04-syn",
+          "kind": "synonym",
+          "text": "Which dish should Priya Nair get when the group eats out together?"
+        },
+        {
+          "id": "g04-low",
+          "kind": "low-overlap",
+          "text": "Which meal suits our colleague who avoids meat?"
+        },
+        {
+          "id": "g04-neg",
+          "kind": "negation",
+          "text": "Which Priya does not eat fish?"
+        }
+      ]
+    },
+    {
+      "id": "g05",
+      "target": {
+        "path": "IT/Backups.md",
+        "text": "# Backups\n\nThe file server is backed up every night at 2 am to the external drive in the comms cupboard.\n"
+      },
+      "distractor": {
+        "path": "IT/Laptops.md",
+        "text": "# Laptops\n\nLaptops are not backed up automatically; staff copy their work to the file server.\n"
+      },
+      "answer": "2 am",
+      "queries": [
+        {
+          "id": "g05-lex",
+          "kind": "lexical",
+          "text": "When is the file server backed up?"
+        },
+        {
+          "id": "g05-syn",
+          "kind": "synonym",
+          "text": "At what time is the shared storage copied for safekeeping?"
+        },
+        {
+          "id": "g05-low",
+          "kind": "low-overlap",
+          "text": "How often do we save a spare copy of everyone's documents, and when?"
+        },
+        {
+          "id": "g05-neg",
+          "kind": "negation",
+          "text": "Which machine is backed up, unlike the laptops that are not?"
+        }
+      ]
+    },
+    {
+      "id": "g06",
+      "target": {
+        "path": "Travel/Conference.md",
+        "text": "# Conference trip\n\nThe flight to Lisbon departs on 9 October 2026 at 07:40 from Gatwick.\n"
+      },
+      "distractor": {
+        "path": "Travel/Holiday.md",
+        "text": "# Holiday\n\nThe family flight to Lisbon departs on 9 August 2026 from Stansted.\n"
+      },
+      "answer": "07:40",
+      "queries": [
+        {
+          "id": "g06-lex",
+          "kind": "lexical",
+          "text": "When does the conference flight to Lisbon depart?"
+        },
+        {
+          "id": "g06-syn",
+          "kind": "synonym",
+          "text": "What time does the plane to Portugal's capital leave for the event?"
+        },
+        {
+          "id": "g06-low",
+          "kind": "low-overlap",
+          "text": "What time is takeoff for the work journey abroad?"
+        },
+        {
+          "id": "g06-date",
+          "kind": "date",
+          "text": "Which flight leaves on 2026-10-09?"
+        }
+      ]
+    },
+    {
+      "id": "g07",
+      "target": {
+        "path": "Office/Plants.md",
+        "text": "# Plants\n\nThe office plants are watered on Mondays and Thursdays. The cactus by the window is never watered in winter.\n"
+      },
+      "distractor": {
+        "path": "Home/Garden.md",
+        "text": "# Garden\n\nThe garden plants are watered every evening in summer, including the cactus bed.\n"
+      },
+      "answer": "Mondays and Thursdays",
+      "queries": [
+        {
+          "id": "g07-lex",
+          "kind": "lexical",
+          "text": "On which days are the office plants watered?"
+        },
+        {
+          "id": "g07-syn",
+          "kind": "synonym",
+          "text": "Which days does the greenery at work get hydrated?"
+        },
+        {
+          "id": "g07-low",
+          "kind": "low-overlap",
+          "text": "When does someone give the pots at our desks a drink?"
+        },
+        {
+          "id": "g07-neg",
+          "kind": "negation",
+          "text": "Which office plant is not watered in winter?"
+        }
+      ]
+    },
+    {
+      "id": "g08",
+      "target": {
+        "path": "Finance/Expenses.md",
+        "text": "# Expenses\n\nExpense claims are paid on the 25th of each month if they are submitted by the 15th.\n"
+      },
+      "distractor": {
+        "path": "Finance/Invoices.md",
+        "text": "# Invoices\n\nSupplier invoices are paid within 30 days of the date they are received.\n"
+      },
+      "answer": "25th",
+      "queries": [
+        {
+          "id": "g08-lex",
+          "kind": "lexical",
+          "text": "When are expense claims paid?"
+        },
+        {
+          "id": "g08-syn",
+          "kind": "synonym",
+          "text": "On what day of the month are staff reimbursements settled?"
+        },
+        {
+          "id": "g08-low",
+          "kind": "low-overlap",
+          "text": "When will I get back the money I spent on the company?"
+        },
+        {
+          "id": "g08-date",
+          "kind": "date",
+          "text": "What gets paid out on the twenty-fifth?"
+        }
+      ]
+    },
+    {
+      "id": "g09",
+      "target": {
+        "path": "Safety/First aid.md",
+        "text": "# First aid\n\nThe first aid kit is on the wall next to the lift on the second floor. It is not in the kitchen any more. Marta is the trained first aider.\n"
+      },
+      "distractor": {
+        "path": "Safety/Fire.md",
+        "text": "# Fire safety\n\nThe fire extinguisher is on the wall next to the stairs on the second floor.\n"
+      },
+      "answer": "next to the lift",
+      "queries": [
+        {
+          "id": "g09-lex",
+          "kind": "lexical",
+          "text": "Where is the first aid kit?"
+        },
+        {
+          "id": "g09-syn",
+          "kind": "synonym",
+          "text": "Where are the bandages and medical supplies kept?"
+        },
+        {
+          "id": "g09-low",
+          "kind": "low-overlap",
+          "text": "Someone cut their hand, where do I grab plasters?"
+        },
+        {
+          "id": "g09-neg",
+          "kind": "negation",
+          "text": "Where is the first aid kit now that it is not in the kitchen?"
+        }
+      ]
+    },
+    {
+      "id": "g10",
+      "target": {
+        "path": "Clients/Halden.md",
+        "text": "# Halden Ltd\n\nHalden's contract ends on 31 January 2027 and will not be renewed automatically.\n"
+      },
+      "distractor": {
+        "path": "Clients/Holden.md",
+        "text": "# Holden & Co\n\nHolden's contract renews automatically every January unless cancelled in writing.\n"
+      },
+      "answer": "31 January 2027",
+      "queries": [
+        {
+          "id": "g10-lex",
+          "kind": "lexical",
+          "text": "When does the Halden contract end?"
+        },
+        {
+          "id": "g10-syn",
+          "kind": "synonym",
+          "text": "On what date does our agreement with Halden expire?"
+        },
+        {
+          "id": "g10-low",
+          "kind": "low-overlap",
+          "text": "How much longer do we serve the customer whose agreement expires next winter?"
+        },
+        {
+          "id": "g10-date",
+          "kind": "date",
+          "text": "Which client agreement finishes on 31/01/2027?"
+        }
+      ]
+    },
+    {
+      "id": "g11",
+      "target": {
+        "path": "Office/Printer.md",
+        "text": "# Printer\n\nThe colour printer on the third floor needs a badge to release print jobs. It does not print on A3 paper.\n"
+      },
+      "distractor": {
+        "path": "Office/Plotter.md",
+        "text": "# Plotter\n\nThe plotter in the basement prints on A3 and A1 paper and starts printing straight away.\n"
+      },
+      "answer": "badge",
+      "queries": [
+        {
+          "id": "g11-lex",
+          "kind": "lexical",
+          "text": "What does the colour printer need to release print jobs?"
+        },
+        {
+          "id": "g11-syn",
+          "kind": "synonym",
+          "text": "What must I tap to get my documents out of the third-floor colour machine?"
+        },
+        {
+          "id": "g11-low",
+          "kind": "low-overlap",
+          "text": "Why won't my pages come out upstairs until I scan something?"
+        },
+        {
+          "id": "g11-neg",
+          "kind": "negation",
+          "text": "Which printer cannot handle A3 paper?"
+        }
+      ]
+    },
+    {
+      "id": "g12",
+      "target": {
+        "path": "Team/Standup.md",
+        "text": "# Standup\n\nThe daily standup is at 9:15 in the Oak room and lasts at most fifteen minutes.\n"
+      },
+      "distractor": {
+        "path": "Team/Retro.md",
+        "text": "# Retrospective\n\nThe fortnightly retrospective is at 15:00 in the Oak room and lasts an hour.\n"
+      },
+      "answer": "9:15",
+      "queries": [
+        {
+          "id": "g12-lex",
+          "kind": "lexical",
+          "text": "When is the daily standup?"
+        },
+        {
+          "id": "g12-syn",
+          "kind": "synonym",
+          "text": "What time is the morning team check-in meeting?"
+        },
+        {
+          "id": "g12-low",
+          "kind": "low-overlap",
+          "text": "When do we all gather briefly each workday to share progress?"
+        },
+        {
+          "id": "g12-date",
+          "kind": "date",
+          "text": "Which meeting starts at quarter past nine?"
+        }
+      ]
+    },
+    {
+      "id": "g13",
+      "target": {
+        "path": "IT/Wifi.md",
+        "text": "# Wifi\n\nGuests use the network called Visitors. Its password changes on the first Monday of every month and is posted at reception.\n"
+      },
+      "distractor": {
+        "path": "IT/VPN.md",
+        "text": "# VPN\n\nStaff connect to the VPN with their own account. Its settings change only when IT announces it.\n"
+      },
+      "answer": "first Monday",
+      "queries": [
+        {
+          "id": "g13-lex",
+          "kind": "lexical",
+          "text": "When does the guest network password change?"
+        },
+        {
+          "id": "g13-syn",
+          "kind": "synonym",
+          "text": "How often is the visitor wireless passphrase rotated?"
+        },
+        {
+          "id": "g13-low",
+          "kind": "low-overlap",
+          "text": "How can someone visiting us get online, and how long does that code last?"
+        },
+        {
+          "id": "g13-date",
+          "kind": "date",
+          "text": "What is updated on the 1st Monday of the month?"
+        }
+      ]
+    },
+    {
+      "id": "g14",
+      "target": {
+        "path": "People/Tomasz.md",
+        "text": "# Tomasz\n\nTomasz works from home on Fridays and cannot be reached before 10 am because of the school run.\n"
+      },
+      "distractor": {
+        "path": "People/Tamsin.md",
+        "text": "# Tamsin\n\nTamsin works from home on Mondays and is always online from 8 am.\n"
+      },
+      "answer": "10 am",
+      "queries": [
+        {
+          "id": "g14-lex",
+          "kind": "lexical",
+          "text": "When can Tomasz be reached on Fridays?"
+        },
+        {
+          "id": "g14-syn",
+          "kind": "synonym",
+          "text": "From what time is Tomasz contactable at the end of the week?"
+        },
+        {
+          "id": "g14-low",
+          "kind": "low-overlap",
+          "text": "How early can I phone the teammate who takes his kids to class at the end of the week?"
+        },
+        {
+          "id": "g14-neg",
+          "kind": "negation",
+          "text": "Before what time should Tomasz not be called?"
+        }
+      ]
+    },
+    {
+      "id": "g15",
+      "target": {
+        "path": "Finance/Budget.md",
+        "text": "# Budget\n\nThe marketing budget for 2027 is 48,000 pounds, agreed at the board meeting on 2 December 2026.\n"
+      },
+      "distractor": {
+        "path": "Finance/Hiring.md",
+        "text": "# Hiring\n\nThe hiring budget for 2027 is 120,000 pounds, still to be agreed by the board.\n"
+      },
+      "answer": "48,000",
+      "queries": [
+        {
+          "id": "g15-lex",
+          "kind": "lexical",
+          "text": "What is the marketing budget for 2027?"
+        },
+        {
+          "id": "g15-syn",
+          "kind": "synonym",
+          "text": "How much money can promotion spend next year?"
+        },
+        {
+          "id": "g15-low",
+          "kind": "low-overlap",
+          "text": "How much can we put into adverts and campaigns in the coming year?"
+        },
+        {
+          "id": "g15-date",
+          "kind": "date",
+          "text": "Which spending figure was settled on 2026-12-02?"
+        }
+      ]
+    },
+    {
+      "id": "g16",
+      "target": {
+        "path": "Office/Bikes.md",
+        "text": "# Bikes\n\nBikes may be stored in the locked shed behind the building. They are not allowed in the corridors.\n"
+      },
+      "distractor": {
+        "path": "Office/Scooters.md",
+        "text": "# Scooters\n\nFolding scooters may be kept under desks and in the corridors.\n"
+      },
+      "answer": "locked shed",
+      "queries": [
+        {
+          "id": "g16-lex",
+          "kind": "lexical",
+          "text": "Where may bikes be stored?"
+        },
+        {
+          "id": "g16-syn",
+          "kind": "synonym",
+          "text": "Where can I keep my bicycle at work?"
+        },
+        {
+          "id": "g16-low",
+          "kind": "low-overlap",
+          "text": "I cycle in, where should I leave it during the day?"
+        },
+        {
+          "id": "g16-neg",
+          "kind": "negation",
+          "text": "Where are bikes not allowed inside the office?"
+        }
+      ]
+    },
+    {
+      "id": "g17",
+      "target": {
+        "path": "Admin/Holidays.md",
+        "text": "# Holidays\n\nThe office is closed from 24 December 2026 to 2 January 2027. Urgent support goes to the on-call phone.\n"
+      },
+      "distractor": {
+        "path": "Admin/Easter.md",
+        "text": "# Easter\n\nThe office is closed on 2 April 2027 and 5 April 2027 for Easter.\n"
+      },
+      "answer": "24 December 2026",
+      "queries": [
+        {
+          "id": "g17-lex",
+          "kind": "lexical",
+          "text": "When is the office closed over the holidays?"
+        },
+        {
+          "id": "g17-syn",
+          "kind": "synonym",
+          "text": "Over which dates is the workplace shut at the end of the year?"
+        },
+        {
+          "id": "g17-low",
+          "kind": "low-overlap",
+          "text": "Are we working over Christmas and New Year?"
+        },
+        {
+          "id": "g17-date",
+          "kind": "date",
+          "text": "Is anyone in on 2026-12-28?"
+        }
+      ]
+    },
+    {
+      "id": "g18",
+      "target": {
+        "path": "Suppliers/Coffee.md",
+        "text": "# Coffee\n\nCoffee beans are delivered by Ridge Roasters every second Wednesday. We never order decaf from them.\n"
+      },
+      "distractor": {
+        "path": "Suppliers/Tea.md",
+        "text": "# Tea\n\nTea and decaf coffee come from the supermarket order every Friday.\n"
+      },
+      "answer": "every second Wednesday",
+      "queries": [
+        {
+          "id": "g18-lex",
+          "kind": "lexical",
+          "text": "When are the coffee beans delivered?"
+        },
+        {
+          "id": "g18-syn",
+          "kind": "synonym",
+          "text": "How often does the roastery drop off our espresso supply?"
+        },
+        {
+          "id": "g18-low",
+          "kind": "low-overlap",
+          "text": "How often does the stuff for our morning brew arrive?"
+        },
+        {
+          "id": "g18-neg",
+          "kind": "negation",
+          "text": "What do we not buy from Ridge Roasters?"
+        }
+      ]
+    },
+    {
+      "id": "g19",
+      "target": {
+        "path": "IT/Passwords.md",
+        "text": "# Password policy\n\nPasswords must be at least 14 characters. They are not changed on a schedule, only after a suspected breach.\n"
+      },
+      "distractor": {
+        "path": "IT/PINs.md",
+        "text": "# Door PINs\n\nDoor PINs are 6 digits and are changed every quarter.\n"
+      },
+      "answer": "14 characters",
+      "queries": [
+        {
+          "id": "g19-lex",
+          "kind": "lexical",
+          "text": "How long must passwords be?"
+        },
+        {
+          "id": "g19-syn",
+          "kind": "synonym",
+          "text": "What is the minimum length for a login secret?"
+        },
+        {
+          "id": "g19-low",
+          "kind": "low-overlap",
+          "text": "How many letters and symbols do I need when signing up to a work account?"
+        },
+        {
+          "id": "g19-neg",
+          "kind": "negation",
+          "text": "Are passwords changed on a schedule or not?"
+        }
+      ]
+    },
+    {
+      "id": "g20",
+      "target": {
+        "path": "Projects/Website.md",
+        "text": "# Website relaunch\n\nThe new website goes live on 3 November 2026. The old site stays online until 17 November 2026.\n"
+      },
+      "distractor": {
+        "path": "Projects/App.md",
+        "text": "# App release\n\nThe mobile app goes live on 3 February 2027 after store review.\n"
+      },
+      "answer": "3 November 2026",
+      "queries": [
+        {
+          "id": "g20-lex",
+          "kind": "lexical",
+          "text": "When does the new website go live?"
+        },
+        {
+          "id": "g20-syn",
+          "kind": "synonym",
+          "text": "What is the launch date of the redesigned site?"
+        },
+        {
+          "id": "g20-low",
+          "kind": "low-overlap",
+          "text": "When will customers first see our fresh pages on the internet?"
+        },
+        {
+          "id": "g20-date",
+          "kind": "date",
+          "text": "What launches on the third of November?"
+        }
+      ]
+    },
+    {
+      "id": "g21",
+      "target": {
+        "path": "Office/Heating.md",
+        "text": "# Heating\n\nThe heating comes on at 6:30 on weekdays and is not on at weekends unless someone books the building.\n"
+      },
+      "distractor": {
+        "path": "Office/Air conditioning.md",
+        "text": "# Air conditioning\n\nThe air conditioning runs at weekends too, from 8:00 to 18:00.\n"
+      },
+      "answer": "6:30",
+      "queries": [
+        {
+          "id": "g21-lex",
+          "kind": "lexical",
+          "text": "When does the heating come on on weekdays?"
+        },
+        {
+          "id": "g21-syn",
+          "kind": "synonym",
+          "text": "What time do the radiators start warming up?"
+        },
+        {
+          "id": "g21-low",
+          "kind": "low-overlap",
+          "text": "How early is it warm inside when I arrive?"
+        },
+        {
+          "id": "g21-neg",
+          "kind": "negation",
+          "text": "When is the heating not on?"
+        }
+      ]
+    },
+    {
+      "id": "g22",
+      "target": {
+        "path": "People/Ines.md",
+        "text": "# Ines\n\nInes started as head of sales on 6 January 2026 and reports to the managing director.\n"
+      },
+      "distractor": {
+        "path": "People/Ivan.md",
+        "text": "# Ivan\n\nIvan started as head of support on 6 January 2025 and reports to Ines.\n"
+      },
+      "answer": "6 January 2026",
+      "queries": [
+        {
+          "id": "g22-lex",
+          "kind": "lexical",
+          "text": "When did Ines start as head of sales?"
+        },
+        {
+          "id": "g22-syn",
+          "kind": "synonym",
+          "text": "When did Ines take over leading the commercial team?"
+        },
+        {
+          "id": "g22-low",
+          "kind": "low-overlap",
+          "text": "Since when has the person in charge of selling been in post?"
+        },
+        {
+          "id": "g22-date",
+          "kind": "date",
+          "text": "Who joined on 06/01/2026?"
+        }
+      ]
+    },
+    {
+      "id": "g23",
+      "target": {
+        "path": "Office/Post.md",
+        "text": "# Post\n\nOutgoing post is collected at 4 pm from the tray at reception. Parcels over 2 kg do not go with the post; they go by courier.\n"
+      },
+      "distractor": {
+        "path": "Office/Deliveries.md",
+        "text": "# Deliveries\n\nIncoming parcels are left at reception and signed for by whoever is at the desk.\n"
+      },
+      "answer": "4 pm",
+      "queries": [
+        {
+          "id": "g23-lex",
+          "kind": "lexical",
+          "text": "When is outgoing post collected?"
+        },
+        {
+          "id": "g23-syn",
+          "kind": "synonym",
+          "text": "What time does the mail get picked up?"
+        },
+        {
+          "id": "g23-low",
+          "kind": "low-overlap",
+          "text": "By when should letters I want sent be ready?"
+        },
+        {
+          "id": "g23-neg",
+          "kind": "negation",
+          "text": "Which parcels do not go with the regular post?"
+        }
+      ]
+    },
+    {
+      "id": "g24",
+      "target": {
+        "path": "Admin/Audit.md",
+        "text": "# Audit\n\nThe annual audit starts on 1 June 2027. All receipts for the year must be scanned by 15 May 2027.\n"
+      },
+      "distractor": {
+        "path": "Admin/Inventory.md",
+        "text": "# Inventory\n\nThe annual stock count starts on 1 July 2027 and takes two days.\n"
+      },
+      "answer": "1 June 2027",
+      "queries": [
+        {
+          "id": "g24-lex",
+          "kind": "lexical",
+          "text": "When does the annual audit start?"
+        },
+        {
+          "id": "g24-syn",
+          "kind": "synonym",
+          "text": "When do the accountants begin checking the yearly books?"
+        },
+        {
+          "id": "g24-low",
+          "kind": "low-overlap",
+          "text": "From what day are outside reviewers going through our finances?"
+        },
+        {
+          "id": "g24-date",
+          "kind": "date",
+          "text": "What begins on 2027-06-01?"
+        }
+      ]
+    }
+  ]
+}
