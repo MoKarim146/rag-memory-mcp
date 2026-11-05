@@ -200,11 +200,14 @@ function git(args: string[]): string {
   }
 }
 
+// Uncommitted changes to anything but benchmark output (bench/runs/, where this and earlier runs write) make a
+// run "dirty": its code is not exactly the commit it names.
 export function gitState() {
-  const dirtyFiles = git(["status", "--porcelain"])
+  const dirtyFiles = git(["status", "--porcelain", "--untracked-files=all"])
     .split("\n")
     .filter(Boolean)
-    .map((line) => line.slice(3));
+    .map((line) => line.slice(3))
+    .filter((file) => !file.startsWith("bench/runs/"));
   return { commit: git(["rev-parse", "HEAD"]) || "unknown", dirty: dirtyFiles.length > 0, dirtyFiles };
 }
 
