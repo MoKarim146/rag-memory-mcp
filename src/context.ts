@@ -2,7 +2,8 @@
 //
 // The five main files are loaded at the start of every session, so their size is paid again and again.
 // Decisions and tasks only ever grow, so instead of returning them whole:
-//   - 02_DECISIONS.md: only the newest dated sections that fit in DECISIONS_BUDGET characters.
+//   - 02_DECISIONS.md: the newest decisions in full, one line each with their date, up to DECISIONS_BUDGET
+//     characters; older ones as their first sentence only, up to OLDER_DECISIONS_BUDGET.
 //   - 03_OPEN_TASKS.md: only open tasks ("- [ ]"); finished tasks ("- [x]") are left out.
 //   - the other three files: whole, up to FILE_BUDGET characters each.
 // Anything left out is still in the files and can be found with search_memory or read with read_note.
@@ -35,6 +36,38 @@ export function compactMainContext(files: MemoryFile[]): ContextPart[] {
   });
 }
 
+interface DecisionEntry {
+  date: string;
+  line: string; // the whole decision on one line: "2026-09-16: <decision> Reason: <reason>"
+  first: string; // the date and the first sentence of the decision only
+}
+
+// Reads "## <date>" sections with "- Decision: ..." and "  Reason: ..." lines. Anything in a section that is
+// not in that form is kept as it is, on its own line, so hand-written notes are not lost.
+function parseDecisions(dated: string[]): DecisionEntry[] {
+  const entries: DecisionEntry[] = [];
+  for (const section of dated) {
+    const newline = section.indexOf("\n");
+    const date = (newline > 0 ? section.slice(3, newline) : section.slice(3)).trim();
+    const body = newline > 0 ? section.slice(newline + 1) : "";
+    const items = body.split(/\n(?=\s*-\s)/).map((item) => item.trim()).filter(Boolean);
+    for (const item of items) {
+      const decision = /^-\s*Decision:\s*([\s\S]*?)(?:\n\s*Reason:\s*([\s\S]*))?$/.exec(item);
+      if (!decision) {
+        const plain = item.replace(/\s*\n\s*/g, " ");
+        entries.push({ date, line: `${date}: ${plain.replace(/^-\s*/, "")}`, first: `${date}: ${plain.replace(/^-\s*/, "")}` });
+        continue;
+      }
+      const what = decision[1].replace(/\s*\n\s*/g, " ").trim();
+      const why = decision[2]?.replace(/\s*\n\s*/g, " ").trim();
+      const firstSentence = what.replace(/\s+\(added by AI via MCP\)$/, "").split(/(?<=\.)\s/)[0];
+      const short = firstSentence.length > OLDER_DECISION_CHARS ? `${firstSentence.slice(0, OLDER_DECISION_CHARS - 1)}…` : firstSentence;
+      entries.push({ date, line: `${date}: ${what}${why ? ` Reason: ${why}` : ""}`, first: `${date}: ${short}` });
+    }
+  }
+  return entries;
+}
+
 function newestDecisions(content: string): { text: string; shown?: string } {
   const sections = content.replace(/\r\n?/g, "\n").split(/\n(?=## )/);
   const dated = sections.filter((section) => section.startsWith("## "));
@@ -42,47 +75,37 @@ function newestDecisions(content: string): { text: string; shown?: string } {
     return tail(content, DECISIONS_BUDGET);
   }
 
+  // One line per decision (date first) instead of a heading per date: the same words in fewer tokens.
+  const entries = parseDecisions(dated);
   const kept: string[] = [];
   let used = 0;
-  for (let i = dated.length - 1; i >= 0; i -= 1) {
-    const section = dated[i].trim();
-    if (kept.length > 0 && used + section.length > DECISIONS_BUDGET) {
+  let index = entries.length - 1;
+  for (; index >= 0; index -= 1) {
+    const line = `- ${entries[index].line}`;
+    if (kept.length > 0 && used + line.length > DECISIONS_BUDGET) {
       break;
     }
-    kept.unshift(section);
-    used += section.length + 2;
+    kept.unshift(line);
+    used += line.length + 1;
+  }
+  if (index < 0) {
+    return { text: kept.join("\n") };
   }
 
-  const countDecisions = (text: string) => (text.match(/^\s*-\s*Decision:/gm) ?? []).length;
-  const total = countDecisions(content);
-  const shownCount = countDecisions(kept.join("\n"));
-  const text = kept.join("\n\n");
-  if (kept.length === dated.length) {
-    return { text };
-  }
-
-  // One line per older decision, newest first, until the budget is used.
-  const older = dated.slice(0, dated.length - kept.length).reverse();
+  // Older decisions, newest first, as their date and first sentence only, until the budget is used.
   const lines: string[] = [];
   let olderUsed = 0;
-  let listed = 0;
-  for (const section of older) {
-    const date = section.slice(3, section.indexOf("\n") > 0 ? section.indexOf("\n") : undefined).trim();
-    for (const match of section.matchAll(/^\s*-\s*Decision:\s*(.+)$/gm)) {
-      const firstSentence = match[1].replace(/\s+\(added by AI via MCP\)$/, "").split(/(?<=\.)\s/)[0];
-      const short = firstSentence.length > OLDER_DECISION_CHARS ? `${firstSentence.slice(0, OLDER_DECISION_CHARS - 1)}…` : firstSentence;
-      const line = `- ${date}: ${short}`;
-      if (olderUsed + line.length > OLDER_DECISIONS_BUDGET) {
-        break;
-      }
-      lines.push(line);
-      olderUsed += line.length + 1;
-      listed += 1;
+  for (let i = index; i >= 0; i -= 1) {
+    const line = `- ${entries[i].first}`;
+    if (olderUsed + line.length > OLDER_DECISIONS_BUDGET) {
+      break;
     }
+    lines.push(line);
+    olderUsed += line.length + 1;
   }
-  const index = lines.length > 0 ? `\n\nOlder decisions, first sentence only:\n${lines.join("\n")}` : "";
-  const older_note = listed > 0 ? `, ${listed} older as one line each` : "";
-  return { text: text + index, shown: `newest ${shownCount} of ${total} decisions in full${older_note}` };
+  const older = lines.length > 0 ? `\nOlder, first sentence only:\n${lines.join("\n")}` : "";
+  const olderNote = lines.length > 0 ? `, ${lines.length} older as one line each` : "";
+  return { text: kept.join("\n") + older, shown: `newest ${kept.length} of ${entries.length} in full${olderNote}` };
 }
 
 function openTasks(content: string): { text: string; shown?: string } {

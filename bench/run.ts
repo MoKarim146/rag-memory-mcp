@@ -33,8 +33,7 @@ const SETS = {
   holdout: { vault: path.join(BENCH_DIR, "holdout-vault"), tasks: path.join(BENCH_DIR, "holdout-tasks.json") },
   test3: { vault: path.join(BENCH_DIR, "test3-vault"), tasks: path.join(BENCH_DIR, "test3-tasks.json") },
 } as const;
-type SetName = keyof typeof SETS;
-let FIXTURE: string = SETS.dev.vault;
+export type SetName = keyof typeof SETS;
 const FROZEN_NOW = Date.parse("2026-11-02T10:00:00.000Z");
 
 process.env.TZ = "UTC";
@@ -87,7 +86,7 @@ interface WriteTask {
   expect_text: string;
 }
 
-interface Tasks {
+export interface Tasks {
   session_start: { id: string; description: string; answer: string };
   lookups: Lookup[];
   writes: WriteTask[];
@@ -155,7 +154,12 @@ export interface RunResult {
   };
 }
 
-async function runVariant(name: string, style: "keyword" | "question", tasks: Tasks, set: SetName): Promise<RunResult> {
+export async function loadTasks(set: SetName): Promise<Tasks> {
+  return JSON.parse(await readFile(SETS[set].tasks, "utf8")) as Tasks;
+}
+
+export async function runVariant(name: string, style: "keyword" | "question", tasks: Tasks, set: SetName): Promise<RunResult> {
+  const FIXTURE = SETS[set].vault;
   const variant = VARIANTS[name];
   if (!variant) {
     throw new Error(`Unknown variant ${name}. Known: ${Object.keys(VARIANTS).join(", ")}`);
@@ -349,6 +353,7 @@ async function runVariant(name: string, style: "keyword" | "question", tasks: Ta
 // The "paste everything" approach: no tools, every note in the chat once. Lookups then cost nothing extra,
 // and the answer is always present if it is anywhere in the vault.
 async function runFullContext(style: "keyword" | "question", tasks: Tasks, set: SetName): Promise<RunResult> {
+  const FIXTURE = SETS[set].vault;
   const files = (await listMarkdown(FIXTURE)).sort();
   const parts: string[] = [];
   for (const file of files) {
@@ -536,9 +541,8 @@ async function main(): Promise<void> {
   if (!(set in SETS)) {
     throw new Error(`--set must be one of: ${Object.keys(SETS).join(", ")}`);
   }
-  FIXTURE = SETS[set].vault;
   const names = args.length > 0 ? args : DEFAULT_VARIANTS;
-  const tasks = JSON.parse(await readFile(SETS[set].tasks, "utf8")) as Tasks;
+  const tasks = await loadTasks(set);
 
   const results: RunResult[] = [];
   for (const name of names) {
@@ -553,7 +557,10 @@ async function main(): Promise<void> {
   console.log(`\nWrote ${path.relative(process.cwd(), out)}`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+// Runs only when started as a script (npx tsx bench/run.ts), not when imported by a test.
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

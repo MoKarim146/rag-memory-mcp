@@ -123,7 +123,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
           noteBlock(
             {
               ...noteAttrs(hit.path, hit.suspicious),
-              section: hit.heading,
+              section: sectionLabel(hit.path, hit.heading),
               // RAG_SHOW_DATES=true: dates help an AI prefer newer information (OWASP LLM07). Off by default
               // because it adds about 8% to search output. Most notes already carry a date in their path or
               // heading (sessions, meetings, dated decisions), so it is only added where neither does.
@@ -303,6 +303,15 @@ function noteAttrs(path: string, suspicious: boolean): Record<string, string | u
     written_by: path.startsWith("Sessions/") ? "ai" : undefined,
     warning: suspicious ? INJECTION_WARNING : undefined,
   };
+}
+
+// The section name shown on a search hit. Session headings start with a full timestamp the file name
+// already has, and a section named like its note ("Glossary" in glossary.md) adds nothing; both are trimmed.
+function sectionLabel(path: string, heading: string): string | undefined {
+  const label = heading.replace(/^\d{4}-\d{2}-\d{2}T[\d:.]+Z\s*-\s*/, "").trim();
+  const simplify = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+  const fileName = path.split("/").pop()!.replace(/\.md$/, "").replace(/^\d+_/, "");
+  return label && simplify(label) !== simplify(fileName) ? label : undefined;
 }
 
 function text(value: string): ToolResult {

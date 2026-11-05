@@ -37,10 +37,24 @@ export const RELATIVE_CUTOFF = 0.5;
 // When nothing matches well, at most this many partial matches are returned.
 const PARTIAL_LIMIT = 2;
 
-// Output size. The best hit shows up to TOP_HIT_CHARS around its best passage; the others show only their
-// matching passages, up to SNIPPET_CHARS each. read_note gives the full note when needed.
-export const TOP_HIT_CHARS = 600;
-export const SNIPPET_CHARS = 200;
+// Output size. The best hit shows up to TOP_HIT_CHARS of its best sentences; the others up to SNIPPET_CHARS.
+// read_note gives the full note when needed.
+export const TOP_HIT_CHARS = 450;
+export const SNIPPET_CHARS = 180;
+// Hits whose shown words overlap this much with an earlier hit are skipped as duplicates.
+const DUPLICATE_SIMILARITY = 0.6;
+
+function wordSet(text: string): Set<string> {
+  return new Set((text.toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? []).filter((word) => !STOPWORDS.has(word)));
+}
+
+// Jaccard similarity of the meaningful words: shared words divided by all distinct words of both.
+function similarity(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0;
+  let shared = 0;
+  for (const word of a) if (b.has(word)) shared += 1;
+  return shared / (a.size + b.size - shared);
+}
 
 export interface SearchHit {
   path: string;
@@ -177,8 +191,11 @@ export class MemoryIndex {
       }
 
       loose = [...sectionScore.keys()]; // already in best-score order, because rows were
-      const covered = this.sectionsCoveringEnoughTerms(rows, terms);
-      const coveredList = loose.filter((id) => covered.has(id));
+      // Ranking stays plain BM25 of the best passage. Weighting by the share of query words matched was
+      // tried in round 3 and rejected: it lost an answer on test set 2 (RAG_RESULTS.md).
+      const matchedTerms = this.termsMatchedPerSection(rows, terms);
+      const needed = minimumTermsMatched(terms.length);
+      const coveredList = loose.filter((id) => (matchedTerms.get(id) ?? 1) >= needed);
       const best = coveredList.length > 0 ? sectionScore.get(coveredList[0])! : 0;
       strict = coveredList.filter((id) => sectionScore.get(id)! <= best * RELATIVE_CUTOFF);
     }
@@ -198,6 +215,7 @@ export class MemoryIndex {
     const getPassages = this.db.prepare("SELECT id, section_id, pindex, text FROM passages WHERE section_id = ? ORDER BY pindex");
     const perFile = new Map<string, number>();
     const hits: SearchHit[] = [];
+    const shownWords: Set<string>[] = [];
     const cap = partial ? Math.min(limit, PARTIAL_LIMIT) : limit;
 
     for (const id of ranked) {
@@ -211,7 +229,14 @@ export class MemoryIndex {
       }
       perFile.set(row.path, count + 1);
       const passages = getPassages.all(id) as unknown as PassageRow[];
-      const snippet = buildSnippet(passages, sectionPassages.get(id) ?? [], marked, hits.length === 0 && !partial);
+      const snippet = buildSnippet(passages, marked, hits.length === 0 && !partial);
+      // Skip a hit that says nearly the same as one already shown (a decision repeated in a meeting note).
+      const words = wordSet(snippet);
+      if (shownWords.some((other) => similarity(words, other) >= DUPLICATE_SIMILARITY)) {
+        perFile.set(row.path, count);
+        continue;
+      }
+      shownWords.push(words);
       hits.push({
         path: row.path,
         heading: row.heading,
@@ -248,11 +273,11 @@ export class MemoryIndex {
     return clean.length > 0 ? clean : ids;
   }
 
-  private sectionsCoveringEnoughTerms(rows: { id: number; section: number }[], terms: string[]): Set<number> {
-    const needed = minimumTermsMatched(terms.length);
-    const sections = new Set(rows.map((row) => row.section));
-    if (needed <= 1 || rows.length === 0) {
-      return sections;
+  // How many different query words each candidate section matches (in its passages or headings).
+  private termsMatchedPerSection(rows: { id: number; section: number }[], terms: string[]): Map<number, number> {
+    const counts = new Map<number, number>();
+    if (rows.length === 0 || terms.length <= 1) {
+      return counts;
     }
     const sectionOf = new Map(rows.map((row) => [row.id, row.section]));
     const matched = new Map<number, Set<string>>();
@@ -268,7 +293,10 @@ export class MemoryIndex {
         matched.set(section, set);
       }
     }
-    return new Set([...sections].filter((section) => (matched.get(section)?.size ?? 0) >= needed));
+    for (const [section, set] of matched) {
+      counts.set(section, set.size);
+    }
+    return counts;
   }
 
   stats(): { files: number; sections: number; passages: number; vectors: number } {
@@ -430,56 +458,92 @@ export class MemoryIndex {
   }
 }
 
-// Builds the text shown for one section hit from its passages.
-// - Best hit: its best passage plus the passages around it, up to TOP_HIT_CHARS.
-// - Other hits: only the matching passages, in note order, up to SNIPPET_CHARS.
-// - No matching passage (the heading matched, or a vector hit): the first passages.
-// Passages that are not next to each other are separated by "…", and "…" at the end means more text exists.
-function buildSnippet(passages: PassageRow[], matchedIds: number[], marked: Map<number, string>, isTop: boolean): string {
-  if (passages.length === 0) {
+// Builds the text shown for one section hit, sentence by sentence.
+// - Units: a list item (with its indented lines, so a decision keeps its "Reason:"), a table row, a code
+//   block, or one sentence of a paragraph.
+// - Each unit scores the number of different query words in it (FTS5 marks them, word forms included).
+// - Best hit: its best unit, then other matching units, then the unit right after the best one (answers
+//   often follow the sentence that matches, "Cause: ... Fix: ..."), up to TOP_HIT_CHARS.
+// - Other hits: their best matching units, up to SNIPPET_CHARS.
+// - No matching unit (the heading matched, or a vector hit): the first units, skipping boilerplate.
+// Units that are not next to each other are separated by "…", and "…" at the end means more text exists.
+interface Unit {
+  text: string;
+  marked: string;
+  passage: number;
+  score: number;
+}
+
+const BOILERPLATE = /^Model: [^\n]{1,100}$/;
+
+function unitsOf(passages: PassageRow[], marked: Map<number, string>): Unit[] {
+  const units: Unit[] = [];
+  passages.forEach((passage, p) => {
+    const source = marked.get(passage.id) ?? passage.text;
+    const whole = /^\s*([-*+]|\d+[.)])\s|^\s*\||^\s*(```|~~~)/.test(passage.text);
+    const pieces = whole ? [source] : source.split(/(?<=[.!?][\u0002]?)\s+(?=[A-Z0-9"'(\u0001])/);
+    for (const piece of pieces) {
+      const text = piece.replace(/[\u0001\u0002]/g, "").trim();
+      if (!text) continue;
+      const words = new Set((piece.match(/\u0001[^\u0002]*\u0002/g) ?? []).map((w) => w.toLowerCase()));
+      units.push({ text, marked: piece, passage: p, score: words.size });
+    }
+  });
+  return units;
+}
+
+function buildSnippet(passages: PassageRow[], marked: Map<number, string>, isTop: boolean): string {
+  const units = unitsOf(passages, marked);
+  if (units.length === 0) {
     return "";
   }
-  const position = new Map(passages.map((p, i) => [p.id, i]));
-  const matched = matchedIds.map((id) => position.get(id)).filter((i): i is number => i !== undefined);
   const cap = isTop ? TOP_HIT_CHARS : SNIPPET_CHARS;
+  const byScore = units
+    .map((unit, index) => ({ unit, index }))
+    .filter(({ unit }) => unit.score > 0)
+    .sort((a, b) => b.unit.score - a.unit.score || a.index - b.index);
 
   let order: number[];
-  if (matched.length === 0) {
-    order = passages.map((_, i) => i);
-  } else if (isTop) {
-    const best = matched[0];
-    order = [best, ...matched.slice(1), best - 1, best + 1, best + 2].filter((i) => i >= 0 && i < passages.length);
+  if (byScore.length === 0) {
+    order = units.map((_, i) => i).filter((i) => !BOILERPLATE.test(units[i].text));
   } else {
-    order = matched;
+    // Each matching unit is followed by the next unit of the same paragraph: in prose the answer often comes
+    // right after the sentence that matches ("We discussed X. Agreed: Y.").
+    const withNext = (i: number) => (units[i + 1]?.passage === units[i].passage ? [i, i + 1, i + 2] : [i]);
+    order = byScore.flatMap((e) => withNext(e.index));
+    if (isTop) {
+      order.push(byScore[0].index - 1);
+    }
+    order = order.filter((i) => i >= 0 && i < units.length);
   }
 
   const chosen = new Set<number>();
   let used = 0;
   for (const i of order) {
-    if (chosen.has(i)) {
-      continue;
-    }
-    const length = passages[i].text.length + 1;
-    if (chosen.size > 0 && used + length > cap) {
-      continue;
-    }
+    if (chosen.has(i) || BOILERPLATE.test(units[i].text)) continue;
+    const length = units[i].text.length + 1;
+    if (chosen.size > 0 && used + length > cap) continue;
     chosen.add(i);
     used += length;
   }
+  if (chosen.size === 0) {
+    chosen.add(order[0] ?? 0);
+  }
 
   const sorted = [...chosen].sort((a, b) => a - b);
-  const parts: string[] = [];
+  let out = sorted[0] > 0 ? "… " : "";
   sorted.forEach((i, k) => {
-    if (k > 0 && i !== sorted[k - 1] + 1) {
-      parts.push("…");
+    const unit = units[i];
+    if (k > 0) {
+      const previous = sorted[k - 1];
+      out += i !== previous + 1 ? "\n…\n" : unit.passage === units[previous].passage ? " " : "\n";
     }
-    const text = passages[i].text;
-    parts.push(text.length > cap ? clipAround(marked.get(passages[i].id) ?? text, cap) : text);
+    out += unit.text.length > cap ? clipAround(unit.marked, cap) : unit.text;
   });
-  if (sorted.at(-1)! < passages.length - 1) {
-    parts.push("…");
+  if (sorted.at(-1)! < units.length - 1) {
+    out += " …";
   }
-  return parts.join("\n");
+  return out;
 }
 
 // Builds the text shown for one hit from a whole chunk. Lines (list items with their continuation lines)

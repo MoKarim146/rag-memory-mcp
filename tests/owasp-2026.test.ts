@@ -716,9 +716,11 @@ describe("LLM10:2026 Improper Output Handling", () => {
     );
     for (const view of await views(f, "plan.md", "beans plan")) {
       expect(view).not.toMatch(/https:\/\/evil\.example\/c\.png|<img|<iframe|<script|fetch\(/);
-      expect(view).toContain("remote image removed");
     }
-    expect((await call(f.client, "read_note", { path: "plan.md" })).text).toContain("![local](images/beds.png)");
+    // Search shows only the matching sentences; the full note shows the label where the image was.
+    const full = (await call(f.client, "read_note", { path: "plan.md" })).text;
+    expect(full).toContain("remote image removed");
+    expect(full).toContain("![local](images/beds.png)");
   });
 
   it("O10-2 an AI cannot save remote images, iframes, scripts or javascript: links into the notes the owner opens", async () => {

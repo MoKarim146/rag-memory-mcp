@@ -81,7 +81,9 @@ describe("index", () => {
 
   it("returns at most two hits per note and respects the limit", async () => {
     const config = await tempVault();
-    const sections = Array.from({ length: 6 }, (_, i) => `## Part ${i}\n\nbanana fact ${i}\n`).join("\n");
+    // Each section says something different, so none is dropped as a duplicate of another.
+    const words = ["apple orchard", "cherry jam", "grape vine", "melon seeds", "peach tree", "plum sauce"];
+    const sections = Array.from({ length: 6 }, (_, i) => `## Part ${i}\n\nbanana ${words[i]} ${i}\n`).join("\n");
     await writeFile(path.join(config.rootDir, "fruit.md"), sections);
     await writeFile(path.join(config.rootDir, "other.md"), "banana bread recipe\n");
     const index = new MemoryIndex(config);
@@ -160,11 +162,11 @@ describe("main context view", () => {
       { path: "02_DECISIONS.md", content: `# Decisions\n\n${decisions}` },
       { path: "03_OPEN_TASKS.md", content: tasks },
     ]);
-    expect(parts[0].text).toContain("choice 39\n  Reason: because 39");
+    expect(parts[0].text).toContain("- 2026-01-40: choice 39 Reason: because 39");
     // Older decisions appear as one line each (newest first) until their budget is used, without reasons.
-    expect(parts[0].text).toContain("Older decisions, first sentence only:");
+    expect(parts[0].text).toContain("Older, first sentence only:");
     expect(parts[0].text).not.toContain("Reason: because 0");
-    expect(parts[0].shown).toMatch(/^newest \d+ of 40 decisions in full, \d+ older as one line each$/);
+    expect(parts[0].shown).toMatch(/^newest \d+ of 40 in full, \d+ older as one line each$/);
     expect(parts[1].text).toBe("- [ ] open one\n- [ ] open two");
     expect(parts[1].shown).toBe("open tasks only, 2 done hidden");
   });
