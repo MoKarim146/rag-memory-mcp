@@ -191,7 +191,7 @@ function setsChart(t: Theme, sets: SetResult[]): string {
   const noteY = panelTop + sets.length * (groupHeight + groupGap) + 18;
   const H = noteY + 18 + 22;
   body += `<text x="24" y="${noteY}" font-size="12" fill="${t.secondary}">On these small vaults, pasting every note is cheapest for a long chat. For a short chat, this server is cheapest.</text>`;
-  body += `<text x="24" y="${noteY + 18}" font-size="12" fill="${t.muted}">"Answered" lists this server / old server / paste every note. Set 1 was used for tuning; sets 2 and 3 were not.</text>`;
+  body += `<text x="24" y="${noteY + 18}" font-size="12" fill="${t.muted}">"Answered" lists this server / old server / paste every note. Sets 1 and 2 were used for tuning; set 3 was not.</text>`;
 
   const alt = sets
     .map((s) => `${s.label}: all questions ${s.long.map(fmt).join(", ")} tokens; short chat ${s.quick.map(fmt).join(", ")} tokens (this server, old server, paste every note); answered ${s.answered.join(", ")} of ${s.questions}`)

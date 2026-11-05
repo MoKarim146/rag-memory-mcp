@@ -16,32 +16,32 @@
       "baselineStartTokens": 2549,
       "baselineSearch": [
         {
-          "ms": 14.7,
+          "ms": 13.6,
           "tokens": 1228
         },
         {
-          "ms": 8.4,
+          "ms": 6.5,
           "tokens": 18
         },
         {
-          "ms": 6.7,
+          "ms": 12.3,
           "tokens": 24
         }
       ],
       "baselineDefinitionTokens": 886,
       "currentStartTokens": 1850,
-      "firstSearchMs": 32.1,
+      "firstSearchMs": 26.8,
       "currentSearch": [
         {
-          "ms": 12.1,
+          "ms": 7.7,
           "tokens": 285
         },
         {
-          "ms": 5.8,
+          "ms": 3.3,
           "tokens": 284
         },
         {
-          "ms": 4.6,
+          "ms": 3.3,
           "tokens": 309
         }
       ],
@@ -49,8 +49,8 @@
       "quickChatPasteEverything": 6674,
       "quickChatOldServer": 4705,
       "quickChatThisServer": 3286,
-      "searchAfterOneEditMs": 3.5,
-      "rssGrowthMB": 7
+      "searchAfterOneEditMs": 3,
+      "rssGrowthMB": 4
     },
     {
       "vault": "~500 notes, logs x5",
@@ -60,32 +60,32 @@
       "baselineStartTokens": 7513,
       "baselineSearch": [
         {
-          "ms": 32.1,
+          "ms": 32.6,
           "tokens": 2751
         },
         {
-          "ms": 98.2,
+          "ms": 94,
           "tokens": 18
         },
         {
-          "ms": 115.7,
+          "ms": 137.2,
           "tokens": 24
         }
       ],
       "baselineDefinitionTokens": 886,
       "currentStartTokens": 1850,
-      "firstSearchMs": 351.2,
+      "firstSearchMs": 441.5,
       "currentSearch": [
         {
-          "ms": 21.7,
+          "ms": 22.8,
           "tokens": 239
         },
         {
-          "ms": 40.6,
+          "ms": 42.8,
           "tokens": 341
         },
         {
-          "ms": 39,
+          "ms": 38,
           "tokens": 357
         }
       ],
@@ -93,8 +93,8 @@
       "quickChatPasteEverything": 90086,
       "quickChatOldServer": 11192,
       "quickChatThisServer": 3345,
-      "searchAfterOneEditMs": 27.7,
-      "rssGrowthMB": 3
+      "searchAfterOneEditMs": 28.9,
+      "rssGrowthMB": 2
     },
     {
       "vault": "~2,000 notes, logs x10",
@@ -104,32 +104,32 @@
       "baselineStartTokens": 13718,
       "baselineSearch": [
         {
-          "ms": 68.6,
+          "ms": 68,
           "tokens": 2575
         },
         {
-          "ms": 315.9,
+          "ms": 348.7,
           "tokens": 18
         },
         {
-          "ms": 322.7,
+          "ms": 348.7,
           "tokens": 24
         }
       ],
       "baselineDefinitionTokens": 886,
       "currentStartTokens": 1850,
-      "firstSearchMs": 1257.9,
+      "firstSearchMs": 1260.9,
       "currentSearch": [
         {
-          "ms": 70.2,
+          "ms": 75.6,
           "tokens": 122
         },
         {
-          "ms": 83,
+          "ms": 88.7,
           "tokens": 197
         },
         {
-          "ms": 96.8,
+          "ms": 101.3,
           "tokens": 257
         }
       ],
@@ -137,7 +137,7 @@
       "quickChatPasteEverything": 336785,
       "quickChatOldServer": 17221,
       "quickChatThisServer": 2984,
-      "searchAfterOneEditMs": 67.7,
+      "searchAfterOneEditMs": 71,
       "rssGrowthMB": 8
     },
     {
@@ -148,32 +148,32 @@
       "baselineStartTokens": 26128,
       "baselineSearch": [
         {
-          "ms": 146.6,
+          "ms": 222,
           "tokens": 2335
         },
         {
-          "ms": 682.3,
+          "ms": 769.1,
           "tokens": 18
         },
         {
-          "ms": 697.9,
+          "ms": 761.1,
           "tokens": 24
         }
       ],
       "baselineDefinitionTokens": 886,
       "currentStartTokens": 1850,
-      "firstSearchMs": 3059.3,
+      "firstSearchMs": 3047.1,
       "currentSearch": [
         {
-          "ms": 231.3,
+          "ms": 169.3,
           "tokens": 177
         },
         {
-          "ms": 180.4,
+          "ms": 228.2,
           "tokens": 197
         },
         {
-          "ms": 173.4,
+          "ms": 205,
           "tokens": 222
         }
       ],
@@ -181,7 +181,7 @@
       "quickChatPasteEverything": 834815,
       "quickChatOldServer": 29391,
       "quickChatThisServer": 3004,
-      "searchAfterOneEditMs": 161.2,
+      "searchAfterOneEditMs": 164.5,
       "rssGrowthMB": 29
     }
   ]

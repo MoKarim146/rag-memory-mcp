@@ -3,6 +3,7 @@
 //   npx tsx bench/show.mts search_memory '{"query":"Why did we choose SQLite?"}'
 //   npx tsx bench/show.mts read_main_context
 //   BENCH_SERVER=baseline npx tsx bench/show.mts search_memory '{"query":"Postgres"}'   (the old server)
+//   BENCH_VAULT=test3-vault npx tsx bench/show.mts search_memory '{"query":"Twilio"}'      (another vault)
 import { cp, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -17,7 +18,7 @@ const { createObsidianMemoryMcpServer } = await import(pathToFileURL(path.join(s
 
 const base = await mkdtemp(path.join(os.tmpdir(), "show-"));
 const vault = path.join(base, "vault");
-await cp(path.join(benchDir, "fixture-vault"), vault, { recursive: true });
+await cp(path.join(benchDir, process.env.BENCH_VAULT ?? "fixture-vault"), vault, { recursive: true });
 
 const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
 await createObsidianMemoryMcpServer(memory.getMemoryConfig({ ...process.env, AI_MEMORY_DIR: vault })).connect(serverTransport);
