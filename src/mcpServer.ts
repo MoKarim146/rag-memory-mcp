@@ -7,6 +7,7 @@ import {
   addDecision,
   addOpenTask,
   appendSessionNote,
+  listOversizedNotes,
   MemoryError,
   type MemoryConfig,
   readHandoffSummary,
@@ -18,7 +19,7 @@ import {
   type WriteResult,
 } from "./memory.js";
 import { DEFAULT_RESULT_LIMIT, getMemoryIndex, MAX_QUERY_CHARS, MAX_RESULT_LIMIT } from "./retrieval/memoryIndex.js";
-import { type CleanOptions, INJECTION_WARNING, prepareNoteText } from "./safety.js";
+import { type CleanOptions, INJECTION_WARNING, looksLikeInjection, prepareNoteText } from "./safety.js";
 
 // Kept short on purpose: tool descriptions and these instructions are sent to the model in every session.
 const SHARED_INSTRUCTIONS =
@@ -27,6 +28,19 @@ const WRITE_INSTRUCTIONS = " Write only when the user wants something saved.";
 const READ_ONLY_INSTRUCTIONS = " This memory is read-only.";
 
 export const READ_PAGE_CHARS = 8000;
+
+// Names the notes too large to search, so the AI can ask the user to split them. Names come from the vault, so
+// each is quoted, cut to 120 characters, and hidden if it looks like instructions to an AI.
+async function oversizedNotice(config: MemoryConfig): Promise<string> {
+  const notes = await listOversizedNotes(config);
+  if (notes.length === 0) return "";
+  const names = notes
+    .slice(0, 5)
+    .map((name) => (looksLikeInjection(name) ? '"[name hidden]"' : JSON.stringify(name.slice(0, 120))));
+  const more = notes.length > 5 ? ` and ${notes.length - 5} more` : "";
+  const them = notes.length === 1 ? "it" : "them";
+  return `\nNot searchable, over 1 MB: ${names.join(", ")}${more}. read_note can open ${them}; ask the user to split ${them} into smaller notes.`;
+}
 const DATED = /\d{4}-\d{2}-\d{2}/;
 const PRIVATE_PLACEHOLDER = "[This note is marked private, so it is not shown.]";
 
@@ -79,7 +93,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
           noteBlock({ path: part.path, shown: part.shown, warning: files[i].suspicious ? INJECTION_WARNING : undefined }, part.text),
         );
         const footer = hidden ? "\nOlder decisions and done tasks are not shown; search_memory finds them." : "";
-        return text(`${DATA_NOTICE}\n${blocks.join("\n")}${footer}`);
+        return text(`${DATA_NOTICE}\n${blocks.join("\n")}${footer}${await oversizedNotice(config)}`);
       }),
     );
   }
@@ -117,7 +131,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
       safe("search_memory", async ({ query, limit }: { query: string; limit?: number }) => {
         const hits = await index.search(query, limit ?? DEFAULT_RESULT_LIMIT);
         if (hits.length === 0) {
-          return text("No matching notes.");
+          return text(`No matching notes.${await oversizedNotice(config)}`);
         }
         const blocks = hits.map((hit) =>
           noteBlock(

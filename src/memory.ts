@@ -1,10 +1,10 @@
 import { constants as fsConstants } from "node:fs";
 import { createHash } from "node:crypto";
-import { access, appendFile, lstat, mkdir, opendir, readFile, realpath, rename, stat, writeFile } from "node:fs/promises";
+import { access, appendFile, lstat, mkdir, open, opendir, readFile, realpath, rename, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { type EmbeddingSettings, parseEmbeddingSettings } from "./retrieval/embeddings.js";
-import { findWriteProblem, looksLikeInjection, maskSecrets } from "./safety.js";
+import { findWriteProblem, isPrivateNote, looksLikeInjection, maskSecrets } from "./safety.js";
 
 export const DEFAULT_MEMORY_DIR = "~/ObsidianVault/AI-Memory";
 
@@ -442,10 +442,35 @@ async function audit(
   }
 }
 
+// Notes too large to search (over MAX_INDEXED_FILE_BYTES). read_note can still open them page by page; they
+// are named so the AI can ask the user to split them. A note marked private in its first 64 KB is left out,
+// so its name is never shown.
+export async function listOversizedNotes(config: MemoryConfig): Promise<string[]> {
+  const out: string[] = [];
+  for (const file of await listMarkdownFiles(config)) {
+    if (file.size <= MAX_INDEXED_FILE_BYTES) continue;
+    const handle = await open(path.join(config.rootDir, file.path), "r");
+    try {
+      const head = Buffer.alloc(64 * 1024);
+      const { bytesRead } = await handle.read(head, 0, head.length, 0);
+      if (!isPrivateNote(head.subarray(0, bytesRead).toString("utf8"))) out.push(file.path);
+    } finally {
+      await handle.close();
+    }
+  }
+  return out;
+}
+
 // Every note search may look at: the same markdown files read_note accepts, with the same checks.
 export async function listNoteFiles(config: MemoryConfig): Promise<NoteFileInfo[]> {
   await ensureMemoryLayout(config);
-  const files = (await listMarkdownFiles(config)).filter((file) => file.size <= MAX_INDEXED_FILE_BYTES);
+  const all = await listMarkdownFiles(config);
+  for (const file of all) {
+    if (file.size > MAX_INDEXED_FILE_BYTES) {
+      warnOnce(`Not searched, over 1 MB: ${file.path}. Split it into smaller notes.`);
+    }
+  }
+  const files = all.filter((file) => file.size <= MAX_INDEXED_FILE_BYTES);
   // Caps against a vault so large it would exhaust memory (OWASP LLM06): at most maxNotes notes and
   // MAX_INDEXED_TOTAL_BYTES of text, taken in path order so the result is the same every time.
   const limit = config.maxNotes ?? 20_000;
