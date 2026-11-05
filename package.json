@@ -4,6 +4,7 @@
   "description": "Token-saving, security-hardened MCP memory server: one shared markdown memory for several AI assistants, with local RAG search.",
   "type": "module",
   "private": true,
+  "license": "MIT",
   "engines": {
     "node": ">=22.13"
   },

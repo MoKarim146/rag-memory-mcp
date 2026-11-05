@@ -225,3 +225,8 @@ npm run bench
   benchmark, the RAG search, the security audit and OWASP controls, the heavy tests and the documents.
 - The first commit in this repository is the original project, unchanged, so every later change can be seen on
   its own.
+
+## License
+
+[MIT](LICENSE). You may use, change and share it, including commercially, as long as the copyright notice
+stays with it.

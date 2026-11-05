@@ -1,6 +1,7 @@
 ---
 name: rag-memory
 description: Use the rag-memory MCP server as shared project memory between AI assistants. Use it at the start of a planning or coding session to load the project's context, whenever you need a past decision, task or detail from the notes, and at the end of a session to save what was done for the next assistant. Needs the rag-memory server connected (tools read_main_context, search_memory, read_note, add_decision, add_open_task, append_session_note, update_handoff_summary).
+license: MIT
 ---
 
 # Shared project memory (rag-memory)
