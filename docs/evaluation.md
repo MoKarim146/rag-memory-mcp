@@ -117,18 +117,20 @@ _No clean run of eval-longmemeval-s (evaluation-dense) yet._
 ### Paraphrase set, evaluation split (16 groups, 64 questions)
 
 <!-- generated: retrieval eval-paraphrase evaluation -->
-Run `bench/runs/eval-paraphrase/20261105T055359Z-1bd2c4b` (commit `1bd2c4b`). Recall@5 interval: 95% bootstrap over questions (2,000 resamples, seed 1).
+Run `bench/runs/eval-paraphrase/20261105T055359Z-1bd2c4b` (commit `1bd2c4b`). Recall@5 interval: 95% bootstrap over questions (2,000 resamples, seed 1). Warm search: one search once the index is built. Cold start: building the index, with embedding for dense and hybrid. Memory: growth of the benchmark process's resident memory while the index was built, a rough reading that garbage collection can make negative.
 
-| System | Results | Questions | Recall@5 | Recall@5, 95% interval | Recall@10 | nDCG@10 | MRR | Evidence shown | Answer present | Distractor first | Without vectors | Tokens (mean) | Search ms (mean) | Index ms (mean) |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| bm25 | 5 | 64 | 0.422 | 0.297 to 0.547 |  |  | 0.404 |  | 42.2% | 4.7% | 0 | 133 | 21 | 170 |
-| bm25 | 10 | 64 | 0.422 | 0.297 to 0.547 | 0.422 | 0.408 | 0.404 |  | 42.2% | 4.7% | 0 | 155 | 22.1 | 170 |
-| dense | 5 | 64 | 0.656 | 0.547 to 0.766 |  |  | 0.633 |  | 65.6% | 3.1% | 0 | 85 | 25.1 | 499 |
-| dense | 10 | 64 | 0.656 | 0.547 to 0.766 | 0.656 | 0.639 | 0.633 |  | 65.6% | 3.1% | 0 | 96 | 24.4 | 499 |
-| hybrid | 5 | 64 | 0.719 | 0.609 to 0.828 |  |  | 0.571 |  | 71.9% | 4.7% | 0 | 165 | 24.7 | 455 |
-| hybrid | 10 | 64 | 0.719 | 0.609 to 0.828 | 0.719 | 0.609 | 0.571 |  | 71.9% | 4.7% | 0 | 205 | 25.7 | 455 |
-| old | 5 | 64 | 0.328 | 0.219 to 0.438 |  |  | 0.279 |  | 35.9% | 4.7% |  | 339 | 66.3 | 65 |
-| old | 10 | 64 | 0.328 | 0.219 to 0.438 | 0.344 | 0.293 | 0.279 |  | 35.9% | 4.7% |  | 339 | 67 | 65 |
+| System | Results | Questions | Recall@5 | Recall@5, 95% interval | Recall@10 | nDCG@10 | MRR | Evidence shown | Answer present | Distractor first | Without vectors | Tokens (mean) | Warm search ms (mean) | Cold start ms (mean) | Memory MB (rough) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| bm25 | 5 | 64 | 0.422 | 0.297 to 0.547 |  |  | 0.404 |  | 42.2% | 4.7% | 0 | 133 | 21 | 170 | 8.8 |
+| bm25 | 10 | 64 | 0.422 | 0.297 to 0.547 | 0.422 | 0.408 | 0.404 |  | 42.2% | 4.7% | 0 | 155 | 22.1 | 170 | 8.8 |
+| dense | 5 | 64 | 0.656 | 0.547 to 0.766 |  |  | 0.633 |  | 65.6% | 3.1% | 0 | 85 | 25.1 | 499 | 19.2 |
+| dense | 10 | 64 | 0.656 | 0.547 to 0.766 | 0.656 | 0.639 | 0.633 |  | 65.6% | 3.1% | 0 | 96 | 24.4 | 499 | 19.2 |
+| hybrid | 5 | 64 | 0.719 | 0.609 to 0.828 |  |  | 0.571 |  | 71.9% | 4.7% | 0 | 165 | 24.7 | 455 | -6.7 |
+| hybrid | 10 | 64 | 0.719 | 0.609 to 0.828 | 0.719 | 0.609 | 0.571 |  | 71.9% | 4.7% | 0 | 205 | 25.7 | 455 | -6.7 |
+| old | 5 | 64 | 0.328 | 0.219 to 0.438 |  |  | 0.279 |  | 35.9% | 4.7% |  | 339 | 66.3 | 65 | 0.5 |
+| old | 10 | 64 | 0.328 | 0.219 to 0.438 | 0.344 | 0.293 | 0.279 |  | 35.9% | 4.7% |  | 339 | 67 | 65 | 0.5 |
+
+Index: bm25 143 notes, 652 passages, 0 vectors; dense 143 notes, 652 passages, 652 vectors; hybrid 143 notes, 652 passages, 652 vectors. The notes include the server's five main notes, which it creates with only a heading.
 
 Paired differences on the same questions (95% bootstrap interval of the mean difference, 2,000 resamples, seed 1). An interval that includes 0 means the difference may be chance.
 

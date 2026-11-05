@@ -33,7 +33,7 @@ const RUNS = path.join(BENCH, "runs");
 interface Run {
   dir: string;
   id: string;
-  meta: { config: Record<string, unknown>; plan: { name: string; about: Record<string, unknown> }[]; git: { commit: string } };
+  meta: { config: Record<string, unknown>; plan: { name: string; about: Record<string, unknown> }[]; git: { commit: string }; facts?: Record<string, unknown> };
   summary: Record<string, Record<string, unknown>>;
   timings: { groups: Record<string, Record<string, unknown>>; other: Record<string, unknown> };
 }
@@ -65,10 +65,10 @@ async function retrievalTable(benchmark: string, split: string): Promise<string>
   const recall5 = (rs: QueryRecord[]) => rs.map((r) => (r.correct.recallAt5 as number | null) ?? 0);
   const hasDistractors = run.meta.plan.some((g) => run.summary[g.name]?.distractorFirstPct != null);
   const lines = [
-    `Run \`${path.relative(ROOT, run.dir)}\` (commit \`${run.meta.git.commit.slice(0, 7)}\`). Recall@5 interval: 95% bootstrap over questions (2,000 resamples, seed 1).`,
+    `Run \`${path.relative(ROOT, run.dir)}\` (commit \`${run.meta.git.commit.slice(0, 7)}\`). Recall@5 interval: 95% bootstrap over questions (2,000 resamples, seed 1). Warm search: one search once the index is built. Cold start: building the index, with embedding for dense and hybrid. Memory: growth of the benchmark process's resident memory while the index was built, a rough reading that garbage collection can make negative.`,
     "",
-    `| System | Results | Questions | Recall@5 | Recall@5, 95% interval | Recall@10 | nDCG@10 | MRR | Evidence shown | Answer present |${hasDistractors ? " Distractor first |" : ""} Without vectors | Tokens (mean) | Search ms (mean) | Index ms (mean) |`,
-    `|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|${hasDistractors ? "---:|" : ""}---:|---:|---:|---:|`,
+    `| System | Results | Questions | Recall@5 | Recall@5, 95% interval | Recall@10 | nDCG@10 | MRR | Evidence shown | Answer present |${hasDistractors ? " Distractor first |" : ""} Without vectors | Tokens (mean) | Warm search ms (mean) | Cold start ms (mean) | Memory MB (rough) |`,
+    `|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|${hasDistractors ? "---:|" : ""}---:|---:|---:|---:|---:|`,
   ];
   for (const group of run.meta.plan) {
     const s = run.summary[group.name] ?? {};
@@ -78,7 +78,17 @@ async function retrievalTable(benchmark: string, split: string): Promise<string>
     const cold = t.indexMsMean ?? run.timings.other[`${about.system}/coldStartMs`];
     const ci = group.name.endsWith("/abstention") ? null : bootstrapMean(recall5(byGroup.get(group.name) ?? []));
     lines.push(
-      `| ${system} | ${about.limit} | ${fmt(s.questions)} | ${fmt(s.recallAt5)} | ${interval(ci)} | ${fmt(s.recallAt10)} | ${fmt(s.ndcgAt10)} | ${fmt(s.mrr)} | ${pctCell(s.evidenceShownPct)} | ${pctCell(s.answerPresentPct)} |${hasDistractors ? ` ${pctCell(s.distractorFirstPct)} |` : ""} ${fmt(s.embeddingFailed ?? "")} | ${fmt(s.tokensMean)} | ${fmt(t.msMean, 1)} | ${fmt(cold, 0)} |`,
+      `| ${system} | ${about.limit} | ${fmt(s.questions)} | ${fmt(s.recallAt5)} | ${interval(ci)} | ${fmt(s.recallAt10)} | ${fmt(s.ndcgAt10)} | ${fmt(s.mrr)} | ${pctCell(s.evidenceShownPct)} | ${pctCell(s.answerPresentPct)} |${hasDistractors ? ` ${pctCell(s.distractorFirstPct)} |` : ""} ${fmt(s.embeddingFailed ?? "")} | ${fmt(s.tokensMean)} | ${fmt(t.msMean, 1)} | ${fmt(cold, 0)} | ${fmt(run.timings.other[`${about.system}/rssGrowthMBMean`], 1)} |`,
+    );
+  }
+  // Index size, for corpora shared by all questions (the run records it once per system).
+  const sizes = [...new Set(run.meta.plan.map((g) => String(g.about.system)))]
+    .map((system) => [system, run.meta.facts?.[`${system}/index`] as { files: number; passages: number; vectors: number } | undefined] as const)
+    .filter(([, stats]) => stats);
+  if (sizes.length) {
+    lines.push(
+      "",
+      `Index: ${sizes.map(([system, st]) => `${system} ${fmt(st!.files)} notes, ${fmt(st!.passages)} passages, ${fmt(st!.vectors)} vectors`).join("; ")}. The notes include the server's five main notes, which it creates with only a heading.`,
     );
   }
   // Paired differences on the same questions and number of results: each system against keyword search, and
