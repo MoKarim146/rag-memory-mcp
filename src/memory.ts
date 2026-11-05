@@ -1,6 +1,6 @@
 import { constants as fsConstants } from "node:fs";
-import { createHash } from "node:crypto";
-import { access, appendFile, lstat, mkdir, open, opendir, readFile, realpath, rename, stat, writeFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { access, appendFile, lstat, mkdir, open, opendir, readFile, realpath, rename, stat, unlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { type EmbeddingSettings, parseEmbeddingSettings } from "./retrieval/embeddings.js";
@@ -194,26 +194,42 @@ export async function readNote(config: MemoryConfig, notePath: string): Promise<
   };
 }
 
+// A short fingerprint of a note's text. read_handoff_summary shows it; update_handoff_summary can require it, so a
+// write based on an old read is refused instead of silently replacing a newer handoff.
+export function contentVersion(text: string): string {
+  return createHash("sha256").update(text.replace(/\r\n?/g, "\n")).digest("hex").slice(0, 12);
+}
+
 export async function updateHandoffSummary(
   config: MemoryConfig,
   content: string,
   now = new Date(),
+  expectedVersion?: string,
 ): Promise<WriteResult> {
   return guardedWrite(config, "update_handoff_summary", "04_MODEL_HANDOFF.md", { content }, now, async (fields) => {
     const target = await resolveWritableFixedFile(config, "04_MODEL_HANDOFF.md");
     const entry = normalizeTrailingNewline(fields.content);
     return {
       entry,
+      // Runs under the file's lock (guardedWrite), so the version check, the history record and the replacement
+      // happen as one step: no other write can slip in between and be lost.
       apply: async () => {
-        // Keep the old handoff before replacing it, in .history/, which no tool can read or write.
         const previous = await readFile(target, "utf8");
+        const current = contentVersion(previous);
+        if (expectedVersion !== undefined && expectedVersion !== current) {
+          throw new MemoryError(
+            `Not saved: the handoff changed since it was read (read ${expectedVersion}, now ${current}). Read it again with read_handoff_summary, keep what still matters, and retry.`,
+          );
+        }
+        // Keep the old handoff before replacing it, in .history/, which no tool can read or write. This also keeps
+        // edits made outside the server (for example in Obsidian).
         if (previous.trim()) {
           const history = await resolveHistoryFile(config, "04_MODEL_HANDOFF.md");
           const record = `\n## Replaced at ${now.toISOString()}\n\n${normalizeTrailingNewline(previous)}`;
           await assertRoomToAppend(history, record, MAX_HISTORY_FILE_BYTES, "The handoff history");
           await appendFile(history, record, "utf8");
         }
-        await writeFile(target, entry, "utf8");
+        await replaceFileAtomically(target, entry);
         return readFile(target, "utf8");
       },
     };
@@ -353,16 +369,95 @@ async function guardedWrite<F extends Record<string, string>>(
     const instructionLike = looksLikeInjection(Object.values(safe).join("\n"));
     if (review === "all" || (review === "suspicious" && instructionLike)) {
       const reason = instructionLike ? "it looks like instructions to an AI" : "every write needs the owner's approval";
-      await holdForReview(config, tool, target, entry, reason, now);
+      await withFileLock(config, REVIEW_FILE, () => holdForReview(config, tool, target, entry, reason, now));
       await audit(config, { tool, target, outcome: "held", entry, now });
       return { path: REVIEW_FILE, content: "", held: true, masked };
     }
 
-    const content = await apply();
+    const content = await withFileLock(config, target, apply);
     await audit(config, { tool, target, outcome: "saved", entry, now });
     return { path: target, content, held: false, masked };
   } catch (error) {
     await audit(config, { tool, target, outcome: "refused", entry: "", now }).catch(() => undefined);
+    throw error;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Serialised, atomic writes
+//
+// Every write to a note runs inside withFileLock:
+// - in this process, writes to the same file run one after another (a promise chain per file);
+// - across processes (two servers on one vault), a lock file in .history/locks/ is created with exclusive create
+//   (O_EXCL). A lock older than LOCK_STALE_MS is taken to be left by a crashed process and removed. Exclusive
+//   create is reliable on local disks; on network or synced folders (Dropbox, iCloud, SMB) it may not be.
+// A replaced file is written to a temporary file next to it and renamed over it, so a reader (Obsidian, another
+// process) sees either the old or the new text, never half of it.
+const LOCK_STALE_MS = 30_000;
+const LOCK_WAIT_MS = 10_000;
+const localLocks = new Map<string, Promise<void>>();
+
+async function withFileLock<T>(config: MemoryConfig, relativePath: string, fn: () => Promise<T>): Promise<T> {
+  const key = path.resolve(config.rootDir, relativePath);
+  const previous = localLocks.get(key) ?? Promise.resolve();
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const mine = previous.then(() => gate);
+  localLocks.set(key, mine);
+  await previous;
+  try {
+    return await withProcessLock(config, relativePath, fn);
+  } finally {
+    release();
+    if (localLocks.get(key) === mine) {
+      localLocks.delete(key);
+    }
+  }
+}
+
+async function withProcessLock<T>(config: MemoryConfig, relativePath: string, fn: () => Promise<T>): Promise<T> {
+  const dir = path.join(config.rootDir, HISTORY_DIR, "locks");
+  await mkdir(dir, { recursive: true });
+  const lock = path.join(dir, `${relativePath.replace(/[\\/]/g, "__")}.lock`);
+  const deadline = Date.now() + LOCK_WAIT_MS;
+  for (;;) {
+    try {
+      const handle = await open(lock, "wx");
+      await handle.writeFile(`${process.pid} ${new Date().toISOString()}\n`);
+      await handle.close();
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      const age = await stat(lock).then(
+        (info) => Date.now() - info.mtimeMs,
+        () => 0,
+      );
+      if (age > LOCK_STALE_MS) {
+        await unlink(lock).catch(() => undefined);
+        continue;
+      }
+      if (Date.now() > deadline) {
+        throw new MemoryError("Not saved: another process is writing this note. Try again in a moment.");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 5 + Math.random() * 20));
+    }
+  }
+  try {
+    return await fn();
+  } finally {
+    await unlink(lock).catch(() => undefined);
+  }
+}
+
+async function replaceFileAtomically(target: string, content: string): Promise<void> {
+  const temp = path.join(path.dirname(target), `.${path.basename(target)}.${process.pid}.${randomUUID().slice(0, 8)}.tmp`);
+  try {
+    await writeFile(temp, content, { encoding: "utf8", flag: "wx" });
+    await rename(temp, target);
+  } catch (error) {
+    await unlink(temp).catch(() => undefined);
     throw error;
   }
 }

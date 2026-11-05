@@ -143,7 +143,8 @@ export class MemoryIndex {
         id INTEGER PRIMARY KEY,
         section_id INTEGER NOT NULL,
         pindex INTEGER NOT NULL,
-        text TEXT NOT NULL
+        text TEXT NOT NULL,
+        vhash TEXT NOT NULL DEFAULT ''
       );
       CREATE INDEX passages_by_section ON passages(section_id);
       CREATE VIRTUAL TABLE passages_fts USING fts5(title, body, tokenize = 'porter unicode61 remove_diacritics 2');
@@ -200,8 +201,8 @@ export class MemoryIndex {
       strict = coveredList.filter((id) => sectionScore.get(id)! <= best * RELATIVE_CUTOFF);
     }
 
-    const vectorIds = this.embedder ? await this.vectorSearch(query) : [];
-    let ranked = vectorIds.length > 0 ? fuse([strict, vectorIds]) : strict;
+    const vector = this.embedder ? await this.vectorSearch(query) : { sections: [], best: new Map<number, number>() };
+    let ranked = vector.sections.length > 0 ? fuse([strict, vector.sections]) : strict;
     let partial = false;
     if (ranked.length === 0 && loose.length > 0) {
       ranked = loose.slice(0, PARTIAL_LIMIT * 3);
@@ -229,7 +230,7 @@ export class MemoryIndex {
       }
       perFile.set(row.path, count + 1);
       const passages = getPassages.all(id) as unknown as PassageRow[];
-      const snippet = buildSnippet(passages, marked, hits.length === 0 && !partial);
+      const snippet = buildSnippet(passages, marked, hits.length === 0 && !partial, vector.best.get(id));
       // Skip a hit that says nearly the same as one already shown (a decision repeated in a meeting note).
       const words = wordSet(snippet);
       if (shownWords.some((other) => similarity(words, other) >= DUPLICATE_SIMILARITY)) {
@@ -355,7 +356,7 @@ export class MemoryIndex {
     const insertSection = this.db.prepare(
       "INSERT INTO sections (path, ordinal, heading, text, hash) VALUES (?, ?, ?, ?, ?)",
     );
-    const insertPassage = this.db.prepare("INSERT INTO passages (section_id, pindex, text) VALUES (?, ?, ?)");
+    const insertPassage = this.db.prepare("INSERT INTO passages (section_id, pindex, text, vhash) VALUES (?, ?, ?, ?)");
     const insertFts = this.db.prepare("INSERT INTO passages_fts (rowid, title, body) VALUES (?, ?, ?)");
 
     this.db.exec("BEGIN");
@@ -368,7 +369,9 @@ export class MemoryIndex {
         const hash = createHash("sha256").update(section.text).digest("hex");
         const sectionId = Number(insertSection.run(path, section.ordinal, section.heading, section.text, hash).lastInsertRowid);
         splitPassages(section.text).forEach((passage, pindex) => {
-          const passageId = Number(insertPassage.run(sectionId, pindex, passage.text).lastInsertRowid);
+          // With embeddings on, each passage gets its own vector, keyed by the text that is embedded.
+          const vhash = this.embedder ? createHash("sha256").update(embedText(section.heading, passage.text)).digest("hex") : "";
+          const passageId = Number(insertPassage.run(sectionId, pindex, passage.text, vhash).lastInsertRowid);
           insertFts.run(passageId, `${title} ${section.headingPath} ${passage.context}`, passage.text);
         });
       }
@@ -404,7 +407,15 @@ export class MemoryIndex {
   }
 
   private async embedMissing(embedder: Embedder): Promise<void> {
-    const rows = this.db.prepare("SELECT DISTINCT hash, text FROM sections").all() as { hash: string; text: string }[];
+    // One vector per passage (small-to-big, as for keywords): a one-sentence fact keeps its own vector
+    // instead of being averaged into the 800 characters around it.
+    const rows = (
+      this.db
+        .prepare(
+          "SELECT p.vhash AS hash, s.heading AS heading, p.text AS text FROM passages p JOIN sections s ON s.id = p.section_id WHERE p.vhash != '' GROUP BY p.vhash",
+        )
+        .all() as { hash: string; heading: string; text: string }[]
+    ).map((row) => ({ hash: row.hash, text: embedText(row.heading, row.text) }));
     const live = new Set(rows.map((row) => row.hash));
     for (const hash of this.vectors.keys()) {
       if (!live.has(hash)) {
@@ -427,34 +438,47 @@ export class MemoryIndex {
     }
   }
 
-  private async vectorSearch(query: string): Promise<number[]> {
+  // Ranks sections by their best passage's similarity to the query, and remembers that passage so the snippet
+  // can show it: a passage found by meaning has no matched words for the snippet to pick it by.
+  private async vectorSearch(query: string): Promise<{ sections: number[]; best: Map<number, number> }> {
+    const none = { sections: [], best: new Map<number, number>() };
     if (!this.embedder || this.vectors.size === 0) {
-      return [];
+      return none;
     }
     let queryVector: Float32Array;
     try {
       [queryVector] = await this.embedder.embed([query]);
     } catch {
       logOnce("Embedding failed; search is using keywords only for now.");
-      return [];
+      return none;
     }
 
-    const rows = this.db.prepare("SELECT id, hash FROM sections").all() as { id: number; hash: string }[];
-    const scored: { id: number; score: number }[] = [];
+    const rows = this.db.prepare("SELECT id, section_id AS section, vhash FROM passages WHERE vhash != ''").all() as {
+      id: number;
+      section: number;
+      vhash: string;
+    }[];
+    const scored: { id: number; section: number; score: number }[] = [];
     for (const row of rows) {
-      const vector = this.vectors.get(row.hash);
+      const vector = this.vectors.get(row.vhash);
       if (!vector) {
         continue;
       }
       const score = dot(queryVector, vector);
       if (score >= this.embedder.minSimilarity) {
-        scored.push({ id: row.id, score });
+        scored.push({ id: row.id, section: row.section, score });
       }
     }
-    return scored
-      .sort((a, b) => b.score - a.score)
-      .slice(0, VECTOR_CANDIDATES)
-      .map((entry) => entry.id);
+    scored.sort((a, b) => b.score - a.score);
+    const sections: number[] = [];
+    const best = new Map<number, number>();
+    for (const entry of scored) {
+      if (best.has(entry.section)) continue;
+      best.set(entry.section, entry.id);
+      sections.push(entry.section);
+      if (sections.length >= VECTOR_CANDIDATES) break;
+    }
+    return { sections, best };
   }
 }
 
@@ -476,7 +500,7 @@ interface Unit {
 
 const BOILERPLATE = /^Model: [^\n]{1,100}$/;
 
-function unitsOf(passages: PassageRow[], marked: Map<number, string>): Unit[] {
+function unitsOf(passages: PassageRow[], marked: Map<number, string>, vectorBest?: number): Unit[] {
   const units: Unit[] = [];
   passages.forEach((passage, p) => {
     const source = marked.get(passage.id) ?? passage.text;
@@ -486,14 +510,15 @@ function unitsOf(passages: PassageRow[], marked: Map<number, string>): Unit[] {
       const text = piece.replace(/[\u0001\u0002]/g, "").trim();
       if (!text) continue;
       const words = new Set((piece.match(/\u0001[^\u0002]*\u0002/g) ?? []).map((w) => w.toLowerCase()));
-      units.push({ text, marked: piece, passage: p, score: words.size });
+      // A unit with no matched word, in the passage found by meaning, still counts (below any word match).
+      units.push({ text, marked: piece, passage: p, score: words.size || (passage.id === vectorBest ? 0.5 : 0) });
     }
   });
   return units;
 }
 
-function buildSnippet(passages: PassageRow[], marked: Map<number, string>, isTop: boolean): string {
-  const units = unitsOf(passages, marked);
+function buildSnippet(passages: PassageRow[], marked: Map<number, string>, isTop: boolean, vectorBest?: number): string {
+  const units = unitsOf(passages, marked, vectorBest);
   if (units.length === 0) {
     return "";
   }
@@ -603,6 +628,11 @@ function clipAround(unit: string, cap: number): string {
 
 // Reciprocal rank fusion: a section scores 1/(60 + rank) in each list it appears in. Sections found by both
 // keyword and vector search rise to the top without having to compare BM25 scores with cosine scores.
+// The text embedded for one passage: its section heading gives it context ("Super Bowl 50", a chapter title).
+function embedText(heading: string, text: string): string {
+  return heading ? `${heading}\n${text}` : text;
+}
+
 function fuse(lists: number[][]): number[] {
   const scores = new Map<number, number>();
   for (const list of lists) {
@@ -621,10 +651,18 @@ function logOnce(message: string): void {
 
 const indexes = new Map<string, MemoryIndex>();
 
-// One shared index per vault and settings, reused by every MCP session.
+// One shared index per vault and indexing policy, reused by every MCP session with that policy. Everything that
+// changes what goes into the index is part of the key: a session that masks email addresses must never be served
+// text indexed by a session that does not. Indexes live as long as the process; there is one per distinct policy.
 export function getMemoryIndex(config: MemoryConfig): MemoryIndex {
   const embedding = config.embeddings ?? { provider: "none" as const };
-  const key = JSON.stringify([config.rootDir, embedding]);
+  const key = JSON.stringify([
+    config.rootDir,
+    embedding,
+    config.maskEmails !== false,
+    config.maskPhones !== false,
+    config.maxNotes ?? 20_000,
+  ]);
   let index = indexes.get(key);
   if (!index) {
     index = new MemoryIndex(config, config.embeddings ? createEmbedder(config.embeddings) : undefined);

@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { compactMainContext } from "./context.js";
 import { DATA_NOTICE, noteBlock } from "./format.js";
@@ -7,6 +8,7 @@ import {
   addDecision,
   addOpenTask,
   appendSessionNote,
+  contentVersion,
   listOversizedNotes,
   MemoryError,
   type MemoryConfig,
@@ -67,9 +69,15 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
   const guard = new SessionGuard(config);
   const clean: CleanOptions = { maskEmails: config.maskEmails, maskPhones: config.maskPhones };
   const safe = <A>(tool: string, handler: (args: A) => Promise<ToolResult>) => guarded(guard, tool, handler);
+  // Every tool is registered through here, so the tool list can be answered from these definitions.
+  const listed: ListedTool[] = [];
+  const register = ((name: string, definition: Omit<ListedTool, "name">, handler: unknown) => {
+    listed.push({ name, ...definition });
+    return (server.registerTool as (n: string, d: unknown, h: unknown) => unknown)(name, definition, handler);
+  }) as typeof server.registerTool;
 
   if (offered("read_main_context")) {
-    server.registerTool(
+    register(
       "read_main_context",
       {
         title: "Read Main Context",
@@ -99,7 +107,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
   }
 
   if (offered("read_handoff_summary")) {
-    server.registerTool(
+    register(
       "read_handoff_summary",
       {
         title: "Read Handoff Summary",
@@ -111,13 +119,14 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
         const file = await readHandoffSummary(config);
         const prepared = prepareNoteText(file.content, clean);
         const body = prepared.private ? PRIVATE_PLACEHOLDER : prepared.text;
-        return text(`${DATA_NOTICE}\n${noteBlock(noteAttrs(file.path, prepared.suspicious && !prepared.private), body)}`);
+        const attrs = { ...noteAttrs(file.path, prepared.suspicious && !prepared.private), version: contentVersion(file.content) };
+        return text(`${DATA_NOTICE}\n${noteBlock(attrs, body)}`);
       }),
     );
   }
 
   if (offered("search_memory")) {
-    server.registerTool(
+    register(
       "search_memory",
       {
         title: "Search Memory",
@@ -153,7 +162,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
   }
 
   if (offered("read_note")) {
-    server.registerTool(
+    register(
       "read_note",
       {
         title: "Read Note",
@@ -186,23 +195,25 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
   }
 
   if (offered("update_handoff_summary")) {
-    server.registerTool(
+    register(
       "update_handoff_summary",
       {
         title: "Update Handoff Summary",
-        description: "Replace 04_MODEL_HANDOFF.md with new content. Only when the user asks to save a handoff.",
-        inputSchema: { content: z.string().min(1) },
+        description:
+          "Replace 04_MODEL_HANDOFF.md. Only when the user asks to save a handoff. Pass the version from read_handoff_summary.",
+        inputSchema: { content: z.string().min(1), expected_version: z.string().regex(/^[0-9a-f]{12}$/).optional() },
         annotations: REPLACE,
       },
-      safe("update_handoff_summary", async (args: { content: string }) => {
-        guard.checkWrite("update_handoff_summary", args);
-        return text(describeWrite(await updateHandoffSummary(config, args.content), "The previous version was kept."));
+      safe("update_handoff_summary", async (args: { content: string; expected_version?: string }) => {
+        guard.checkWrite("update_handoff_summary", { content: args.content });
+        const result = await updateHandoffSummary(config, args.content, new Date(), args.expected_version);
+        return text(describeWrite(result, "The previous version was kept."));
       }),
     );
   }
 
   if (offered("append_session_note")) {
-    server.registerTool(
+    register(
       "append_session_note",
       {
         title: "Append Session Note",
@@ -222,7 +233,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
   }
 
   if (offered("add_decision")) {
-    server.registerTool(
+    register(
       "add_decision",
       {
         title: "Add Decision",
@@ -241,7 +252,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
   }
 
   if (offered("add_open_task")) {
-    server.registerTool(
+    register(
       "add_open_task",
       {
         title: "Add Open Task",
@@ -260,7 +271,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
     );
   }
 
-  trimToolList(server);
+  answerToolList(server, listed);
   return server;
 }
 
@@ -371,26 +382,26 @@ function paginate(content: string, size: number): string[] {
   return pages;
 }
 
-// The SDK adds "$schema": "http://json-schema.org/draft-07/schema#" to every input schema and an
-// "execution" block that only repeats the default. Neither helps the model, and both are sent in every
-// session, so they are removed from the tools/list answer. Validation of tool input is unchanged.
-function trimToolList(server: McpServer): void {
-  type Handler = (request: unknown, extra: unknown) => Promise<{ tools: Record<string, unknown>[] }>;
-  const handlers = (server.server as unknown as { _requestHandlers?: Map<string, Handler> })._requestHandlers;
-  const original = handlers?.get("tools/list");
-  if (!handlers || !original) {
-    return;
-  }
+// The tool list sent to the model in every session. The SDK's own answer adds "$schema" to every input schema
+// and an "execution" block that only repeats the default; neither helps the model, so this answer leaves them
+// out. It is installed with the SDK's public setRequestHandler, which replaces the default tools/list handler.
+// Tool input is still validated by the SDK, from the same zod shapes.
+interface ListedTool {
+  name: string;
+  title?: string;
+  description?: string;
+  inputSchema: z.ZodRawShape;
+  annotations?: Record<string, unknown>;
+}
 
-  handlers.set("tools/list", async (request, extra) => {
-    const result = await original(request, extra);
-    for (const tool of result.tools) {
-      const schema = tool.inputSchema as Record<string, unknown> | undefined;
-      if (schema) {
-        delete schema.$schema;
-      }
-      delete tool.execution;
-    }
-    return result;
-  });
+function answerToolList(server: McpServer, tools: ListedTool[]): void {
+  server.server.setRequestHandler(ListToolsRequestSchema, () => ({
+    tools: tools.map((tool) => {
+      const { $schema: _unused, ...inputSchema } = z.toJSONSchema(z.object(tool.inputSchema), {
+        target: "draft-7",
+        io: "input",
+      }) as Record<string, unknown>;
+      return { name: tool.name, title: tool.title, description: tool.description, inputSchema, annotations: tool.annotations };
+    }),
+  }));
 }
