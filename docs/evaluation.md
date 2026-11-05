@@ -89,7 +89,10 @@ For each query, the documents of the results are taken in order, each counted on
   for LongMemEval, where every question has its own history.
 
 Timings are from one run on the reference machine ([benchmarks.md](benchmarks.md)) with the search pinned to two
-cores and the model on two others. They are not compared between runs.
+cores and the model on two others. They are not compared between runs. The model server embeds identical texts only
+once, and hybrid runs after dense on the same notes, so hybrid's index time reuses dense's vectors and is lower than
+a first build: **the cost of embedding is dense's index time.** Search times include embedding the query, which
+for hybrid was also already cached from the dense run, so hybrid's search times are slightly flattered too.
 
 ## Results
 

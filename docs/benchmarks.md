@@ -13,9 +13,43 @@ recomputed from those records without running any search again.
 | `npm run bench:verify` | Recomputes every committed run from its records (add `-- <run folder>` for one run, `--tokens` to recount tokens) | seconds to a minute | free |
 | `npm run bench` | The token benchmark on the three fake test sets (`bench/run.ts`, older result format in `bench/results/`) | about a minute | free |
 | `npx tsx bench/books-tune.ts` | The tuning set: SQuAD *training* articles and separate planted facts. For trying changes; never reported as a result | a minute (keywords) | downloads the SQuAD training set (30 MB) |
-| `npx tsx bench/eval/run.ts scifact` or `longmemeval-s` | Retrieval evaluation on outside datasets ([docs/evaluation.md](evaluation.md)) | minutes to hours, see that page | downloads up to 280 MB once |
+| `npx tsx bench/eval/run.ts scifact`, `longmemeval-s` or `paraphrase` | Retrieval evaluation on outside datasets and the paraphrase set ([docs/evaluation.md](evaluation.md)); add `--systems bm25,dense,hybrid,old` and `--split` | minutes to hours, see that page | downloads up to 280 MB once; dense and hybrid need an embedding model |
+| `npx tsx bench/paraphrase/check.ts` | Checks every paraphrase question against the rule of its type | seconds | free |
+| `npm run bench:books -- --needles-embeddings` | Only the planted facts in Moby Dick and Emma, keyword search against keywords and vectors merged | minutes, mostly embedding | needs an embedding model |
+| `npm run bench:agent:dry` | The agent evaluation's plumbing with a scripted stand-in model ([docs/agent-evaluation.md](agent-evaluation.md)) | seconds | free, nothing sent |
+| `npx tsx bench/agent/run.ts --budget-usd <dollars>` | The agent evaluation with a real model | minutes | paid; needs `ANTHROPIC_API_KEY`; prints UNRUN and sends nothing without a key and a budget |
+| `npx tsx bench/report.ts` | Rewrites every generated table in the documents from the run folders and result files (`--check` only compares) | seconds | free |
 
-CI runs `bench:smoke` and `bench:verify` on every push. Full runs are started by hand.
+CI runs `bench:smoke`, `bench:verify`, `bench/report.ts --check`, `bench:agent:dry` and `npm run demo` on every push.
+Full runs are started by hand.
+
+### The embedding model used for the reference runs
+
+`all-MiniLM-L6-v2` (sentence-transformers, Apache 2.0; model card read at Hugging Face revision `1110a24`), in the
+ONNX packaging by Chroma that `bench/tools/fetch-minilm.sh` downloads and checks by SHA-256, served on
+`127.0.0.1:11434` by `bench/tools/ollama_compatible.py`, which answers Ollama's `/api/embed` (Python packages pinned
+in `bench/tools/requirements.txt`). The stand-in embeds identical texts only once, so a second system on the same
+notes (hybrid, which runs after dense) reuses the vectors: read the cost of embedding from dense's index time. To
+reproduce:
+
+```bash
+bash bench/tools/fetch-minilm.sh
+```
+
+```bash
+python3 -m venv .venv-embed && .venv-embed/bin/pip install -r bench/tools/requirements.txt
+```
+
+```bash
+taskset -c 2,3 .venv-embed/bin/python bench/tools/ollama_compatible.py bench/.cache/models/all-minilm/onnx 11434 2
+```
+
+```bash
+RAG_EVAL_MODEL_NOTE="all-MiniLM-L6-v2 ONNX via bench/tools/ollama_compatible.py" taskset -c 0,1 npx tsx bench/eval/run.ts paraphrase --split evaluation --systems bm25,dense,hybrid,old
+```
+
+With Ollama itself (`ollama pull all-minilm`) the same commands work without the stand-in; its GGUF weights can give
+slightly different vectors, so results can differ a little.
 
 ## Reference environment
 
@@ -112,6 +146,9 @@ Seeds: the 1,000-question SQuAD sample uses seed 1 (`bench/books.ts`); the tunin
 | `bench/smoke-expected.json` | regression | must not change unless a change is deliberate and explained |
 | SQuAD training set, tuning facts (`bench/books-tune.ts`) | development | everything tried is logged in `bench/results/books-tune.txt` |
 | Test set 3, SQuAD development set, NarrativeQA, the 20 planted facts | evaluation | never used to choose a setting; run once per change |
+| BEIR SciFact train, LongMemEval-S development split (98), paraphrase development groups (8) | development | frozen before any run; not used to tune anything so far, and not reported |
+| BEIR SciFact test, LongMemEval-S evaluation split (402) and its dense subset (101), paraphrase evaluation groups (16) | evaluation | frozen before any run; never used to choose a setting |
+| The agent evaluation's 9 questions (`bench/agent/questions.json`) | evaluation | written once; not used to tune the server, the skill or the prompt |
 
 ## Older results
 
