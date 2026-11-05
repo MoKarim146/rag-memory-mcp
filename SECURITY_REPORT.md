@@ -5,12 +5,13 @@ exact results are in `security/`.
 
 **Who did what.** The original project, including its first 27 attack tests and the fix for websites calling
 the server (G7), was written with Codex; Mohamed Karim designed it, directed the work and tested it. Claude
-Code wrote the work in this report at his direction: the new attack tests, the fixes, and this document.
+Code wrote the work in this report at Mohamed Karim's direction: the new attack tests, the fixes, and this document.
 
 ## Summary
 
 The server was tested in five rounds. Each time the tests were written first and run on the code as it was,
-the failures were recorded, and only then was the code fixed.
+the failures were recorded, and only then was the code fixed. Round 6 adds checks written together with, or after,
+the changes they guard, so it has no "before" numbers.
 
 | Round | Tests | Before the fixes | After the fixes |
 |---|---|---|---|
@@ -19,7 +20,8 @@ the failures were recorded, and only then was the code fixed.
 | 3. Heavy fuzz and stress tests (`tests/heavy/`, `npm run test:heavy`) | 15 | found 5 bugs | 15 of 15 pass |
 | 4. Real books and outside questions (`bench/books.ts`): FP-2 and the large-note test | 2 | 0 of 2 passed | 2 of 2 pass |
 | 5. Correctness and isolation (`tests/correctness.test.ts`) | 8 | 2 of 8 passed | 8 of 8 pass |
-| Whole fast suite (`npm test`) | 143 | | 143 of 143 pass |
+| 6. Later checks: retrieval modes, embedding prefixes and keyword fallback, decision supersession, six concurrent MCP clients (`tests/correctness.test.ts`), and FP-3, no masking of ordinary ids and numbers (`tests/security-audit.test.ts`) | 7 | not recorded | 7 of 7 pass |
+| Whole fast suite (`npm test`) | 154 | | 154 of 154 pass |
 
 | | Before | After |
 |---|---|---|
@@ -368,6 +370,10 @@ with an internal npm error, so the updates were made by hand: MCP SDK 1.29 → 1
 only). After: 1 moderate (`security/npm-audit-after.json`), in `@hono/node-server`. Both of its advisories are
 about its static-file serving (`serveStatic`), which this server never uses, and there is no patched 1.x
 version; moving to 2.x would mean overriding the SDK's own requirement, so it was left and is listed here.
+
+`@anthropic-ai/sdk` 1.3.0 (exact version) is a development dependency, used only by the optional agent evaluation
+(`bench/agent/run.ts`). It is not installed in the Docker image, which installs production packages only, and
+`npm audit --omit=dev` is unchanged by it.
 
 ## Not fixed
 
