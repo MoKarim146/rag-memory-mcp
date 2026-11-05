@@ -46,6 +46,7 @@ export interface QueryRecord {
     answers?: string[];
     relevant?: Record<string, number>; // retrieval datasets: document id -> relevance grade
     evidenceTurns?: string[]; // LongMemEval has_answer turns
+    distractors?: string[]; // paraphrase set: notes that share words but do not answer
     evidence?: string[]; // answer with its neighbouring words in the source
     chunk?: string; // the note that holds the answer
     book?: string; // for book-level questions
@@ -105,6 +106,7 @@ export function quality(records: QueryRecord[]) {
       mrr: mean(records.map((r) => r.correct.reciprocalRank as number | null)),
       answerPresentPct: share("answerPresent"),
       evidenceShownPct: share("evidenceShown"),
+      distractorFirstPct: share("distractorFirst"),
       ...(records.some((r) => r.vectorStatus !== undefined)
         ? { embeddingFailed: records.filter((r) => r.vectorStatus === "failed" || r.vectorStatus === "not-ready").length }
         : {}),
@@ -225,9 +227,11 @@ export interface RunMeta {
   facts?: Record<string, unknown>; // numbers about the inputs (for example tokens if everything is pasted)
 }
 
+// Only trailing whitespace is removed: `git status --porcelain` lines start with a status column that may be a
+// space, and trimming it would cut the first character of the first file name.
 function git(args: string[]): string {
   try {
-    return execFileSync("git", args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    return execFileSync("git", args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trimEnd();
   } catch {
     return "";
   }

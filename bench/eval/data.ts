@@ -99,6 +99,7 @@ export interface EvalQuery {
   date?: string;
   type?: string;
   abstention?: boolean;
+  distractors?: string[]; // paraphrase set: documents that share words but do not answer (outside searchable content)
 }
 
 // One note per document; ids are kept in the path so results map back to them exactly.

@@ -53,6 +53,7 @@ export interface RetrievalGold {
   relevant: Record<string, number>; // document id -> grade
   answers?: string[];
   evidenceTurns?: string[];
+  distractors?: string[]; // documents that share words with the relevant one but do not answer
 }
 
 export interface ShownDoc {
@@ -96,5 +97,12 @@ export function judgeRetrieval(output: string, shown: ShownDoc[], gold: Retrieva
     reciprocalRank: total ? (first >= 0 ? 1 / (first + 1) : 0) : null,
     answerPresent: gold.answers ? gold.answers.some((a) => containsAnswer(output, a)) : null,
     evidenceShown: gold.evidenceTurns && gold.evidenceTurns.length ? evidenceShown(output, gold.evidenceTurns) : null,
+    // A distractor ranked above the first relevant document (or shown while no relevant one is).
+    distractorFirst: gold.distractors?.length
+      ? (() => {
+          const d = docs.findIndex((doc) => gold.distractors!.includes(doc));
+          return d >= 0 && (first < 0 || d < first);
+        })()
+      : null,
   };
 }

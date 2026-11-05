@@ -56,7 +56,7 @@ export async function verifyRun(dir: string, recountTokens = false): Promise<str
     const shown = shownOf(r.output, r.retrieved);
     const again =
       r.kind === "retrieval"
-        ? judgeRetrieval(r.output, shown.map((s, i) => ({ doc: r.retrieved[i].doc ?? "", text: s.text })), { relevant: r.gold.relevant ?? {}, answers: r.gold.answers, evidenceTurns: r.gold.evidenceTurns }, r.k ?? 5)
+        ? judgeRetrieval(r.output, shown.map((s, i) => ({ doc: r.retrieved[i].doc ?? "", text: s.text })), { relevant: r.gold.relevant ?? {}, answers: r.gold.answers, evidenceTurns: r.gold.evidenceTurns, distractors: r.gold.distractors }, r.k ?? 5)
         : judge(r.output, shown, { answers: r.gold.answers ?? [], evidence: r.gold.evidence, chunk: r.gold.chunk, book: r.gold.book });
     if (r.error === null && !same(again, r.correct)) {
       wrongJudgement++;

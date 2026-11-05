@@ -23,6 +23,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { connect, runQueries, seededShuffle, systemEnv, warmUp, writeVault, type Query, type Server, type System } from "../books.js";
 import { RunWriter, quality, shownOf, timings, type QueryRecord } from "../lib/runs.js";
 import { judgeRetrieval } from "../lib/scoring.js";
+import { readdir } from "node:fs/promises";
+import { loadSet } from "../paraphrase/check.js";
 import { EVAL_SOURCES, fetchPinned, longMemEvalS, sciFact, type EvalDoc, type EvalQuery } from "./data.js";
 
 process.env.TZ = "UTC";
@@ -74,7 +76,12 @@ function toQuery(q: EvalQuery, system: SystemName, df: Map<string, number>): Que
 function asRetrieval(record: QueryRecord, q: EvalQuery, docOf: Map<string, string>, k: number): QueryRecord {
   const shown = shownOf(record.output, record.retrieved);
   const retrieved = record.retrieved.map((r) => ({ ...r, doc: docOf.get(r.path) ?? `unknown:${r.path}` }));
-  const gold = { relevant: q.relevant, ...(q.answers ? { answers: q.answers } : {}), ...(q.evidenceTurns ? { evidenceTurns: q.evidenceTurns } : {}) };
+  const gold = {
+    relevant: q.relevant,
+    ...(q.answers ? { answers: q.answers } : {}),
+    ...(q.evidenceTurns ? { evidenceTurns: q.evidenceTurns } : {}),
+    ...(q.distractors ? { distractors: q.distractors } : {}),
+  };
   return {
     ...record,
     kind: "retrieval",
@@ -92,8 +99,8 @@ function argValue(flag: string): string | undefined {
 
 async function main(): Promise<void> {
   const dataset = process.argv[2];
-  if (dataset !== "scifact" && dataset !== "longmemeval-s") {
-    console.error("usage: npx tsx bench/eval/run.ts scifact|longmemeval-s [--split ...] [--systems bm25,dense,hybrid,old] [--quick N]");
+  if (dataset !== "scifact" && dataset !== "longmemeval-s" && dataset !== "paraphrase") {
+    console.error("usage: npx tsx bench/eval/run.ts scifact|longmemeval-s|paraphrase [--split ...] [--systems bm25,dense,hybrid,old] [--quick N]");
     process.exit(2);
   }
   const systems = (argValue("--systems") ?? "bm25,old").split(",") as SystemName[];
@@ -118,6 +125,39 @@ async function main(): Promise<void> {
     if (!queries) throw new Error("SciFact splits: test (evaluation), train (development)");
     items = queries.map((query) => ({ query, docs: data.docs, shared: true }));
     dataFacts = { documents: data.docs.length, sources: ["scifactRelease", split === "test" ? "scifactQrelsTest" : "scifactQrelsTrain"] };
+  } else if (dataset === "paraphrase") {
+    // Every target and distractor note of all 24 groups, plus the notes of the three fake test vaults as everyday
+    // filler; the questions of the groups in the chosen split. Note paths are the document ids.
+    split = argValue("--split") ?? "evaluation";
+    const splits = JSON.parse(await readFile(path.join(BENCH, "paraphrase", "splits.json"), "utf8")) as Record<string, string[]>;
+    if (!Array.isArray(splits[split])) throw new Error("paraphrase splits: evaluation, development");
+    const groups = await loadSet();
+    const docs: EvalDoc[] = groups.flatMap((g) => [g.target, g.distractor].map((n) => ({ id: n.path, path: n.path, text: n.text })));
+    const walk = async (dir: string): Promise<string[]> => {
+      const files: string[] = [];
+      for (const entry of await readdir(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) files.push(...(await walk(full)));
+        else if (entry.name.endsWith(".md")) files.push(full);
+      }
+      return files;
+    };
+    for (const vault of ["fixture-vault", "holdout-vault", "test3-vault"]) {
+      for (const file of (await walk(path.join(BENCH, vault))).sort()) {
+        const notePath = `Filler/${vault}/${path.relative(path.join(BENCH, vault), file)}`;
+        docs.push({ id: notePath, path: notePath, text: await readFile(file, "utf8") });
+      }
+    }
+    const shared = { docs, shared: true };
+    items = groups
+      .filter((g) => splits[split].includes(g.id))
+      .flatMap((g) =>
+        g.queries.map((q) => ({
+          ...shared,
+          query: { id: q.id, text: q.text, relevant: { [g.target.path]: 1 }, answers: [q.answer ?? g.answer], distractors: [g.distractor.path], type: q.kind },
+        })),
+      );
+    dataFacts = { documents: docs.length, setFile: "bench/paraphrase/set.json", splitFile: "bench/paraphrase/splits.json" };
   } else {
     split = argValue("--split") ?? "evaluation";
     const splits = JSON.parse(await readFile(path.join(HERE, "splits", "longmemeval-s.json"), "utf8")) as Record<string, string[]>;
@@ -149,7 +189,7 @@ async function main(): Promise<void> {
             limit: k,
             ...(it.query.abstention ? { note: "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only." } : {}),
           },
-          ...(dataset === "longmemeval-s" ? { breakdowns: ["type"] } : {}),
+          ...(dataset !== "scifact" ? { breakdowns: ["type"] } : {}),
         };
         entry.queries++;
         plan.set(name, entry);
