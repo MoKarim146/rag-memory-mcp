@@ -50,7 +50,8 @@ of 24 to 34 notes, with questions whose answers are known:
 | **This server** | **3,060** | **2,320** | **2,735** |
 | Saving against pasting every note | −54.1% | −36.4% | −58.5% |
 | Saving against the old server | −32.1% | −24.1% | −27.9% |
-| Answers found by this server | 24 of 24 | 31 of 31 | 39 of 40 |
+| Answer in this server's search results | 21 of 24 | 30 of 31 | 39 of 40 |
+| ... if the AI then opens the right listed note (upper bound) | 24 of 24 | 31 of 31 | 39 of 40 |
 
 Sets 1 and 2 were used to tune the search. Set 3 was written before the last round of changes and never used
 for tuning, so it is the honest number.

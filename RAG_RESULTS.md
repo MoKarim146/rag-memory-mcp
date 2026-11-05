@@ -28,16 +28,19 @@ benchmark compares three setups on three fake vaults:
 | Paste every note | **6,673** | **3,648** | **6,585** |
 | Old server | 12,359 | 9,723 | 13,762 |
 | This server | 7,838 | 7,463 | 10,278 |
-| **Answers found** | | | |
+| **Answer in what the AI reads** (realistic: the search result alone) | | | |
 | Paste every note | 24 of 24 | 31 of 31 | 40 of 40 |
+| Old server | 19 of 24 | 27 of 31 | 39 of 40 |
+| This server | 21 of 24 | 30 of 31 | 39 of 40 |
+| **With an ideal follow-up read** (upper bound, see below) | | | |
 | Old server | 23 of 24 | 30 of 31 | 40 of 40 |
 | This server | 24 of 24 | 31 of 31 | 39 of 40 |
 
 In plain words:
 
 - **Against pasting every note, a short chat costs 36.4% to 58.5% fewer tokens** (set 1: −54.1%, set 2: −36.4%,
-  set 3: −58.5%), and this server found 94 of the 95 answers. That is the goal of "about half the tokens with
-  almost the same answers", for short chats.
+  set 3: −58.5%). The answer was in this server's search results for 90 of the 95 questions; an agent that
+  then always opens the right listed note would reach 94 (an upper bound). Pasting every note contains all 95.
 - **For a long chat on a small vault, pasting every note is cheaper.** If one chat asks every question, this
   server uses 17.5% (set 1), 104.6% (set 2) and 56.1% (set 3) more tokens than pasting every note once. These
   vaults have only 24 to 34 notes.
@@ -65,7 +68,9 @@ once before and once after round 3. **Set 3 is the honest number.**
   each have 2 questions with no answer in the notes, which only measure cost. Plus 4 writes per set.
 - **The scripted agent** (`bench/run.ts`). It connects through a real MCP client and acts like an AI: read the
   start-of-chat summary, then for each question search once; if the answer is not in the result, read one listed
-  note. It is an ideal agent: when the right note is listed, it always picks it. Every server gets the same
+  note. It is an ideal agent: when the right note is listed, it always picks it, which a real AI does not always
+  do. So "answers found" with that follow-up read is an **upper bound**; "found by the search alone" is the
+  realistic measure. Every server gets the same
   agent.
 - **Two ways of asking.** "Keyword": a short search term (`Twilio`). "Question": the full question. The old
   server only finds exact text, so keywords are the fair comparison with it.
@@ -107,8 +112,8 @@ Sources: `bench/results/dev-after-r3.json`, `holdout-after-r3.json` and `test3-a
 
 | | Set 1 old | Set 1 new | Set 2 old | Set 2 new | Set 3 old | Set 3 new |
 |---|---:|---:|---:|---:|---:|---:|
-| Answers found (keywords) | 23/24 | 24/24 | 30/31 | 31/31 | 40/40 | 39/40 |
-| Found by the search alone, without reading a note | 19/24 | 21/24 | 27/31 | 30/31 | 39/40 | 39/40 |
+| Found by the search alone (realistic) | 19/24 | 21/24 | 27/31 | 30/31 | 39/40 | 39/40 |
+| Found with an ideal follow-up read (upper bound) | 23/24 | 24/24 | 30/31 | 31/31 | 40/40 | 39/40 |
 | Mean reciprocal rank | 0.505 | 0.764 | 0.618 | 0.742 | 0.796 | 0.807 |
 | Answers already in the start summary | 10 | 9 | 8 | 8 | 15 | 13 |
 | Full questions: answers found | 0/24 | 23/24 | 0/31 | 29/31 | 0/40 | 36/40 |

@@ -23,7 +23,7 @@ trail for the next one, while spending as few tokens as possible.
   and only for a path the search listed.
 - **Search with the specific words the note itself would use**: names, numbers, error codes, product names,
   such as `Twilio cost`, `TM-429` or `row level security`. On this project's three small test sets, such
-  hand-picked words found 94 of 95 answers and the plain questions 88 of 95.
+  hand-picked words put the answer in the search results for 90 of 95 questions, the plain questions for 80.
 - **Use more than one word.** On 10,570 questions about Wikipedia articles, a single word found 43.6% of answers
   and all the words of the question 82.3%. Common words such as "what" and "the" are ignored, so the user's
   whole question is a fair fallback.

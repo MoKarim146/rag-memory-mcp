@@ -191,7 +191,7 @@ function setsChart(t: Theme, sets: SetResult[]): string {
   const noteY = panelTop + sets.length * (groupHeight + groupGap) + 18;
   const H = noteY + 18 + 22;
   body += `<text x="24" y="${noteY}" font-size="12" fill="${t.secondary}">On these small vaults, pasting every note is cheapest for a long chat. For a short chat, this server is cheapest.</text>`;
-  body += `<text x="24" y="${noteY + 18}" font-size="12" fill="${t.muted}">"Answered" lists this server / old server / paste every note. Sets 1 and 2 were used for tuning; set 3 was not.</text>`;
+  body += `<text x="24" y="${noteY + 18}" font-size="12" fill="${t.muted}">Answered: answer in the search result alone (this server / old server / paste). Set 3 not tuned on.</text>`;
 
   const alt = sets
     .map((s) => `${s.label}: all questions ${s.long.map(fmt).join(", ")} tokens; short chat ${s.quick.map(fmt).join(", ")} tokens (this server, old server, paste every note); answered ${s.answered.join(", ")} of ${s.questions}`)
@@ -242,7 +242,7 @@ async function json<T>(file: string): Promise<T> {
 interface Run {
   variant: string;
   style: string;
-  summary: { readingTokens: number; quickChatTokens: number; answered: number; answerableLookups: number };
+  summary: { readingTokens: number; quickChatTokens: number; answered: number; answeredBySearchAlone: number; answerableLookups: number };
 }
 
 async function main(): Promise<void> {
@@ -258,7 +258,8 @@ async function main(): Promise<void> {
       questions: a.summary.answerableLookups,
       long: [a.summary.readingTokens, b.summary.readingTokens, c.summary.readingTokens],
       quick: [a.summary.quickChatTokens, b.summary.quickChatTokens, c.summary.quickChatTokens],
-      answered: [a.summary.answered, b.summary.answered, c.summary.answered],
+      // The search result alone, without the benchmark's ideal follow-up read (that would be an upper bound).
+      answered: [a.summary.answeredBySearchAlone, b.summary.answeredBySearchAlone, c.summary.answered],
     });
   }
   const passed = async (file: string) => {
