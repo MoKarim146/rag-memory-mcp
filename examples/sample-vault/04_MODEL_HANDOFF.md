@@ -1,6 +1,6 @@
 # Model Handoff
 
-The repository is being hardened as a professional GitHub/CV project.
+The repository is being hardened for public use.
 
 Current milestone: repository security and privacy documentation foundation.
 

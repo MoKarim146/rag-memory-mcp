@@ -24,7 +24,7 @@ the failures were recorded, and only then was the code fixed.
 | Known-vulnerable packages used at run time (`npm audit`) | 9 (1 critical, 6 high, 2 moderate) | 1 moderate, in a feature this server does not use |
 | Still open | | A stuffed note with no obvious order still reaches searches; politely worded orders are not flagged; the server cannot tell a true note from a false one. See "Not fixed" |
 
-**Mistakes of mine, for the record.** Four tests were wrong or too weak the first time, and each was corrected
+**Test corrections.** Four tests were wrong or too weak on their first run, and each was corrected
 without changing the server in between: PI-1 counted the notice line as a tag; O4-4 ran the injection check
 over the server's own instructions, which are supposed to name tools; O6-4 passed for the wrong reason (its
 fake server sent a malformed answer, so the size limit was never reached); O5-1 checked a weaker rule than the
