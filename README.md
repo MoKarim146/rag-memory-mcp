@@ -2,7 +2,8 @@
 
 [![CI](https://github.com/MoKarim146/rag-memory-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/MoKarim146/rag-memory-mcp/actions/workflows/ci.yml)
 
-One shared memory for all your AI assistants. It spends fewer tokens, and it treats your notes as untrusted.
+One shared memory for all your AI assistants. In the short chats measured below it used fewer tokens than
+pasting the notes or the original server, and it treats your notes as untrusted.
 
 It is an MCP server. MCP (Model Context Protocol) is the standard way AI apps connect to tools. The memory is a
 folder of plain markdown notes, for example inside Obsidian. When an AI needs something, the server searches the
@@ -21,15 +22,17 @@ A simple memory server wastes tokens in three ways:
 2. It hands over whole files, or every matching line, instead of just the answer.
 3. Its start-of-chat summary keeps growing as decisions and tasks pile up.
 
-This server fixes all three:
+This server is built to keep all three small:
 
 - **It searches first (RAG).** RAG means *retrieval-augmented generation*: the server retrieves the relevant
   passages, then the AI generates its answer from them. Search runs on your computer, with no cloud service and
   no API key.
 - **It keeps everything short.** Short tool descriptions, a start-of-chat summary that stays the same size, and
   search results that show only the matching sentences.
-- **It cleans notes before an AI reads them.** Hidden text that tries to give the AI orders (*prompt
-  injection*), pasted passwords and private notes are removed. It also checks what an AI tries to save.
+- **It cleans notes before an AI reads them.** Known kinds of hidden text that try to give the AI orders
+  (*prompt injection*), secret-looking strings and notes you mark private are removed, and notes that look like
+  orders are flagged. It also checks what an AI tries to save. It cannot catch every trick: see
+  [Safety](#safety).
 
 It is built from [secure-obsidian-memory-mcp](https://github.com/MoKarim146/secure-obsidian-memory-mcp).
 
@@ -43,6 +46,7 @@ It is built from [secure-obsidian-memory-mcp](https://github.com/MoKarim146/secu
 A short chat means: tool descriptions, the start-of-chat summary and 3 searches. Measured on three fake vaults
 of 24 to 34 notes, with questions whose answers are known:
 
+<!-- generated: tokens dev-after-r3 holdout-after-r3 test3-after -->
 | A short chat | Set 1 | Set 2 | Set 3 |
 |---|---:|---:|---:|
 | Paste every note | 6,673 tokens | 3,648 tokens | 6,585 tokens |
@@ -52,6 +56,7 @@ of 24 to 34 notes, with questions whose answers are known:
 | Saving against the old server | −32.1% | −24.1% | −27.9% |
 | Answer in this server's search results | 21 of 24 | 30 of 31 | 39 of 40 |
 | ... if the AI then opens the right listed note (upper bound) | 24 of 24 | 31 of 31 | 39 of 40 |
+<!-- /generated -->
 
 Sets 1 and 2 were used to tune the search. Set 3 was written before the last round of changes and never used
 for tuning, so it is the honest number.
@@ -61,8 +66,10 @@ for tuning, so it is the honest number.
 - On these small vaults, if one chat asks *every* question (24 to 40 of them), pasting every note once is
   cheaper: this server then uses 17.5% to 104.6% more tokens. The server wins on short chats and on bigger
   vaults: at 491 notes, a short chat costs 3,345 tokens instead of 90,086.
-- On set 3 it missed 1 of 40 answers with keyword searches. With full questions it missed 4 of 40, all of them
-  questions worded differently from the notes.
+- On set 3 it missed 1 of 40 answers with keyword searches. With the full questions instead of picked keywords,
+  the answer was in the search results for 33 of 40. For 4 of the 7 misses, opening the listed notes would not
+  have helped either; all 4 were worded differently from the notes (for example "people at university" for
+  "students").
 
 **Tested on real books and outside questions** ([docs/book-benchmark.md](docs/book-benchmark.md)):
 
@@ -72,7 +79,13 @@ for tuning, so it is the honest number.
 - A made-up fact hidden in Moby Dick (291,728 tokens), at 20 depths: found 20 of 20 times with words from the
   fact, but 0 of 10 times when the question shared no word with it. Search matches words, not meaning.
 
-Every number, how it was measured, and everything that got worse: [RAG_RESULTS.md](RAG_RESULTS.md).
+**Tested on outside retrieval datasets and on paraphrased questions** ([docs/evaluation.md](docs/evaluation.md)):
+keyword search, vectors and both together compared on BEIR SciFact, LongMemEval-S and a frozen paraphrase set, with
+95% intervals.
+
+Every number, how it was measured, and everything that got worse: [RAG_RESULTS.md](RAG_RESULTS.md). Which claims
+are verified, provisional or untested: [docs/claims.md](docs/claims.md). Design choices and their costs:
+[docs/architecture.md](docs/architecture.md).
 
 ## How a search works
 
@@ -134,6 +147,22 @@ experimental; it is expected.
 **Other AI apps.** Any app that can connect to an MCP server over HTTP can use it. ChatGPT and other web apps
 connect from their company's servers, so they need a public address, such as a Cloudflare Tunnel or ngrok. Only
 do that with token login on (`MCP_AUTH_REQUIRED=true`), and stop the tunnel when you are done.
+
+**See it work first.** `npm run demo` starts the server on a throwaway copy of made-up notes and shows a search,
+a replaced decision, a flagged note with planted instructions, a private note and a refused out-of-date save.
+
+**What has been tested.** Checked on 5 November 2026 on Linux with Node.js 22.23.4:
+
+| Setup | Status |
+|---|---|
+| The three steps above from a fresh clone (`setup.sh`, `npm start`, `claude mcp add`) | Tested: Claude Code 2.1.318 lists the server as connected |
+| Copying the skill into `~/.claude/skills/` | The copy is tested; whether Claude Code then uses it is not |
+| `npm run demo`, `npm test`, the benchmark checks | Tested on every push in CI (Ubuntu) |
+| Docker and `docker-compose.yml` | See [container-hardening.md](docs/container-hardening.md) for what was tested |
+| Vectors with Ollama (`RAG_EMBEDDINGS=ollama`) | Ollama itself not tested; its API was tested with a stand-in serving `all-minilm` |
+| macOS, Windows, Node.js 22.13 exactly | Not tested |
+| ChatGPT or other web apps through a tunnel | Not tested |
+| Agent behaviour with a real model | Not run (needs an API key and a budget): [agent-evaluation.md](docs/agent-evaluation.md) |
 
 ### Teach your AI to use it well
 
@@ -223,6 +252,9 @@ npm run bench
 
 - `npm test`: the fast tests. `npm run test:heavy`: fuzz and stress tests, including a 10,000-note vault.
 - `npm run bench`: the token benchmark. `npm run charts` redraws the charts from the saved results.
+- `npm run bench:verify` recomputes every committed benchmark run from its per-query records, and
+  `npx tsx bench/report.ts --check` checks that every generated table in the documents matches them. How to
+  reproduce each benchmark: [docs/benchmarks.md](docs/benchmarks.md).
 - Code layout and the rules every change must keep: [CLAUDE.md](CLAUDE.md).
 - Only use fake notes in this repository. Never commit a real vault, `.env`, tokens or tunnel addresses.
 
@@ -230,7 +262,7 @@ npm run bench
 
 - The original project, [secure-obsidian-memory-mcp](https://github.com/MoKarim146/secure-obsidian-memory-mcp),
   was written with **Codex**. **Mohamed Karim** designed it, directed the work and tested it.
-- **Claude Code** (Anthropic's coding agent) wrote this version's additions at his direction: the token
+- **Claude Code** (Anthropic's coding agent) wrote this version's additions at Mohamed Karim's direction: the token
   benchmark, the RAG search, the security audit and OWASP controls, the heavy tests and the documents.
 - The first commit in this repository is the original project, unchanged, so every later change can be seen on
   its own.

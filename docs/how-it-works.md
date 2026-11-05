@@ -81,6 +81,14 @@ averaged into the text around it. A section's vector score is its best passage's
 shown in the result even when it shares no word with the question. Keyword results and embedding results are
 merged with *reciprocal rank fusion*: each result gets points for how high it ranks in each list, and the totals
 decide the order. Vector matches below `RAG_MIN_SIMILARITY` (default 0.45 for Ollama) are ignored.
+`RAG_RETRIEVAL=keyword` or `dense` uses only one of the two lists (for comparisons; `hybrid` is the default).
+
+Some models expect a short task label before the text: `nomic-embed-text`, the default model, wants
+`search_query: ` before a search and `search_document: ` before a passage. The server adds the labels that the model
+cards of `nomic-embed-text`, `mxbai-embed-large`, `snowflake-arctic-embed` and `bge-large` ask for; `all-minilm` and
+`bge-m3` need none. For another model, set `RAG_EMBED_QUERY_PREFIX` and `RAG_EMBED_DOCUMENT_PREFIX`. Only `all-minilm`
+was evaluated ([evaluation.md](evaluation.md)). If the model cannot be reached or fails, search goes on with keywords
+only, and the benchmark records report it as `vectorStatus: "failed"`.
 
 Costs, measured with `all-minilm` on one CPU core: about 54 passages embedded per second; 48 Wikipedia articles
 are 5,999 passages (9 MB of vectors), 18 long books are 62,174 passages (95 MB, about 19 minutes to embed).
@@ -113,6 +121,17 @@ search spends up to 10 seconds embedding more passages.
 - A note that is deleted or marked private leaves the index and its vectors on the next search.
 - Limits: notes over 1 MB are not searched (they are named, see above), at most 20,000 notes (`RAG_MAX_NOTES`)
   and 200 MB of text are indexed.
+
+## Decisions: who wrote them, and what replaces what
+
+- Every decision an AI adds ends with `(added by AI via MCP)`, and the start summary marks it `(AI)` where it
+  shortens it.
+- A decision replaces an earlier one only when it says so: `add_decision` takes `supersedes`, the id of the earlier
+  decision (its date, or `date#2` for the second one that day, as the start summary shows it), and writes a
+  `Supersedes:` line. The id must exist, or nothing is saved.
+- The start summary lists a replaced decision among the older ones, marked `(superseded by <id>)`, so it is not
+  shown as current. A newer decision that disagrees without `Supersedes` replaces nothing: both stay current, and
+  the skill tells the AI to show the user both instead of picking the newest.
 
 ## How the start-of-chat summary stays short
 

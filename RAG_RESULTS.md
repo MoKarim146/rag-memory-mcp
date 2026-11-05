@@ -223,9 +223,13 @@ tokens); with full questions they cost 16.9% to 20.2% more:
 
 They found the same answers in every case. Off by default.
 
-**A real embedding model through Ollama** (`RAG_EMBEDDINGS=ollama`): **not measured.** The build environment
-could not download a model. Its safety rules were tested (SECURITY_REPORT.md: AB-5 to AB-7, SL-3, O6-4, O9-3,
-O9-4). To measure it on your own computer:
+**A real embedding model** (`RAG_EMBEDDINGS=ollama`): measured with `all-MiniLM-L6-v2` on BEIR SciFact,
+LongMemEval-S and a frozen paraphrase set, against keyword search, with 95% intervals:
+[docs/evaluation.md](docs/evaluation.md). The model ran in an Ollama-compatible stand-in
+(`bench/tools/ollama_compatible.py`), not in Ollama itself. **Not measured:** Ollama itself, `nomic-embed-text`
+(the default model in `.env.example`), and this page's three test sets with a real model. The safety rules for the
+embedding server were tested (SECURITY_REPORT.md: AB-5 to AB-7, SL-3, O6-4, O9-3, O9-4). To measure the test sets
+with Ollama on your own computer:
 
 ```bash
 ollama pull nomic-embed-text
