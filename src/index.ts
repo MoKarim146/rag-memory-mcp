@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { ensureMemoryLayout, getMemoryConfig } from "./memory.js";
 import { parseAuthEnv, startHttpServer } from "./httpServer.js";
 
@@ -5,6 +6,13 @@ const DEFAULT_PORT = 8787;
 const DEFAULT_HOST = "127.0.0.1";
 
 async function main(): Promise<void> {
+  // Settings can live in a .env file in the folder the server is started from (see .env.example).
+  // A value already set in the shell wins over the file.
+  const envFile = existsSync(".env");
+  if (envFile) {
+    process.loadEnvFile(".env");
+  }
+
   const config = getMemoryConfig();
   await ensureMemoryLayout(config);
 
@@ -24,6 +32,7 @@ async function main(): Promise<void> {
   });
 
   console.log(`rag-memory-mcp listening on http://${host}:${port}/mcp`);
+  console.log(`memory folder: ${config.rootDir}${envFile ? " (settings from .env)" : ""}`);
   console.log(
     [
       auth ? "token login: on" : "token login: off (any program on this computer can use the tools)",
