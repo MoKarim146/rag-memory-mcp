@@ -2,6 +2,7 @@ import { constants as fsConstants } from "node:fs";
 import { access, appendFile, lstat, mkdir, opendir, readFile, realpath, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { type EmbeddingSettings, parseEmbeddingSettings } from "./retrieval/embeddings.js";
 
 export const DEFAULT_MEMORY_DIR = "~/ObsidianVault/AI-Memory";
 
@@ -17,6 +18,14 @@ export type MainMemoryFile = (typeof MAIN_MEMORY_FILES)[number];
 
 export interface MemoryConfig {
   rootDir: string;
+  // Optional vector add-on for search. Undefined means keyword search only.
+  embeddings?: EmbeddingSettings;
+}
+
+export interface NoteFileInfo {
+  path: string; // relative to AI_MEMORY_DIR, with forward slashes
+  size: number;
+  mtimeMs: number;
 }
 
 export interface MemoryFile {
@@ -24,21 +33,9 @@ export interface MemoryFile {
   content: string;
 }
 
-export interface SearchMatch {
-  path: string;
-  line: number;
-  snippet: string;
-}
-
-export interface SearchResult {
-  query: string;
-  matches: SearchMatch[];
-}
-
 const SESSION_DIR = "Sessions";
-const MAX_SEARCH_FILE_BYTES = 1024 * 1024;
-const MAX_SEARCH_RESULTS = 50;
-const MAX_SNIPPET_LENGTH = 220;
+// Notes larger than this are not indexed for search (read_note can still read them).
+export const MAX_INDEXED_FILE_BYTES = 1024 * 1024;
 
 export function expandHome(input: string): string {
   if (input === "~") {
@@ -53,8 +50,10 @@ export function expandHome(input: string): string {
 }
 
 export function getMemoryConfig(env: NodeJS.ProcessEnv = process.env): MemoryConfig {
+  const embeddings = parseEmbeddingSettings(env);
   return {
     rootDir: path.resolve(expandHome(env.AI_MEMORY_DIR || DEFAULT_MEMORY_DIR)),
+    embeddings: embeddings.provider === "none" ? undefined : embeddings,
   };
 }
 
@@ -192,41 +191,16 @@ export async function addOpenTask(
   };
 }
 
-export async function searchMemory(config: MemoryConfig, query: string): Promise<SearchResult> {
+// Every note search may look at: the same markdown files read_note accepts, with the same checks.
+export async function listNoteFiles(config: MemoryConfig): Promise<NoteFileInfo[]> {
   await ensureMemoryLayout(config);
-  assertTextInput("query", query);
-
-  const needle = query.trim().toLowerCase();
   const files = await listMarkdownFiles(config);
-  const matches: SearchMatch[] = [];
+  return files.filter((file) => file.size <= MAX_INDEXED_FILE_BYTES);
+}
 
-  for (const file of files) {
-    if (matches.length >= MAX_SEARCH_RESULTS) {
-      break;
-    }
-
-    const target = await resolveReadableFile(config, file);
-    const stat = await lstat(target);
-    if (stat.size > MAX_SEARCH_FILE_BYTES) {
-      continue;
-    }
-
-    const text = await readFile(target, "utf8");
-    const lines = text.split(/\r?\n/);
-
-    for (let index = 0; index < lines.length && matches.length < MAX_SEARCH_RESULTS; index += 1) {
-      const line = lines[index];
-      if (line.toLowerCase().includes(needle)) {
-        matches.push({
-          path: file,
-          line: index + 1,
-          snippet: makeSnippet(line, needle),
-        });
-      }
-    }
-  }
-
-  return { query: query.trim(), matches };
+// Reads one note's raw text through the same path checks as read_note.
+export async function readNoteText(config: MemoryConfig, relativePath: string): Promise<string> {
+  return readSafeFile(config, relativePath);
 }
 
 async function readSafeFile(config: MemoryConfig, relativePath: string): Promise<string> {
@@ -357,9 +331,9 @@ async function ensureMarkdownFile(target: string, defaultContent: string): Promi
   }
 }
 
-async function listMarkdownFiles(config: MemoryConfig): Promise<string[]> {
+async function listMarkdownFiles(config: MemoryConfig): Promise<NoteFileInfo[]> {
   const rootReal = await realpath(config.rootDir);
-  const results: string[] = [];
+  const results: NoteFileInfo[] = [];
 
   async function walk(currentDir: string): Promise<void> {
     const currentReal = await realpath(currentDir);
@@ -383,13 +357,13 @@ async function listMarkdownFiles(config: MemoryConfig): Promise<string[]> {
 
       if (stat.isFile() && entry.name.endsWith(".md")) {
         const relative = path.relative(config.rootDir, absolute).split(path.sep).join("/");
-        results.push(relative);
+        results.push({ path: relative, size: stat.size, mtimeMs: stat.mtimeMs });
       }
     }
   }
 
   await walk(config.rootDir);
-  return results.sort((a, b) => a.localeCompare(b));
+  return results.sort((a, b) => a.path.localeCompare(b.path));
 }
 
 function defaultFileContent(file: MainMemoryFile): string {
@@ -422,21 +396,6 @@ function slugify(input: string): string {
     .slice(0, 80);
 
   return slug || "model";
-}
-
-function makeSnippet(line: string, needle: string): string {
-  const trimmed = line.trim();
-  if (trimmed.length <= MAX_SNIPPET_LENGTH) {
-    return trimmed;
-  }
-
-  const lower = trimmed.toLowerCase();
-  const index = lower.indexOf(needle);
-  const start = Math.max(0, index - 80);
-  const end = Math.min(trimmed.length, start + MAX_SNIPPET_LENGTH);
-  const prefix = start > 0 ? "..." : "";
-  const suffix = end < trimmed.length ? "..." : "";
-  return `${prefix}${trimmed.slice(start, end)}${suffix}`;
 }
 
 function isNotFoundError(error: unknown): boolean {

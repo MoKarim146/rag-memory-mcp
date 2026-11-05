@@ -10,9 +10,9 @@ import {
   type MemoryConfig,
   readMainContext,
   readNote,
-  searchMemory,
   updateHandoffSummary,
 } from "../src/memory.js";
+import { getMemoryIndex } from "../src/retrieval/memoryIndex.js";
 
 async function tempConfig(): Promise<MemoryConfig> {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), "obsidian-memory-mcp-"));
@@ -61,16 +61,11 @@ describe("memory backend", () => {
     await ensureMemoryLayout(config);
     await writeFile(path.join(config.rootDir, "extra.md"), "Alpha\nNeedle appears here\nOmega\n", "utf8");
 
-    const search = await searchMemory(config, "needle");
+    const hits = await getMemoryIndex(config).search("needle");
     const note = await readNote(config, "extra.md");
 
-    expect(search.matches).toEqual([
-      {
-        path: "extra.md",
-        line: 2,
-        snippet: "Needle appears here",
-      },
-    ]);
+    expect(hits.map((hit) => hit.path)).toEqual(["extra.md"]);
+    expect(hits[0].snippet).toContain("Needle appears here");
     expect(note.content).toContain("Alpha");
   });
 

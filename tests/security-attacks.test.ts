@@ -119,14 +119,15 @@ describe("tool-level attacks that the server blocks", () => {
     await symlink(f.outside, path.join(f.vault, "linkdir"));
     const result = await call(f.client, "search_memory", { query: "do-not-leak" });
     expect(result.ok).toBe(true);
-    expect(JSON.parse(result.text).matches).toEqual([]);
+    expect(result.text).toBe("No matching notes.");
+    expect(result.text).not.toContain(CANARY);
   });
 
   it("append_session_note keeps a hostile model name inside Sessions/", async () => {
     for (const modelName of ["../../outside/pwned", path.join(f.outside, "pwned"), "..\\..\\outside\\pwned"]) {
       const result = await call(f.client, "append_session_note", { model_name: modelName, title: "t", content: "c" });
       expect(result.ok).toBe(true);
-      expect(JSON.parse(result.text).path).toMatch(/^Sessions\/\d{4}-\d{2}-\d{2}_[^/]+\.md$/);
+      expect(result.text).toMatch(/^Saved to Sessions\/\d{4}-\d{2}-\d{2}_[^/]+\.md\.$/);
     }
     expect((await readdir(f.outside)).sort()).toEqual(OUTSIDE_FILES);
   });
@@ -159,7 +160,7 @@ describe("tool-level attacks that the server blocks", () => {
 
   it("ignores an extra argument that tries to pick the write path", async () => {
     const result = await call(f.client, "add_decision", { decision: "d", reason: "r", path: "../outside/pwned.md" });
-    expect(JSON.parse(result.text).path).toBe("02_DECISIONS.md");
+    expect(result.text).toBe("Saved to 02_DECISIONS.md.");
     expect((await readdir(f.outside)).sort()).toEqual(OUTSIDE_FILES);
   });
 

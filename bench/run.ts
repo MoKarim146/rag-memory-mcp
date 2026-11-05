@@ -121,6 +121,7 @@ export interface RunResult {
     lookupResultTokens: number;
     lookupCalls: number;
     startTokens: number;
+    startAnswersCovered: number; // lookup answers that already appear in the session-start context
     writeResultTokens: number;
     writesLanded: number;
     argTokens: number;
@@ -193,8 +194,10 @@ async function runVariant(name: string, style: "keyword" | "question", tasks: Ta
     const records: TaskRecord[] = [];
 
     // 1. Session start.
+    let startText = "";
     {
       const result = await call("read_main_context");
+      startText = result.text;
       records.push(finishTask({ id: tasks.session_start.id, kind: "start" }, [result], {
         answered: contains(result.text, tasks.session_start.answer),
         answeredBySearchAlone: null,
@@ -288,6 +291,7 @@ async function runVariant(name: string, style: "keyword" | "question", tasks: Ta
         lookupResultTokens: lookups.reduce((sum, r) => sum + r.resultTokens, 0),
         lookupCalls: lookups.reduce((sum, r) => sum + r.calls.length, 0),
         startTokens: records.filter((r) => r.kind === "start").reduce((sum, r) => sum + r.resultTokens, 0),
+        startAnswersCovered: tasks.lookups.filter((l) => l.answer && contains(startText, l.answer)).length,
         writeResultTokens: writes.reduce((sum, r) => sum + r.resultTokens, 0),
         writesLanded: writes.filter((r) => r.writeLanded).length,
         argTokens,
@@ -388,6 +392,7 @@ function printSummary(results: RunResult[]): void {
     r.definitions.tools,
     r.definitions.modelFacingTokens + r.definitions.instructionsTokens,
     r.summary.startTokens,
+    `${r.summary.startAnswersCovered}/${r.summary.answerableLookups}`,
     r.summary.lookupResultTokens,
     r.summary.writeResultTokens,
     r.summary.sessionTotalTokens,
@@ -395,7 +400,7 @@ function printSummary(results: RunResult[]): void {
     `${r.summary.answeredBySearchAlone}/${r.summary.answerableLookups}`,
     r.summary.meanReciprocalRank,
   ]);
-  const header = ["run", "tools", "defs+instr", "start", "lookups", "writes", "session total", "answered", "by search alone", "MRR"];
+  const header = ["run", "tools", "defs+instr", "start", "start covers", "lookups", "writes", "session total", "answered", "by search alone", "MRR"];
   console.log(`| ${header.join(" | ")} |`);
   console.log(`|${header.map(() => "---").join("|")}|`);
   for (const row of rows) {

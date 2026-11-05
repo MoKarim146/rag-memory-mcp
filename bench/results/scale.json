@@ -1,0 +1,164 @@
+{
+  "node": "v22.23.4",
+  "cpus": 4,
+  "cpuModel": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "queries": [
+    "delivery",
+    "PayLoop webhook secret rotation",
+    "What is the contrast ratio of the Add to basket button?"
+  ],
+  "rows": [
+    {
+      "vault": "fixture (32 notes)",
+      "notes": 32,
+      "megabytes": 0.03,
+      "baselineStartTokens": 2549,
+      "baselineSearch": [
+        {
+          "ms": 18.2,
+          "tokens": 1228
+        },
+        {
+          "ms": 6,
+          "tokens": 18
+        },
+        {
+          "ms": 7,
+          "tokens": 24
+        }
+      ],
+      "currentStartTokens": 1590,
+      "firstSearchMs": 19.7,
+      "currentSearch": [
+        {
+          "ms": 2.8,
+          "tokens": 333
+        },
+        {
+          "ms": 2.9,
+          "tokens": 345
+        },
+        {
+          "ms": 2.9,
+          "tokens": 447
+        }
+      ],
+      "searchAfterOneEditMs": 2.4,
+      "rssGrowthMB": 3
+    },
+    {
+      "vault": "~500 notes, logs x5",
+      "notes": 491,
+      "megabytes": 0.33,
+      "baselineStartTokens": 7513,
+      "baselineSearch": [
+        {
+          "ms": 31.8,
+          "tokens": 2751
+        },
+        {
+          "ms": 101.7,
+          "tokens": 18
+        },
+        {
+          "ms": 120.2,
+          "tokens": 24
+        }
+      ],
+      "currentStartTokens": 1590,
+      "firstSearchMs": 274.9,
+      "currentSearch": [
+        {
+          "ms": 21,
+          "tokens": 251
+        },
+        {
+          "ms": 27.8,
+          "tokens": 431
+        },
+        {
+          "ms": 22.4,
+          "tokens": 261
+        }
+      ],
+      "searchAfterOneEditMs": 24.3,
+      "rssGrowthMB": 0
+    },
+    {
+      "vault": "~2,000 notes, logs x10",
+      "notes": 1895,
+      "megabytes": 1.24,
+      "baselineStartTokens": 13718,
+      "baselineSearch": [
+        {
+          "ms": 76.6,
+          "tokens": 2575
+        },
+        {
+          "ms": 318.4,
+          "tokens": 18
+        },
+        {
+          "ms": 293.5,
+          "tokens": 24
+        }
+      ],
+      "currentStartTokens": 1590,
+      "firstSearchMs": 736,
+      "currentSearch": [
+        {
+          "ms": 66.1,
+          "tokens": 251
+        },
+        {
+          "ms": 67.2,
+          "tokens": 431
+        },
+        {
+          "ms": 86.4,
+          "tokens": 261
+        }
+      ],
+      "searchAfterOneEditMs": 62.1,
+      "rssGrowthMB": 3
+    },
+    {
+      "vault": "~5,000 notes, logs x20",
+      "notes": 4730,
+      "megabytes": 3.06,
+      "baselineStartTokens": 26128,
+      "baselineSearch": [
+        {
+          "ms": 184.9,
+          "tokens": 2335
+        },
+        {
+          "ms": 734.4,
+          "tokens": 18
+        },
+        {
+          "ms": 736.2,
+          "tokens": 24
+        }
+      ],
+      "currentStartTokens": 1590,
+      "firstSearchMs": 1730.9,
+      "currentSearch": [
+        {
+          "ms": 154.7,
+          "tokens": 251
+        },
+        {
+          "ms": 156.5,
+          "tokens": 431
+        },
+        {
+          "ms": 157.5,
+          "tokens": 261
+        }
+      ],
+      "searchAfterOneEditMs": 145.8,
+      "rssGrowthMB": 20
+    }
+  ]
+}

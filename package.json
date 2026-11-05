@@ -1,11 +1,11 @@
 {
   "name": "secure-obsidian-memory-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Secure local MCP gateway for persistent Obsidian-based AI memory.",
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
