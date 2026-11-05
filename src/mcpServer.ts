@@ -237,16 +237,18 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
       "add_decision",
       {
         title: "Add Decision",
-        description: "Append a dated decision to 02_DECISIONS.md.",
+        description:
+          "Append a dated decision to 02_DECISIONS.md. If it replaces an earlier one, pass that decision's id (its date, or date#n) as supersedes.",
         inputSchema: {
           decision: z.string().min(1),
           reason: z.string().min(1),
+          supersedes: z.string().regex(/^\d{4}-\d{2}-\d{2}(#\d+)?$/).optional(),
         },
         annotations: APPEND,
       },
-      safe("add_decision", async (args: { decision: string; reason: string }) => {
+      safe("add_decision", async (args: { decision: string; reason: string; supersedes?: string }) => {
         guard.checkWrite("add_decision", args);
-        return text(describeWrite(await addDecision(config, args.decision, args.reason)));
+        return text(describeWrite(await addDecision(config, args.decision, args.reason, new Date(), args.supersedes)));
       }),
     );
   }

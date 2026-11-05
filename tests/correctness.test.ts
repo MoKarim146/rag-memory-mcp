@@ -266,3 +266,38 @@ describe("embedding model formatting", () => {
     await rm(config.rootDir, { recursive: true, force: true });
   });
 });
+
+describe("provenance and supersession", () => {
+  it("a decision replaces an earlier one only when it says so, and the summary shows which", async () => {
+    const config = await vault();
+    const c = await client(config);
+    await writeFile(
+      path.join(config.rootDir, "02_DECISIONS.md"),
+      "# Decisions\n\n## 2026-10-01\n\n- Decision: Use Postgres for orders.\n  Reason: The team knows it.\n\n## 2026-10-02\n\n- Decision: Ship on Fridays.\n  Reason: Quiet weekends.\n",
+    );
+    // A newer AI decision that contradicts an older one, without saying it replaces it: both stay current.
+    expect((await call(c, "add_decision", { decision: "Use SQLite for orders.", reason: "Simpler." })).ok).toBe(true);
+    let summary = (await call(c, "read_main_context")).text;
+    expect(summary).toContain("Use Postgres for orders.");
+    expect(summary).toContain("Use SQLite for orders. (added by AI via MCP)");
+    expect(summary).not.toContain("superseded");
+
+    // An explicit replacement: the old decision is marked, with the id of the one that replaced it.
+    const today = new Date().toISOString().slice(0, 10);
+    expect((await call(c, "add_decision", { decision: "Ship on Tuesdays.", reason: "Support is in.", supersedes: "2026-10-02" })).ok).toBe(true);
+    const file = await readFile(path.join(config.rootDir, "02_DECISIONS.md"), "utf8");
+    expect(file).toContain("  Supersedes: 2026-10-02");
+    summary = (await call(c, "read_main_context")).text;
+    expect(summary).toMatch(/2026-10-02: Ship on Fridays\. \(superseded by \d{4}-\d{2}-\d{2}(#\d+)?\)/);
+    expect(summary).toContain("Ship on Tuesdays.");
+    expect(summary).not.toMatch(/- 2026-10-02: Ship on Fridays\. Reason:/); // no longer listed as current
+
+    // A replacement must name a decision that exists.
+    const unknown = await call(c, "add_decision", { decision: "x", reason: "y", supersedes: "2020-01-01" });
+    expect(unknown.ok).toBe(false);
+    expect(unknown.text).toContain("no decision 2020-01-01");
+    void today;
+    await c.close();
+    await rm(config.rootDir, { recursive: true, force: true });
+  });
+});

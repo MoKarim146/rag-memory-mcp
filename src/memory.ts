@@ -4,6 +4,7 @@ import { access, appendFile, lstat, mkdir, open, opendir, readFile, realpath, re
 import os from "node:os";
 import path from "node:path";
 import { type EmbeddingSettings, parseEmbeddingSettings } from "./retrieval/embeddings.js";
+import { decisionIds } from "./context.js";
 import { findWriteProblem, isPrivateNote, looksLikeInjection, maskSecrets } from "./safety.js";
 
 export const DEFAULT_MEMORY_DIR = "~/ObsidianVault/AI-Memory";
@@ -282,11 +283,14 @@ export async function appendSessionNote(
   });
 }
 
+// supersedes: the id of an earlier decision this one replaces (its date, or date#n), as read_main_context shows
+// it. Only such an explicit reference retires a decision; a newer decision that disagrees does not.
 export async function addDecision(
   config: MemoryConfig,
   decision: string,
   reason: string,
   now = new Date(),
+  supersedes?: string,
 ): Promise<WriteResult> {
   return guardedWrite(config, "add_decision", "02_DECISIONS.md", { decision, reason }, now, async (safe) => {
     const target = await resolveWritableFixedFile(config, "02_DECISIONS.md");
@@ -296,11 +300,17 @@ export async function addDecision(
       "",
       `- Decision: ${safe.decision.trim()} ${AI_MARK}`,
       `  Reason: ${safe.reason.trim()}`,
+      ...(supersedes ? [`  Supersedes: ${supersedes}`] : []),
       "",
     ].join("\n");
     return {
       entry,
       apply: async () => {
+        if (supersedes && !decisionIds(await readFile(target, "utf8")).includes(supersedes)) {
+          throw new MemoryError(
+            `Not saved: there is no decision ${supersedes} in 02_DECISIONS.md. Use an id as read_main_context shows it: a date, or date#n.`,
+          );
+        }
         await assertRoomToAppend(target, entry, MAX_APPEND_FILE_BYTES, "02_DECISIONS.md");
         await appendFile(target, entry, "utf8");
         return readFile(target, "utf8");
