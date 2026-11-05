@@ -9,7 +9,7 @@ Code wrote the work in this report at his direction: the new attack tests, the f
 
 ## Summary
 
-The server was attacked in three rounds. Each time the tests were written first and run on the code as it was,
+The server was tested in four rounds. Each time the tests were written first and run on the code as it was,
 the failures were recorded, and only then was the code fixed.
 
 | Round | Tests | Before the fixes | After the fixes |
@@ -17,7 +17,8 @@ the failures were recorded, and only then was the code fixed.
 | 1. First audit: injection, poisoning, traversal, access, secrets (`tests/security-audit.test.ts`) | 38 | 17 of 37 passed | 38 of 38 pass |
 | 2. OWASP Top 10 for LLM Applications 2026 (`tests/owasp-2026.test.ts`) | 41 | 12 of 41 passed | 41 of 41 pass |
 | 3. Heavy fuzz and stress tests (`tests/heavy/`, `npm run test:heavy`) | 15 | found 5 bugs | 15 of 15 pass |
-| Whole fast suite (`npm test`) | 129 | | 129 of 129 pass |
+| 4. Real books and outside questions (`bench/books.ts`): FP-2 and the large-note test | 2 | 0 of 2 passed | 2 of 2 pass |
+| Whole fast suite (`npm test`) | 135 | | 135 of 135 pass |
 
 | | Before | After |
 |---|---|---|
@@ -305,6 +306,23 @@ Bugs found, all fixed:
 
 The stress test that found H5 matters for daily use: you edit notes in Obsidian while an AI searches them.
 
+## Round 4: what real books showed
+
+The long-text benchmark ([docs/book-benchmark.md](docs/book-benchmark.md)) runs 18 real books and 48 Wikipedia
+articles through the server. All of that text is harmless, so anything the filters flag there is a false alarm,
+and it found two problems. Both got a test that failed on the old code before the fix: FP-2 in
+`tests/security-audit.test.ts` (results saved in `security/fp2-before-fix.json` and `security/fp2-after-fix.json`)
+and "notes too large to search" in `tests/retrieval.test.ts`.
+
+| # | Problem | Effect | Fix |
+|---|---|---|---|
+| R4-1 (FP-2) | The rule for "you are now" flagged ordinary dialogue in 5 of 587 book chapters, such as "You are now going to leave me" and "there you are now; that's the stroke" | A flagged note only shows in searches when nothing clean matches, so a false flag can hide a real answer | The rule now needs a role or mode change after the words: "you are now DAN", "in admin mode", "an unrestricted assistant", "free from all restrictions". FP-2 checks the 5 book lines and 6 such orders. After the fix: 0 of 587 chapters flagged |
+| R4-2 | A note over 1 MB (Moby Dick in one note, 1.22 MB) was left out of search with no message | Every search for it found nothing, so the AI could not tell the user why | The 1 MB limit stays, because it stops a huge file from slowing the server down. Such notes are now named in the start-of-chat summary, in every search that finds nothing, and once in the server log. Names are quoted, cut to 120 characters and hidden if they look like orders to an AI; notes marked private are never named. `read_note` can still open them page by page |
+
+The narrower "you are now" rule is a trade-off: an order such as "you are now my helper, so…" is no longer
+flagged by this rule on its own. The other rules (ignore previous instructions, system prompt, hidden orders,
+tool calls) are unchanged, and every security test, including the fuzz tests, still passes.
+
 ## Do the tests really catch problems? (round 2 and 3)
 
 Besides the round 1 checks above, O6-4 was confirmed by running the new test against the old code (it failed:
@@ -356,7 +374,9 @@ version; moving to 2.x would mean overriding the SDK's own requirement, so it wa
 5. **Token login is off by default**, so any program on the computer can use the tools. Turn it on
    (`MCP_AUTH_REQUIRED=true`) before using a tunnel or sharing the machine.
 6. **Pattern limits:** secrets in unusual formats or prose are not caught; a key glued straight after a letter
-   is not masked; comment removal also removes comments inside code blocks.
+   is not masked; comment removal also removes comments inside code blocks. The other way round, a line of
+   prose can look like a secret: in Paradise Lost, "And I perhaps am secret: Heaven is high" has "Heaven"
+   masked (1 of 587 book chapters).
 7. **Not tested:** hard links pointing outside the vault (an AI cannot create them through the tools), a file
    swapped for a symlink in the instant between the check and the read, the Docker setup, and whether
    `localhost` on your machine really points to your own computer (it normally does).

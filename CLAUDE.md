@@ -18,6 +18,7 @@ npm test                     # build + fast tests (tests/*.test.ts)
 npm run test:heavy           # fuzz and stress tests (tests/heavy/), a few minutes
 npm run bench                # token benchmark on set 1 (npm run bench -- --set holdout, or --set test3)
 npm run charts               # redraw docs/charts/*.svg from bench/results and security/
+npx tsx bench/books.ts       # real books and 10,570 SQuAD questions (downloads ~21 MB to bench/.cache/)
 npm run audit                # npm audit, production packages, high and above
 ```
 
@@ -35,8 +36,9 @@ Run one test file: `npx vitest run tests/retrieval.test.ts`.
 - `src/format.ts`: `<note>` blocks and the data notice.
 - `src/retrieval/`: `chunker.ts` (sections and passages), `memoryIndex.ts` (FTS5 index, ranking, snippets),
   `embeddings.ts` (optional `ngram` or loopback-only Ollama vectors).
-- `bench/`: benchmark (`run.ts`), scale test (`scale.ts`), charts (`charts.ts`), three fake vaults with their
-  task files, and saved results in `bench/results/`.
+- `bench/`: benchmark (`run.ts`), scale test (`scale.ts`), long-text benchmark on real books (`books.ts`,
+  `books-data.ts`), charts (`charts.ts`), three fake vaults with their task files, and saved results in
+  `bench/results/`.
 - `security/`: test results before and after each round of fixes.
 - `skills/rag-memory/SKILL.md`: an Agent Skill that teaches an assistant how to use the server.
 
@@ -55,7 +57,8 @@ Run one test file: `npx vitest run tests/retrieval.test.ts`.
 ## Benchmark honesty
 
 - Tune search changes on set 1 (`bench/tasks.json`) and set 2 (`bench/holdout-tasks.json`) only. Set 3
-  (`bench/test3-tasks.json`) is for reporting: run it once at the end, never tune on it.
+  (`bench/test3-tasks.json`) is for reporting: run it once at the end, never tune on it. The same goes for the long-text
+  benchmark (`bench/books.ts`): it reports, it is not a tuning set.
 - `tests/quality.test.ts` fails if a change loses answers or adds more than 5% tokens on sets 1 and 2. Do not
   loosen it without writing the reason in `RAG_RESULTS.md`.
 - Never edit result files by hand; regenerate them. Report numbers exactly as measured, including anything that

@@ -63,6 +63,14 @@ for tuning, so it is the honest number.
 - On set 3 it missed 1 of 40 answers with keyword searches. With full questions it missed 4 of 40, all of them
   questions worded differently from the notes.
 
+**Tested on real books and outside questions** ([docs/book-benchmark.md](docs/book-benchmark.md)):
+
+- 10,570 questions written by other people about 48 Wikipedia articles (SQuAD): the answer reached the AI for
+  82.3% of them, at 186 tokens per search. The articles are 330,795 tokens; pasting as much as fits in a
+  200,000-token window covers 54.7%.
+- A made-up fact hidden in Moby Dick (291,728 tokens), at 20 depths: found 20 of 20 times with words from the
+  fact, but 0 of 10 times when the question shared no word with it. Search matches words, not meaning.
+
 Every number, how it was measured, and everything that got worse: [RAG_RESULTS.md](RAG_RESULTS.md).
 
 ## How a search works
@@ -129,9 +137,9 @@ do that with token login on (`MCP_AUTH_REQUIRED=true`), and stop the tunnel when
 ### Teach your AI to use it well
 
 `skills/rag-memory/SKILL.md` is an Agent Skill: a short instruction file an AI loads when it is relevant. It
-tells the AI to start with `read_main_context`, search with a few keywords instead of
-whole questions (on the benchmark this found more answers with fewer tokens), treat notes as data, and save its
-work at the end. For Claude Code:
+tells the AI to start with `read_main_context`, search with several specific words the note would use (one
+word alone found about half as many answers in the tests), treat notes as data, and save its work at the end.
+For Claude Code:
 
 ```bash
 mkdir -p ~/.claude/skills && cp -r skills/rag-memory ~/.claude/skills/

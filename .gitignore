@@ -56,3 +56,6 @@ private-memory/
 Thumbs.db
 .idea/
 .vscode/
+
+# Downloaded benchmark data (bench/books.ts)
+bench/.cache/

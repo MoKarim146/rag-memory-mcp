@@ -1,0 +1,3810 @@
+{
+  "about": "Long-text benchmark (bench/books.ts). Run once; nothing here was used to tune the search.",
+  "quick": false,
+  "node": "v22.23.4",
+  "cpuModel": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "tokenizer": "o200k_base",
+  "sources": {
+    "gutenberg": {
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/gutenberg.zip",
+      "sha256": "2d3c3ab548c653944310f37f536443ec85d0a0ad855fcae217a0c9efdce2d611",
+      "about": "18 public-domain books from Project Gutenberg, as packaged by NLTK"
+    },
+    "squad": {
+      "url": "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/master/dataset/dev-v1.1.json",
+      "sha256": "95aa6a52d5d6a735563366753ca50492a658031da74f301ac5238b03966972c9",
+      "about": "SQuAD 1.1 development set: 10,570 questions on 48 Wikipedia articles (CC BY-SA 4.0)"
+    },
+    "narrativeqaQuestions": {
+      "url": "https://raw.githubusercontent.com/google-deepmind/narrativeqa/master/qaps.csv",
+      "sha256": "990b02af0b5280de210f0e6b80f43b3fab80dc6de630c4d5059a1b7131c26e38",
+      "about": "NarrativeQA questions about whole books (Apache 2.0)"
+    },
+    "narrativeqaDocuments": {
+      "url": "https://raw.githubusercontent.com/google-deepmind/narrativeqa/master/documents.csv",
+      "sha256": "6dffa4cc0b5c9963fe3a097c87f04aa7767da36627500cc7a0d69e2405e1144a",
+      "about": "NarrativeQA list of books"
+    }
+  },
+  "sample": {
+    "squadSampleSize": 1000,
+    "seed": 1
+  },
+  "scopes": [
+    {
+      "name": "squad",
+      "about": "48 Wikipedia articles, one note each (SQuAD 1.1 development set)",
+      "notes": 48,
+      "megabytes": 1.6,
+      "largestNoteBytes": 85639,
+      "pasteEverythingTokens": 330795,
+      "runs": [
+        {
+          "system": "current",
+          "set": "squad-all",
+          "style": "keywords",
+          "limit": 5,
+          "questions": 10570,
+          "found": 8703,
+          "foundPct": 82.3,
+          "evidencePct": 78.1,
+          "goldListedPct": 98.3,
+          "mrr": 0.781,
+          "tokensMean": 185,
+          "tokensMedian": 166,
+          "tokensP90": 291,
+          "msMean": 13.3,
+          "msP95": 22.5,
+          "byType": {
+            "how": {
+              "questions": 1225,
+              "foundPct": 82.2,
+              "evidencePct": 77.6
+            },
+            "other": {
+              "questions": 169,
+              "foundPct": 81.1,
+              "evidencePct": 73.4
+            },
+            "what": {
+              "questions": 6022,
+              "foundPct": 81.9,
+              "evidencePct": 78.2
+            },
+            "when": {
+              "questions": 713,
+              "foundPct": 82,
+              "evidencePct": 80.1
+            },
+            "where": {
+              "questions": 478,
+              "foundPct": 79.7,
+              "evidencePct": 74.5
+            },
+            "which": {
+              "questions": 699,
+              "foundPct": 85,
+              "evidencePct": 79.1
+            },
+            "who": {
+              "questions": 1109,
+              "foundPct": 85.2,
+              "evidencePct": 79.3
+            },
+            "why": {
+              "questions": 155,
+              "foundPct": 77.4,
+              "evidencePct": 74.2
+            }
+          },
+          "byOverlap": {
+            "high (2/3 or more)": {
+              "questions": 4543,
+              "foundPct": 94.6,
+              "evidencePct": 92.8
+            },
+            "low (under 1/3 of words in the answer sentence)": {
+              "questions": 1918,
+              "foundPct": 55.5,
+              "evidencePct": 45.8
+            },
+            "medium": {
+              "questions": 4109,
+              "foundPct": 81.3,
+              "evidencePct": 77
+            }
+          },
+          "missedExamples": [
+            {
+              "question": "Which NFL team represented the AFC at Super Bowl 50?",
+              "answer": "Denver Broncos",
+              "query": "NFL team represented AFC Super Bowl 50",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "Which NFL team represented the NFC at Super Bowl 50?",
+              "answer": "Carolina Panthers",
+              "query": "NFL team represented NFC Super Bowl 50",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "Where did Super Bowl 50 take place?",
+              "answer": "Santa Clara, California",
+              "query": "Super Bowl 50 take place",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "Which NFL team won Super Bowl 50?",
+              "answer": "Denver Broncos",
+              "query": "NFL team won Super Bowl 50",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "What day was the game played on?",
+              "answer": "February 7, 2016",
+              "query": "day game played",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "What is the AFC short for?",
+              "answer": "American Football Conference",
+              "query": "AFC short",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "What does AFC stand for?",
+              "answer": "American Football Conference",
+              "query": "AFC stand",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "What day was the Super Bowl played on?",
+              "answer": "February 7, 2016",
+              "query": "day Super Bowl played",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "Who won Super Bowl 50?",
+              "answer": "Denver Broncos",
+              "query": "won Super Bowl 50",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "What venue did Super Bowl 50 take place in?",
+              "answer": "Levi's Stadium",
+              "query": "venue Super Bowl 50 take place",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "What city did Super Bowl 50 take place in?",
+              "answer": "Santa Clara",
+              "query": "city Super Bowl 50 take place",
+              "article": "Super Bowl 50"
+            },
+            {
+              "question": "What city did Super Bowl 50 take place in?",
+              "answer": "Santa Clara",
+              "query": "city Super Bowl 50 take place",
+              "article": "Super Bowl 50"
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "squad-all",
+          "style": "question",
+          "limit": 5,
+          "questions": 10570,
+          "found": 8694,
+          "foundPct": 82.3,
+          "evidencePct": 78.1,
+          "goldListedPct": 98.2,
+          "mrr": 0.781,
+          "tokensMean": 186,
+          "tokensMedian": 167,
+          "tokensP90": 293,
+          "msMean": 13.3,
+          "msP95": 21.9,
+          "byType": {
+            "how": {
+              "questions": 1225,
+              "foundPct": 81.9,
+              "evidencePct": 77.5
+            },
+            "other": {
+              "questions": 169,
+              "foundPct": 81.1,
+              "evidencePct": 73.4
+            },
+            "what": {
+              "questions": 6022,
+              "foundPct": 81.8,
+              "evidencePct": 78.1
+            },
+            "when": {
+              "questions": 713,
+              "foundPct": 82,
+              "evidencePct": 80.1
+            },
+            "where": {
+              "questions": 478,
+              "foundPct": 79.9,
+              "evidencePct": 74.7
+            },
+            "which": {
+              "questions": 699,
+              "foundPct": 85,
+              "evidencePct": 79.1
+            },
+            "who": {
+              "questions": 1109,
+              "foundPct": 85.2,
+              "evidencePct": 79.3
+            },
+            "why": {
+              "questions": 155,
+              "foundPct": 76.8,
+              "evidencePct": 73.5
+            }
+          },
+          "byOverlap": {
+            "high (2/3 or more)": {
+              "questions": 4543,
+              "foundPct": 94.7,
+              "evidencePct": 92.8
+            },
+            "low (under 1/3 of words in the answer sentence)": {
+              "questions": 1918,
+              "foundPct": 55.6,
+              "evidencePct": 46
+            },
+            "medium": {
+              "questions": 4109,
+              "foundPct": 81,
+              "evidencePct": 76.8
+            }
+          }
+        },
+        {
+          "system": "current",
+          "set": "squad-all",
+          "style": "oneword",
+          "limit": 5,
+          "questions": 10570,
+          "found": 4607,
+          "foundPct": 43.6,
+          "evidencePct": 38.8,
+          "goldListedPct": 74.6,
+          "mrr": 0.332,
+          "tokensMean": 215,
+          "tokensMedian": 234,
+          "tokensP90": 299,
+          "msMean": 2.5,
+          "msP95": 4.3,
+          "byType": {
+            "how": {
+              "questions": 1225,
+              "foundPct": 42.9,
+              "evidencePct": 37.1
+            },
+            "other": {
+              "questions": 169,
+              "foundPct": 52.1,
+              "evidencePct": 39.6
+            },
+            "what": {
+              "questions": 6022,
+              "foundPct": 42.9,
+              "evidencePct": 38.4
+            },
+            "when": {
+              "questions": 713,
+              "foundPct": 47.7,
+              "evidencePct": 45.7
+            },
+            "where": {
+              "questions": 478,
+              "foundPct": 47.1,
+              "evidencePct": 42.9
+            },
+            "which": {
+              "questions": 699,
+              "foundPct": 42.1,
+              "evidencePct": 37.3
+            },
+            "who": {
+              "questions": 1109,
+              "foundPct": 44.8,
+              "evidencePct": 38.4
+            },
+            "why": {
+              "questions": 155,
+              "foundPct": 36.8,
+              "evidencePct": 31.6
+            }
+          },
+          "byOverlap": {
+            "high (2/3 or more)": {
+              "questions": 4543,
+              "foundPct": 53.2,
+              "evidencePct": 48.9
+            },
+            "low (under 1/3 of words in the answer sentence)": {
+              "questions": 1918,
+              "foundPct": 26.6,
+              "evidencePct": 19.8
+            },
+            "medium": {
+              "questions": 4109,
+              "foundPct": 40.9,
+              "evidencePct": 36.5
+            }
+          }
+        },
+        {
+          "system": "current",
+          "set": "squad-sample",
+          "style": "keywords",
+          "limit": 5,
+          "questions": 1000,
+          "found": 824,
+          "foundPct": 82.4,
+          "evidencePct": 77.7,
+          "goldListedPct": 98.2,
+          "mrr": 0.785,
+          "tokensMean": 185,
+          "tokensMedian": 167,
+          "tokensP90": 292,
+          "msMean": 13.2,
+          "msP95": 21.6,
+          "byType": {
+            "how": {
+              "questions": 130,
+              "foundPct": 82.3,
+              "evidencePct": 80.8
+            },
+            "other": {
+              "questions": 19,
+              "foundPct": 78.9,
+              "evidencePct": 63.2
+            },
+            "what": {
+              "questions": 565,
+              "foundPct": 81.9,
+              "evidencePct": 77
+            },
+            "when": {
+              "questions": 65,
+              "foundPct": 83.1,
+              "evidencePct": 81.5
+            },
+            "where": {
+              "questions": 44,
+              "foundPct": 79.5,
+              "evidencePct": 77.3
+            },
+            "which": {
+              "questions": 65,
+              "foundPct": 86.2,
+              "evidencePct": 83.1
+            },
+            "who": {
+              "questions": 105,
+              "foundPct": 84.8,
+              "evidencePct": 76.2
+            },
+            "why": {
+              "questions": 7,
+              "foundPct": 71.4,
+              "evidencePct": 57.1
+            }
+          },
+          "byOverlap": {
+            "high (2/3 or more)": {
+              "questions": 399,
+              "foundPct": 93,
+              "evidencePct": 90.5
+            },
+            "low (under 1/3 of words in the answer sentence)": {
+              "questions": 194,
+              "foundPct": 57.2,
+              "evidencePct": 47.9
+            },
+            "medium": {
+              "questions": 407,
+              "foundPct": 84,
+              "evidencePct": 79.4
+            }
+          },
+          "missedExamples": [
+            {
+              "question": "What social construct did Huguenot refugees in Canterbury practice?",
+              "answer": "economic separation",
+              "query": "social construct Huguenot refugees Canterbury practice",
+              "article": "Huguenot"
+            },
+            {
+              "question": "What river runs through Warsaw?",
+              "answer": "Vistula River",
+              "query": "river runs Warsaw",
+              "article": "Warsaw"
+            },
+            {
+              "question": "What did Aristotle refer to forced motion as?",
+              "answer": "unnatural",
+              "query": "Aristotle refer forced motion",
+              "article": "Force"
+            },
+            {
+              "question": "What type of cascade results when complement proteins bind to microbes and activate their protease activity?",
+              "answer": "catalytic cascade",
+              "query": "type cascade results complement proteins bind microbes activate protease activity",
+              "article": "Immune system"
+            },
+            {
+              "question": "Which husband and wife modern furniture design team are represented in the V&A furniture collection?",
+              "answer": "Charles and Ray Eames",
+              "query": "husband wife modern furniture design team represented V furniture collection",
+              "article": "Victoria and Albert Museum"
+            },
+            {
+              "question": "What are those with lower incomes less likely to have in order to prepare for the future?",
+              "answer": "savings and investment",
+              "query": "lower incomes less likely order prepare future",
+              "article": "Economic inequality"
+            },
+            {
+              "question": "What do students do after primary school?",
+              "answer": "join a vocational youth/village polytechnic or make their own arrangements for an apprenticeship program",
+              "query": "students primary school",
+              "article": "Kenya"
+            },
+            {
+              "question": "Which architect, famous for the India Gate in New Delhi, is represented in the RIBA collection?",
+              "answer": "Sir Edwin Lutyens",
+              "query": "architect famous India Gate New Delhi represented RIBA collection",
+              "article": "Victoria and Albert Museum"
+            },
+            {
+              "question": "Most imperialism was carried out using which method of transport?",
+              "answer": "seaborne",
+              "query": "imperialism carried using method transport",
+              "article": "Imperialism"
+            },
+            {
+              "question": "What is an examine of work that a centrifugal governor-equipped steam engine wasn't suitable for?",
+              "answer": "cotton spinning",
+              "query": "examine work centrifugal governor-equipped steam engine wasn't suitable",
+              "article": "Steam engine"
+            },
+            {
+              "question": "What type of entrepreneurship leads to advancements in technology?",
+              "answer": "opportunity-based entrepreneurship",
+              "query": "type entrepreneurship leads advancements technology",
+              "article": "Economic inequality"
+            },
+            {
+              "question": "When is the earliest Britain had an imperialist policy?",
+              "answer": "the sixteenth century",
+              "query": "earliest Britain imperialist policy",
+              "article": "Imperialism"
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "squad-sample",
+          "style": "keywords",
+          "limit": 10,
+          "questions": 1000,
+          "found": 834,
+          "foundPct": 83.4,
+          "evidencePct": 78.2,
+          "goldListedPct": 98.7,
+          "mrr": 0.786,
+          "tokensMean": 214,
+          "tokensMedian": 167,
+          "tokensP90": 438,
+          "msMean": 13.3,
+          "msP95": 22.2,
+          "byType": {
+            "how": {
+              "questions": 130,
+              "foundPct": 83.8,
+              "evidencePct": 81.5
+            },
+            "other": {
+              "questions": 19,
+              "foundPct": 78.9,
+              "evidencePct": 63.2
+            },
+            "what": {
+              "questions": 565,
+              "foundPct": 82.7,
+              "evidencePct": 77.5
+            },
+            "when": {
+              "questions": 65,
+              "foundPct": 84.6,
+              "evidencePct": 83.1
+            },
+            "where": {
+              "questions": 44,
+              "foundPct": 81.8,
+              "evidencePct": 77.3
+            },
+            "which": {
+              "questions": 65,
+              "foundPct": 87.7,
+              "evidencePct": 83.1
+            },
+            "who": {
+              "questions": 105,
+              "foundPct": 85.7,
+              "evidencePct": 76.2
+            },
+            "why": {
+              "questions": 7,
+              "foundPct": 71.4,
+              "evidencePct": 57.1
+            }
+          },
+          "byOverlap": {
+            "high (2/3 or more)": {
+              "questions": 399,
+              "foundPct": 94,
+              "evidencePct": 91
+            },
+            "low (under 1/3 of words in the answer sentence)": {
+              "questions": 194,
+              "foundPct": 58.8,
+              "evidencePct": 48.5
+            },
+            "medium": {
+              "questions": 407,
+              "foundPct": 84.8,
+              "evidencePct": 79.9
+            }
+          }
+        },
+        {
+          "system": "current-ngram",
+          "set": "squad-sample",
+          "style": "keywords",
+          "limit": 5,
+          "questions": 1000,
+          "found": 772,
+          "foundPct": 77.2,
+          "evidencePct": 72.6,
+          "goldListedPct": 97.6,
+          "mrr": 0.72,
+          "tokensMean": 209,
+          "tokensMedian": 207,
+          "tokensP90": 296,
+          "msMean": 26.3,
+          "msP95": 35.3
+        },
+        {
+          "system": "current-ngram",
+          "set": "squad-sample",
+          "style": "question",
+          "limit": 5,
+          "questions": 1000,
+          "found": 770,
+          "foundPct": 77,
+          "evidencePct": 72.2,
+          "goldListedPct": 97.6,
+          "mrr": 0.711,
+          "tokensMean": 271,
+          "tokensMedian": 286,
+          "tokensP90": 322,
+          "msMean": 27.4,
+          "msP95": 37.2
+        },
+        {
+          "system": "baseline",
+          "set": "squad-all",
+          "style": "oneword",
+          "limit": "old server",
+          "questions": 10570,
+          "found": 6368,
+          "foundPct": 60.2,
+          "evidencePct": 54.3,
+          "goldListedPct": 84.5,
+          "mrr": 0.324,
+          "tokensMean": 839,
+          "tokensMedian": 387,
+          "tokensP90": 2576,
+          "msMean": 17.4,
+          "msP95": 22.4
+        },
+        {
+          "system": "baseline",
+          "set": "squad-sample",
+          "style": "question",
+          "limit": "old server",
+          "questions": 1000,
+          "found": 10,
+          "foundPct": 1,
+          "evidencePct": 0.1,
+          "goldListedPct": 0,
+          "mrr": 0,
+          "tokensMean": 25,
+          "tokensMedian": 24,
+          "tokensP90": 30,
+          "msMean": 16.7,
+          "msP95": 20.1
+        }
+      ],
+      "truncation": [
+        {
+          "window": 8000,
+          "pct": 3.1
+        },
+        {
+          "window": 32000,
+          "pct": 8.6
+        },
+        {
+          "window": 128000,
+          "pct": 34.6
+        },
+        {
+          "window": 200000,
+          "pct": 54.7
+        },
+        {
+          "window": 1000000,
+          "pct": 100
+        }
+      ],
+      "answerCeilingPct": 100,
+      "rightArticleTokensMean": 6885,
+      "currentFirstSearchMs": 432.8,
+      "currentDefinitionTokens": 558,
+      "currentStartTokens": 92,
+      "current-ngramFirstSearchMs": 497.8,
+      "current-ngramDefinitionTokens": 558,
+      "current-ngramStartTokens": 92,
+      "baselineFirstSearchMs": 20.5,
+      "baselineDefinitionTokens": 886,
+      "baselineStartTokens": 136
+    },
+    {
+      "name": "moby-chapters",
+      "about": "Moby Dick, one note per chapter, 20 facts planted",
+      "notes": 137,
+      "megabytes": 1.2,
+      "largestNoteBytes": 39660,
+      "pasteEverythingTokens": 291728,
+      "runs": [
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "keyword",
+          "limit": 5,
+          "questions": 20,
+          "found": 20,
+          "foundPct": 100,
+          "evidencePct": 100,
+          "goldListedPct": 100,
+          "mrr": 1,
+          "tokensMean": 75,
+          "tokensMedian": 75,
+          "tokensP90": 105,
+          "msMean": 4.6,
+          "msP95": 10.9,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 66
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 92
+            },
+            {
+              "id": "n03",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 77
+            },
+            {
+              "id": "n05",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 55
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n07",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 56
+            },
+            {
+              "id": "n08",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 105
+            },
+            {
+              "id": "n09",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 97
+            },
+            {
+              "id": "n10",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 93
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 52
+            },
+            {
+              "id": "n12",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 132
+            },
+            {
+              "id": "n13",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 59
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 81
+            },
+            {
+              "id": "n16",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 56
+            },
+            {
+              "id": "n18",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 69
+            },
+            {
+              "id": "n20",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 78
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "question",
+          "limit": 5,
+          "questions": 20,
+          "found": 8,
+          "foundPct": 40,
+          "evidencePct": 40,
+          "goldListedPct": 50,
+          "mrr": 0.4,
+          "tokensMean": 189,
+          "tokensMedian": 155,
+          "tokensP90": 388,
+          "msMean": 12.1,
+          "msP95": 19.7,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 80,
+              "evidencePct": 80
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 188
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 142
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 155
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 196
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 388
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 139
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 263
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 339
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 348
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 146
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 52
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 115
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 349
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 59
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 81
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 163
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 56
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 110
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 69
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 417
+            }
+          ]
+        },
+        {
+          "system": "current-ngram",
+          "set": "needles",
+          "style": "keyword",
+          "limit": 5,
+          "questions": 20,
+          "found": 20,
+          "foundPct": 100,
+          "evidencePct": 100,
+          "goldListedPct": 100,
+          "mrr": 1,
+          "tokensMean": 80,
+          "tokensMedian": 75,
+          "tokensP90": 132,
+          "msMean": 14.2,
+          "msP95": 23.5,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 66
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 92
+            },
+            {
+              "id": "n03",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 77
+            },
+            {
+              "id": "n05",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 55
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n07",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 56
+            },
+            {
+              "id": "n08",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 105
+            },
+            {
+              "id": "n09",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 97
+            },
+            {
+              "id": "n10",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 93
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 52
+            },
+            {
+              "id": "n12",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 132
+            },
+            {
+              "id": "n13",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 59
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 144
+            },
+            {
+              "id": "n16",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 89
+            },
+            {
+              "id": "n18",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 69
+            },
+            {
+              "id": "n20",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 78
+            }
+          ]
+        },
+        {
+          "system": "current-ngram",
+          "set": "needles",
+          "style": "question",
+          "limit": 5,
+          "questions": 20,
+          "found": 8,
+          "foundPct": 40,
+          "evidencePct": 40,
+          "goldListedPct": 50,
+          "mrr": 0.4,
+          "tokensMean": 309,
+          "tokensMedian": 330,
+          "tokensP90": 401,
+          "msMean": 20.8,
+          "msP95": 26.2,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 80,
+              "evidencePct": 80
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 381
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 305
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 155
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 196
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 386
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 327
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 408
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 393
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 382
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 353
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 191
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 115
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 365
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 307
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 146
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 330
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 324
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 387
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 321
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 401
+            }
+          ]
+        },
+        {
+          "system": "baseline",
+          "set": "needles",
+          "style": "oneword",
+          "limit": "old server",
+          "questions": 20,
+          "found": 20,
+          "foundPct": 100,
+          "evidencePct": 100,
+          "goldListedPct": 100,
+          "mrr": 0.831,
+          "tokensMean": 284,
+          "tokensMedian": 65,
+          "tokensP90": 300,
+          "msMean": 22.7,
+          "msP95": 25.6,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 68
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 147
+            },
+            {
+              "id": "n03",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 68
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 64
+            },
+            {
+              "id": "n05",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 64
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 63
+            },
+            {
+              "id": "n07",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 66
+            },
+            {
+              "id": "n08",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 64
+            },
+            {
+              "id": "n09",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 62
+            },
+            {
+              "id": "n10",
+              "found": true,
+              "listed": true,
+              "rank": 2,
+              "tokens": 152
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            },
+            {
+              "id": "n12",
+              "found": true,
+              "listed": true,
+              "rank": 3,
+              "tokens": 300
+            },
+            {
+              "id": "n13",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 28,
+              "tokens": 3732
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            },
+            {
+              "id": "n16",
+              "found": true,
+              "listed": true,
+              "rank": 4,
+              "tokens": 298
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 65
+            },
+            {
+              "id": "n18",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 64
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 2,
+              "tokens": 150
+            },
+            {
+              "id": "n20",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 60
+            }
+          ]
+        },
+        {
+          "system": "baseline",
+          "set": "needles",
+          "style": "keyword",
+          "limit": "old server",
+          "questions": 20,
+          "found": 5,
+          "foundPct": 25,
+          "evidencePct": 25,
+          "goldListedPct": 25,
+          "mrr": 0.25,
+          "tokensMean": 29,
+          "tokensMedian": 18,
+          "tokensP90": 68,
+          "msMean": 22,
+          "msP95": 24.3,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 40,
+              "evidencePct": 40
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 10,
+              "evidencePct": 10
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 70
+            },
+            {
+              "id": "n02",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 16
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 18
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 66
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 16
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 65
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 17
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 17
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 17
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 16
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 63
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 18
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 17
+            },
+            {
+              "id": "n14",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 16
+            },
+            {
+              "id": "n15",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 19
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 16
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 68
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 18
+            },
+            {
+              "id": "n19",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 18
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 15
+            }
+          ]
+        }
+      ],
+      "needleTruncation": [
+        {
+          "window": 8000,
+          "pct": 5
+        },
+        {
+          "window": 32000,
+          "pct": 15
+        },
+        {
+          "window": 128000,
+          "pct": 40
+        },
+        {
+          "window": 200000,
+          "pct": 65
+        },
+        {
+          "window": 1000000,
+          "pct": 100
+        }
+      ],
+      "currentFirstSearchMs": 360.8,
+      "currentDefinitionTokens": 558,
+      "currentStartTokens": 92,
+      "current-ngramFirstSearchMs": 410.5,
+      "current-ngramDefinitionTokens": 558,
+      "current-ngramStartTokens": 92,
+      "baselineFirstSearchMs": 21.8,
+      "baselineDefinitionTokens": 886,
+      "baselineStartTokens": 136
+    },
+    {
+      "name": "moby-one-note",
+      "about": "Moby Dick as a single note, 20 facts planted",
+      "notes": 1,
+      "megabytes": 1.2,
+      "largestNoteBytes": 1221138,
+      "pasteEverythingTokens": 289940,
+      "runs": [
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "keyword",
+          "limit": 5,
+          "questions": 20,
+          "found": 0,
+          "foundPct": 0,
+          "evidencePct": 0,
+          "goldListedPct": 0,
+          "mrr": 0,
+          "tokensMean": 35,
+          "tokensMedian": 35,
+          "tokensP90": 35,
+          "msMean": 1.4,
+          "msP95": 5.1,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n02",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n04",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n06",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n11",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n14",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n15",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n17",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n19",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "question",
+          "limit": 5,
+          "questions": 20,
+          "found": 0,
+          "foundPct": 0,
+          "evidencePct": 0,
+          "goldListedPct": 0,
+          "mrr": 0,
+          "tokensMean": 35,
+          "tokensMedian": 35,
+          "tokensP90": 35,
+          "msMean": 1.4,
+          "msP95": 3.7,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n02",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n04",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n06",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n11",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n14",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n15",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n17",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n19",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 35
+            }
+          ]
+        }
+      ],
+      "needleTruncation": [
+        {
+          "window": 8000,
+          "pct": 5
+        },
+        {
+          "window": 32000,
+          "pct": 15
+        },
+        {
+          "window": 128000,
+          "pct": 40
+        },
+        {
+          "window": 200000,
+          "pct": 65
+        },
+        {
+          "window": 1000000,
+          "pct": 100
+        }
+      ],
+      "currentFirstSearchMs": 3.2,
+      "currentDefinitionTokens": 558,
+      "currentStartTokens": 123
+    },
+    {
+      "name": "emma-chapters",
+      "about": "Emma, one note per chapter, 20 facts planted",
+      "notes": 56,
+      "megabytes": 0.9,
+      "largestNoteBytes": 35951,
+      "pasteEverythingTokens": 202905,
+      "runs": [
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "keyword",
+          "limit": 5,
+          "questions": 20,
+          "found": 20,
+          "foundPct": 100,
+          "evidencePct": 100,
+          "goldListedPct": 100,
+          "mrr": 1,
+          "tokensMean": 69,
+          "tokensMedian": 61,
+          "tokensP90": 114,
+          "msMean": 2.8,
+          "msP95": 5.4,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 114
+            },
+            {
+              "id": "n03",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 114
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 64
+            },
+            {
+              "id": "n05",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 100
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 49
+            },
+            {
+              "id": "n07",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 51
+            },
+            {
+              "id": "n08",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 117
+            },
+            {
+              "id": "n09",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 73
+            },
+            {
+              "id": "n10",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 63
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 48
+            },
+            {
+              "id": "n12",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 55
+            },
+            {
+              "id": "n13",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 53
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 47
+            },
+            {
+              "id": "n16",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n18",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 71
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 65
+            },
+            {
+              "id": "n20",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 51
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "question",
+          "limit": 5,
+          "questions": 20,
+          "found": 8,
+          "foundPct": 40,
+          "evidencePct": 40,
+          "goldListedPct": 45,
+          "mrr": 0.4,
+          "tokensMean": 139,
+          "tokensMedian": 112,
+          "tokensP90": 353,
+          "msMean": 12.6,
+          "msP95": 22.8,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 80,
+              "evidencePct": 80
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 98
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 114
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 96
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 113
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 330
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 72
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 184
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 94
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 252
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 114
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 48
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 128
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 358
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 53
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 47
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 99
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 112
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 65
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 353
+            }
+          ]
+        }
+      ],
+      "needleTruncation": [
+        {
+          "window": 8000,
+          "pct": 5
+        },
+        {
+          "window": 32000,
+          "pct": 20
+        },
+        {
+          "window": 128000,
+          "pct": 65
+        },
+        {
+          "window": 200000,
+          "pct": 95
+        },
+        {
+          "window": 1000000,
+          "pct": 100
+        }
+      ],
+      "currentFirstSearchMs": 191.8,
+      "currentDefinitionTokens": 558,
+      "currentStartTokens": 92
+    },
+    {
+      "name": "emma-one-note",
+      "about": "Emma as a single note, 20 facts planted",
+      "notes": 1,
+      "megabytes": 0.9,
+      "largestNoteBytes": 888002,
+      "pasteEverythingTokens": 202349,
+      "runs": [
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "keyword",
+          "limit": 5,
+          "questions": 20,
+          "found": 20,
+          "foundPct": 100,
+          "evidencePct": 100,
+          "goldListedPct": 100,
+          "mrr": 1,
+          "tokensMean": 59,
+          "tokensMedian": 53,
+          "tokensP90": 104,
+          "msMean": 1.4,
+          "msP95": 3.9,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 53
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 104
+            },
+            {
+              "id": "n03",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 104
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 54
+            },
+            {
+              "id": "n05",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 90
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 39
+            },
+            {
+              "id": "n07",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 42
+            },
+            {
+              "id": "n08",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 107
+            },
+            {
+              "id": "n09",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 63
+            },
+            {
+              "id": "n10",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 53
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 38
+            },
+            {
+              "id": "n12",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 45
+            },
+            {
+              "id": "n13",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 48
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 43
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 41
+            },
+            {
+              "id": "n16",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 48
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 48
+            },
+            {
+              "id": "n18",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 55
+            },
+            {
+              "id": "n20",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 41
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "question",
+          "limit": 5,
+          "questions": 20,
+          "found": 8,
+          "foundPct": 40,
+          "evidencePct": 40,
+          "goldListedPct": 100,
+          "mrr": 0.4,
+          "tokensMean": 94,
+          "tokensMedian": 92,
+          "tokensP90": 162,
+          "msMean": 5.9,
+          "msP95": 11.7,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 80,
+              "evidencePct": 80
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 88
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 104
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 86
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 103
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 126
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 62
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 164
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 84
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 162
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 94
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 38
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 118
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 155
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 43
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 41
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 79
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 48
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 92
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 55
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": true,
+              "rank": 0,
+              "tokens": 141
+            }
+          ]
+        }
+      ],
+      "needleTruncation": [
+        {
+          "window": 8000,
+          "pct": 5
+        },
+        {
+          "window": 32000,
+          "pct": 20
+        },
+        {
+          "window": 128000,
+          "pct": 65
+        },
+        {
+          "window": 200000,
+          "pct": 95
+        },
+        {
+          "window": 1000000,
+          "pct": 100
+        }
+      ],
+      "currentFirstSearchMs": 141.6,
+      "currentDefinitionTokens": 558,
+      "currentStartTokens": 92
+    },
+    {
+      "name": "library",
+      "about": "Everything together: 18 books by chapter (facts in Moby Dick) and the 48 articles",
+      "notes": 587,
+      "megabytes": 13.3,
+      "largestNoteBytes": 85639,
+      "pasteEverythingTokens": 3157635,
+      "runs": [
+        {
+          "system": "current",
+          "set": "squad-sample",
+          "style": "keywords",
+          "limit": 5,
+          "questions": 1000,
+          "found": 810,
+          "foundPct": 81,
+          "evidencePct": 76.6,
+          "goldListedPct": 97.1,
+          "mrr": 0.767,
+          "tokensMean": 198,
+          "tokensMedian": 173,
+          "tokensP90": 309,
+          "msMean": 43,
+          "msP95": 72.5,
+          "byType": {
+            "how": {
+              "questions": 130,
+              "foundPct": 82.3,
+              "evidencePct": 80.8
+            },
+            "other": {
+              "questions": 19,
+              "foundPct": 73.7,
+              "evidencePct": 57.9
+            },
+            "what": {
+              "questions": 565,
+              "foundPct": 81.2,
+              "evidencePct": 76.8
+            },
+            "when": {
+              "questions": 65,
+              "foundPct": 83.1,
+              "evidencePct": 81.5
+            },
+            "where": {
+              "questions": 44,
+              "foundPct": 75,
+              "evidencePct": 72.7
+            },
+            "which": {
+              "questions": 65,
+              "foundPct": 83.1,
+              "evidencePct": 78.5
+            },
+            "who": {
+              "questions": 105,
+              "foundPct": 80,
+              "evidencePct": 72.4
+            },
+            "why": {
+              "questions": 7,
+              "foundPct": 71.4,
+              "evidencePct": 57.1
+            }
+          },
+          "byOverlap": {
+            "high (2/3 or more)": {
+              "questions": 399,
+              "foundPct": 93.2,
+              "evidencePct": 91
+            },
+            "low (under 1/3 of words in the answer sentence)": {
+              "questions": 194,
+              "foundPct": 53.1,
+              "evidencePct": 44.8
+            },
+            "medium": {
+              "questions": 407,
+              "foundPct": 82.3,
+              "evidencePct": 77.6
+            }
+          },
+          "missedExamples": [
+            {
+              "question": "What social construct did Huguenot refugees in Canterbury practice?",
+              "answer": "economic separation",
+              "query": "social construct Huguenot refugees Canterbury practice",
+              "article": "Huguenot"
+            },
+            {
+              "question": "What river runs through Warsaw?",
+              "answer": "Vistula River",
+              "query": "river runs Warsaw",
+              "article": "Warsaw"
+            },
+            {
+              "question": "What did Aristotle refer to forced motion as?",
+              "answer": "unnatural",
+              "query": "Aristotle refer forced motion",
+              "article": "Force"
+            },
+            {
+              "question": "What type of cascade results when complement proteins bind to microbes and activate their protease activity?",
+              "answer": "catalytic cascade",
+              "query": "type cascade results complement proteins bind microbes activate protease activity",
+              "article": "Immune system"
+            },
+            {
+              "question": "Which husband and wife modern furniture design team are represented in the V&A furniture collection?",
+              "answer": "Charles and Ray Eames",
+              "query": "husband wife modern furniture design team represented V furniture collection",
+              "article": "Victoria and Albert Museum"
+            },
+            {
+              "question": "How did Luther respond after being asked if the books were his?",
+              "answer": "confirmed",
+              "query": "Luther respond asked books",
+              "article": "Martin Luther"
+            },
+            {
+              "question": "What Catholic Church liturgical belief did Lortie criticize openly?",
+              "answer": "the doctrine of transubstantiation",
+              "query": "Catholic Church liturgical belief Lortie criticize openly",
+              "article": "Huguenot"
+            },
+            {
+              "question": "What do students do after primary school?",
+              "answer": "join a vocational youth/village polytechnic or make their own arrangements for an apprenticeship program",
+              "query": "students primary school",
+              "article": "Kenya"
+            },
+            {
+              "question": "Which architect, famous for the India Gate in New Delhi, is represented in the RIBA collection?",
+              "answer": "Sir Edwin Lutyens",
+              "query": "architect famous India Gate New Delhi represented RIBA collection",
+              "article": "Victoria and Albert Museum"
+            },
+            {
+              "question": "Most imperialism was carried out using which method of transport?",
+              "answer": "seaborne",
+              "query": "imperialism carried using method transport",
+              "article": "Imperialism"
+            },
+            {
+              "question": "What is an examine of work that a centrifugal governor-equipped steam engine wasn't suitable for?",
+              "answer": "cotton spinning",
+              "query": "examine work centrifugal governor-equipped steam engine wasn't suitable",
+              "article": "Steam engine"
+            },
+            {
+              "question": "What type of entrepreneurship leads to advancements in technology?",
+              "answer": "opportunity-based entrepreneurship",
+              "query": "type entrepreneurship leads advancements technology",
+              "article": "Economic inequality"
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "squad-sample",
+          "style": "question",
+          "limit": 5,
+          "questions": 1000,
+          "found": 808,
+          "foundPct": 80.8,
+          "evidencePct": 76.4,
+          "goldListedPct": 97.1,
+          "mrr": 0.765,
+          "tokensMean": 198,
+          "tokensMedian": 174,
+          "tokensP90": 309,
+          "msMean": 44.7,
+          "msP95": 74.9,
+          "byType": {
+            "how": {
+              "questions": 130,
+              "foundPct": 80.8,
+              "evidencePct": 79.2
+            },
+            "other": {
+              "questions": 19,
+              "foundPct": 73.7,
+              "evidencePct": 57.9
+            },
+            "what": {
+              "questions": 565,
+              "foundPct": 81.2,
+              "evidencePct": 76.8
+            },
+            "when": {
+              "questions": 65,
+              "foundPct": 83.1,
+              "evidencePct": 81.5
+            },
+            "where": {
+              "questions": 44,
+              "foundPct": 75,
+              "evidencePct": 72.7
+            },
+            "which": {
+              "questions": 65,
+              "foundPct": 83.1,
+              "evidencePct": 78.5
+            },
+            "who": {
+              "questions": 105,
+              "foundPct": 80,
+              "evidencePct": 72.4
+            },
+            "why": {
+              "questions": 7,
+              "foundPct": 71.4,
+              "evidencePct": 57.1
+            }
+          },
+          "byOverlap": {
+            "high (2/3 or more)": {
+              "questions": 399,
+              "foundPct": 93.2,
+              "evidencePct": 91
+            },
+            "low (under 1/3 of words in the answer sentence)": {
+              "questions": 194,
+              "foundPct": 53.1,
+              "evidencePct": 44.8
+            },
+            "medium": {
+              "questions": 407,
+              "foundPct": 81.8,
+              "evidencePct": 77.1
+            }
+          }
+        },
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "keyword",
+          "limit": 5,
+          "questions": 20,
+          "found": 20,
+          "foundPct": 100,
+          "evidencePct": 100,
+          "goldListedPct": 100,
+          "mrr": 1,
+          "tokensMean": 86,
+          "tokensMedian": 75,
+          "tokensP90": 132,
+          "msMean": 20.1,
+          "msP95": 36.5,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 66
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 256
+            },
+            {
+              "id": "n03",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 77
+            },
+            {
+              "id": "n05",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 55
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n07",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 56
+            },
+            {
+              "id": "n08",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 105
+            },
+            {
+              "id": "n09",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 97
+            },
+            {
+              "id": "n10",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 93
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 52
+            },
+            {
+              "id": "n12",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 132
+            },
+            {
+              "id": "n13",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 59
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 81
+            },
+            {
+              "id": "n16",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 58
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 56
+            },
+            {
+              "id": "n18",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 75
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 69
+            },
+            {
+              "id": "n20",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 120
+            }
+          ]
+        },
+        {
+          "system": "current",
+          "set": "needles",
+          "style": "question",
+          "limit": 5,
+          "questions": 20,
+          "found": 8,
+          "foundPct": 40,
+          "evidencePct": 40,
+          "goldListedPct": 40,
+          "mrr": 0.4,
+          "tokensMean": 220,
+          "tokensMedian": 244,
+          "tokensP90": 372,
+          "msMean": 41.3,
+          "msP95": 71.9,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 80,
+              "evidencePct": 80
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 0,
+              "evidencePct": 0
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 361
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 92
+            },
+            {
+              "id": "n03",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 123
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 129
+            },
+            {
+              "id": "n05",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 244
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 139
+            },
+            {
+              "id": "n07",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 372
+            },
+            {
+              "id": "n08",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 313
+            },
+            {
+              "id": "n09",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 398
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 333
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 52
+            },
+            {
+              "id": "n12",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 304
+            },
+            {
+              "id": "n13",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 349
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 115
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 81
+            },
+            {
+              "id": "n16",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 314
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 56
+            },
+            {
+              "id": "n18",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 188
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 69
+            },
+            {
+              "id": "n20",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 366
+            }
+          ]
+        },
+        {
+          "system": "baseline",
+          "set": "needles",
+          "style": "oneword",
+          "limit": "old server",
+          "questions": 20,
+          "found": 19,
+          "foundPct": 95,
+          "evidencePct": 95,
+          "goldListedPct": 95,
+          "mrr": 0.754,
+          "tokensMean": 698,
+          "tokensMedian": 68,
+          "tokensP90": 3718,
+          "msMean": 128.1,
+          "msP95": 225.6,
+          "byOverlap": {
+            "name": {
+              "questions": 10,
+              "foundPct": 100,
+              "evidencePct": 100
+            },
+            "none": {
+              "questions": 10,
+              "foundPct": 90,
+              "evidencePct": 90
+            }
+          },
+          "perNeedle": [
+            {
+              "id": "n01",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 68
+            },
+            {
+              "id": "n02",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 797
+            },
+            {
+              "id": "n03",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 68
+            },
+            {
+              "id": "n04",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 64
+            },
+            {
+              "id": "n05",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 65
+            },
+            {
+              "id": "n06",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 63
+            },
+            {
+              "id": "n07",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 66
+            },
+            {
+              "id": "n08",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 211
+            },
+            {
+              "id": "n09",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 141
+            },
+            {
+              "id": "n10",
+              "found": false,
+              "listed": false,
+              "rank": 0,
+              "tokens": 3480
+            },
+            {
+              "id": "n11",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            },
+            {
+              "id": "n12",
+              "found": true,
+              "listed": true,
+              "rank": 4,
+              "tokens": 381
+            },
+            {
+              "id": "n13",
+              "found": true,
+              "listed": true,
+              "rank": 17,
+              "tokens": 3772
+            },
+            {
+              "id": "n14",
+              "found": true,
+              "listed": true,
+              "rank": 43,
+              "tokens": 3718
+            },
+            {
+              "id": "n15",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            },
+            {
+              "id": "n16",
+              "found": true,
+              "listed": true,
+              "rank": 4,
+              "tokens": 599
+            },
+            {
+              "id": "n17",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 65
+            },
+            {
+              "id": "n18",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 64
+            },
+            {
+              "id": "n19",
+              "found": true,
+              "listed": true,
+              "rank": 2,
+              "tokens": 150
+            },
+            {
+              "id": "n20",
+              "found": true,
+              "listed": true,
+              "rank": 1,
+              "tokens": 61
+            }
+          ]
+        },
+        {
+          "system": "baseline",
+          "set": "squad-sample",
+          "style": "oneword",
+          "limit": "old server",
+          "questions": 300,
+          "found": 162,
+          "foundPct": 54,
+          "evidencePct": 47.3,
+          "goldListedPct": 78.3,
+          "mrr": 0.235,
+          "tokensMean": 1299,
+          "tokensMedian": 650,
+          "tokensP90": 3688,
+          "msMean": 129.2,
+          "msP95": 159.1
+        },
+        {
+          "system": "current",
+          "set": "narrativeqa",
+          "style": "keywords",
+          "limit": 5,
+          "questions": 146,
+          "found": 18,
+          "foundPct": 12.3,
+          "rightBookSharePct": 69.2,
+          "topRightBookPct": 73.3,
+          "mrr": 0.077,
+          "tokensMean": 327,
+          "tokensMedian": 333,
+          "tokensP90": 387,
+          "msMean": 45,
+          "msP95": 75.1,
+          "byBook": {
+            "Emma": {
+              "questions": 29,
+              "foundPct": 13.8
+            },
+            "Paradise Lost": {
+              "questions": 29,
+              "foundPct": 10.3
+            },
+            "Persuasion": {
+              "questions": 29,
+              "foundPct": 10.3
+            },
+            "Sense and Sensibility": {
+              "questions": 30,
+              "foundPct": 10
+            },
+            "The Man Who Was Thursday": {
+              "questions": 29,
+              "foundPct": 17.2
+            }
+          },
+          "note": "found is not meaningful here: NarrativeQA answers are free text written from plot summaries, and many are not in the book word for word. Use topRightBookPct."
+        },
+        {
+          "system": "current",
+          "set": "narrativeqa",
+          "style": "question",
+          "limit": 5,
+          "questions": 146,
+          "found": 18,
+          "foundPct": 12.3,
+          "rightBookSharePct": 68.5,
+          "topRightBookPct": 73.3,
+          "mrr": 0.075,
+          "tokensMean": 329,
+          "tokensMedian": 335,
+          "tokensP90": 389,
+          "msMean": 46,
+          "msP95": 76,
+          "byBook": {
+            "Emma": {
+              "questions": 29,
+              "foundPct": 13.8
+            },
+            "Paradise Lost": {
+              "questions": 29,
+              "foundPct": 10.3
+            },
+            "Persuasion": {
+              "questions": 29,
+              "foundPct": 10.3
+            },
+            "Sense and Sensibility": {
+              "questions": 30,
+              "foundPct": 10
+            },
+            "The Man Who Was Thursday": {
+              "questions": 29,
+              "foundPct": 17.2
+            }
+          },
+          "note": "found is not meaningful here: NarrativeQA answers are free text written from plot summaries, and many are not in the book word for word. Use topRightBookPct."
+        }
+      ],
+      "truncation": [
+        {
+          "window": 8000,
+          "pct": 0
+        },
+        {
+          "window": 32000,
+          "pct": 0
+        },
+        {
+          "window": 128000,
+          "pct": 0
+        },
+        {
+          "window": 200000,
+          "pct": 0
+        },
+        {
+          "window": 1000000,
+          "pct": 0
+        }
+      ],
+      "needleTruncation": [
+        {
+          "window": 8000,
+          "pct": 0
+        },
+        {
+          "window": 32000,
+          "pct": 0
+        },
+        {
+          "window": 128000,
+          "pct": 0
+        },
+        {
+          "window": 200000,
+          "pct": 0
+        },
+        {
+          "window": 1000000,
+          "pct": 100
+        }
+      ],
+      "bookTokens": {
+        "Emma": 201979,
+        "Persuasion": 103353,
+        "Sense and Sensibility": 149104,
+        "The King James Bible": 1089810,
+        "Poems of William Blake": 8980,
+        "Stories to Tell to Children": 57306,
+        "The Adventures of Buster Bear": 19476,
+        "Alice's Adventures in Wonderland": 34390,
+        "The Ball and the Cross": 104356,
+        "The Wisdom of Father Brown": 90984,
+        "The Man Who Was Thursday": 72058,
+        "The Parent's Assistant": 220313,
+        "Moby Dick": 289568,
+        "Paradise Lost": 107568,
+        "Julius Caesar": 31136,
+        "Hamlet": 44752,
+        "Macbeth": 27960,
+        "Leaves of Grass": 165428
+      },
+      "currentFirstSearchMs": 3238.6,
+      "currentDefinitionTokens": 558,
+      "currentStartTokens": 92,
+      "baselineFirstSearchMs": 148.2,
+      "baselineDefinitionTokens": 886,
+      "baselineStartTokens": 136
+    }
+  ],
+  "safety": {
+    "notes": 587,
+    "flaggedAsInstructions": 0,
+    "withSecretsMasked": 1,
+    "withPersonalDataMasked": 1,
+    "withHiddenTextRemoved": 0,
+    "examples": [
+      {
+        "kind": "mask",
+        "note": "Books/The Ball and the Cross/012.md",
+        "text": "Produced by Ben Crowder <crowderb@blankslate.net> => Produced by Ben Crowder <[email removed]>"
+      },
+      {
+        "kind": "mask",
+        "note": "Books/Paradise Lost/012.md",
+        "text": "00482129 If answerable style I can obtain Of my celestial patroness, who deigns Her nightly visitation unimplor'd, And dictates to me slumbering; or inspires Easy my unpremeditated verse: Since first  => 00482129 If answerable style I can obtain Of my celestial patroness, who deigns Her nightly visitation unimplor'd, And dictates to me slumbering; or inspires Easy my unpremeditated verse: Since first "
+      }
+    ],
+    "squadAnswersHiddenByMasking": 0,
+    "squadAnswersHiddenExamples": []
+  },
+  "minutes": 13.6
+}

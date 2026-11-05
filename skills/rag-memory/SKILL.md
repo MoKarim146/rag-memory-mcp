@@ -21,12 +21,18 @@ trail for the next one, while spending as few tokens as possible.
 
 - **Search before reading.** Call `search_memory` first. Call `read_note` only when a snippet is not enough,
   and only for a path the search listed.
-- **Search with 1 to 3 words the note itself would use**, such as a name, number, error code or tool name:
-  `Twilio`, `TM-429`, `row level security`. Avoid pasting the user's whole question. On this project's three
-  test sets, keyword searches found 94 of 95 answers; full questions found 88 of 95 and used about 18% more
-  tokens.
-- If a search misses, try once more with a different word (a synonym, or the name of the feature), then read
-  the most likely note it listed. Do not loop.
+- **Search with the specific words the note itself would use**: names, numbers, error codes, product names,
+  such as `Twilio cost`, `TM-429` or `row level security`. On this project's three small test sets, such
+  hand-picked words found 94 of 95 answers and the plain questions 88 of 95.
+- **Use more than one word.** On 10,570 questions about Wikipedia articles, a single word found 43.6% of answers
+  and all the words of the question 82.3%. Common words such as "what" and "the" are ignored, so the user's
+  whole question is a fair fallback.
+- **Search with the note's words, not the user's**, when they are likely to differ. Search matches words, not
+  meaning: a question sharing no word with the note ("the bird at work" for "the office parrot") finds nothing.
+- If a search misses, try once more with different words (a synonym, or the name of the feature or person), then
+  read the most likely note it listed. Do not loop.
+- For a question about a whole story or a long document ("why did they…"), snippets are not enough: read the
+  relevant notes.
 - A hit labelled `match="partial"` is a weak match. Check that it really answers the question.
 - When notes disagree, trust the newest one. Decisions are dated; a later decision replaces an earlier one.
 - Keep the default `limit` (5). Ask for more only when the user wants a list.

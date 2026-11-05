@@ -255,9 +255,24 @@ and task logs. They are **synthetic**: good for speed and size, not for answer q
 - The heavy tests also build a 10,000-note vault and check it stays within generous limits (index under 2
   minutes, a search under 5 seconds, under 1.5 GB of memory growth).
 
+## Real books and outside questions
+
+A separate benchmark uses real text and questions written by other people: [docs/book-benchmark.md](docs/book-benchmark.md).
+In short:
+
+- **10,570 SQuAD questions** about 48 Wikipedia articles (330,795 tokens): the answer reached the AI for 82.3%,
+  at 186 tokens per search. Pasting as much as fits in 200,000 tokens covers 54.7%; the right article alone, if
+  you knew which, is 6,885 tokens.
+- **20 made-up facts hidden in Moby Dick** (291,728 tokens): 20 of 20 found with words from the fact; 8 of 10
+  with reworded questions that keep a name; 0 of 10 with questions sharing no word with the fact.
+- **One word is not enough:** the question's rarest single word found 43.6% of SQuAD answers.
+- **It found two bugs**, both fixed: a note over 1 MB was left out of search without any message, and dialogue
+  such as "You are now going to leave me" was flagged as an order to an AI in 5 of 587 book chapters.
+
 ## Limits of this benchmark
 
-- Three small fake vaults and one tokenizer. A real vault will behave differently.
+- Three small fake vaults and one tokenizer. A real vault will behave differently; the book benchmark above uses
+  real text.
 - The scripted agent is ideal and simple. Real AIs sometimes search twice, read the wrong note, or skip searching.
   Every setup got the same agent.
 - "Answered" means the answer text was in what the AI received, not that an AI then answered correctly.
