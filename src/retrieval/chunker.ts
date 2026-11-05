@@ -132,3 +132,112 @@ function hardSplit(text: string, maxChars: number): string[] {
   }
   return parts;
 }
+
+// Passages are the units search ranks: one list item (with its indented continuation lines), one paragraph,
+// one table row or one code block. Small units make ranking precise ("which bullet answers this?"); the
+// section they belong to is what gets shown, so the answer keeps its context.
+export const MAX_PASSAGE_CHARS = 400;
+
+export interface Passage {
+  text: string;
+  context: string; // extra words that help matching but are not shown, e.g. a table's header row
+}
+
+const LIST_ITEM = /^\s*([-*+]|\d+[.)])\s/;
+const TABLE_ROW = /^\s*\|/;
+const TABLE_RULE = /^\s*\|?\s*:?-{3,}/;
+
+export function splitPassages(text: string, maxChars = MAX_PASSAGE_CHARS): Passage[] {
+  const passages: Passage[] = [];
+  let buffer: string[] = [];
+  let kind: "prose" | "list" | "code" | null = null;
+  let tableHeader = "";
+  let inFence = false;
+
+  const flush = () => {
+    const joined = buffer.join("\n").trim();
+    if (joined) {
+      for (const piece of splitLong(joined, maxChars)) {
+        passages.push({ text: piece, context: "" });
+      }
+    }
+    buffer = [];
+    kind = null;
+  };
+
+  for (const line of text.split("\n")) {
+    if (inFence) {
+      buffer.push(line);
+      if (FENCE.test(line)) {
+        inFence = false;
+        flush();
+      }
+      continue;
+    }
+    if (FENCE.test(line)) {
+      flush();
+      inFence = true;
+      kind = "code";
+      buffer.push(line);
+      continue;
+    }
+    if (!line.trim()) {
+      flush();
+      tableHeader = "";
+      continue;
+    }
+    if (TABLE_ROW.test(line)) {
+      flush();
+      if (TABLE_RULE.test(line)) {
+        continue;
+      }
+      if (!tableHeader) {
+        tableHeader = line;
+      }
+      passages.push({ text: line.trim(), context: line === tableHeader ? "" : tableHeader });
+      continue;
+    }
+    if (LIST_ITEM.test(line)) {
+      flush();
+      kind = "list";
+      buffer.push(line);
+      continue;
+    }
+    if (kind === "list" && /^\s+\S/.test(line)) {
+      buffer.push(line); // continuation of the list item above
+      continue;
+    }
+    if (kind !== "prose") {
+      flush();
+      kind = "prose";
+    }
+    buffer.push(line);
+  }
+  flush();
+  return passages;
+}
+
+// Splits a long passage at sentence ends, or at spaces if a sentence is itself too long.
+function splitLong(text: string, maxChars: number): string[] {
+  if (text.length <= maxChars) {
+    return [text];
+  }
+  const sentences = text.match(/[^.!?]+(?:[.!?]+|$)\s*/g) ?? [text];
+  const pieces: string[] = [];
+  let current = "";
+  for (const sentence of sentences) {
+    if (current && current.length + sentence.length > maxChars) {
+      pieces.push(current.trim());
+      current = "";
+    }
+    if (sentence.length > maxChars) {
+      pieces.push(...hardSplit(sentence, maxChars).map((p) => p.trim()));
+      continue;
+    }
+    current += sentence;
+  }
+  if (current.trim()) {
+    pieces.push(current.trim());
+  }
+  return pieces.filter(Boolean);
+}

@@ -1,17 +1,25 @@
-// The search index: SQLite FTS5 keyword search over note chunks, with optional vectors on top.
+// The search index: SQLite FTS5 keyword search with optional vectors on top.
+//
+// How a search works ("small-to-big" retrieval):
+//   1. Every note is cut into sections (one heading's text) and every section into passages (one list item,
+//      paragraph, table row or code block). Passages are what the keyword search ranks, so a single bullet
+//      that answers the question can win on its own.
+//   2. Matching passages are grouped back into their sections. A section's score is its best passage's score.
+//   3. Weak hits are dropped: for questions of 3+ words a section must match 2 of them, and a section must
+//      score at least RELATIVE_CUTOFF of the best section's score.
+//   4. The best section shows its best passage with the passages around it; the others show only their
+//      matching passages. If nothing passes step 3, up to 2 partial matches are returned, labelled as such.
 //
 // - The index lives in memory only (an in-memory SQLite database). Nothing is written to disk.
-// - It is built the first time someone searches, and brought up to date before every search: notes whose
-//   size or modification time changed are re-read, deleted notes are dropped. There is no file watcher
-//   and no background job.
-// - It only sees the notes that read_note is allowed to read, because it lists and reads them through the
-//   same functions in memory.ts.
+// - It is built the first time someone searches and brought up to date before every search: notes whose
+//   size or modification time changed are re-read, deleted notes are dropped. No file watcher, no background job.
+// - It only sees the notes read_note is allowed to read, because it lists and reads them through memory.ts.
 
 import { DatabaseSync } from "node:sqlite";
 import { createHash } from "node:crypto";
 import { listNoteFiles, readNoteText, type MemoryConfig } from "../memory.js";
 import { prepareNoteText } from "../safety.js";
-import { chunkMarkdown, MAX_CHUNK_CHARS } from "./chunker.js";
+import { chunkMarkdown, splitPassages } from "./chunker.js";
 import { createEmbedder, dot, type Embedder } from "./embeddings.js";
 
 export const DEFAULT_RESULT_LIMIT = 5;
@@ -19,32 +27,47 @@ export const MAX_RESULT_LIMIT = 10;
 export const MAX_QUERY_CHARS = 500;
 const MAX_QUERY_TERMS = 16;
 const MAX_HITS_PER_FILE = 2;
-const CANDIDATES = 50;
+const PASSAGE_CANDIDATES = 200;
+const VECTOR_CANDIDATES = 50;
 const RRF_K = 60;
 const EMBED_BATCH = 16;
 const EMBED_TIME_BUDGET_MS = 10_000;
+// A section is kept only if its score is at least this share of the best section's score.
+export const RELATIVE_CUTOFF = 0.5;
+// When nothing matches well, at most this many partial matches are returned.
+const PARTIAL_LIMIT = 2;
+
+// Output size. The best hit shows up to TOP_HIT_CHARS around its best passage; the others show only their
+// matching passages, up to SNIPPET_CHARS each. read_note gives the full note when needed.
+export const TOP_HIT_CHARS = 600;
+export const SNIPPET_CHARS = 200;
 
 export interface SearchHit {
   path: string;
   heading: string;
-  text: string; // the whole chunk
-  snippet: string; // what search_memory shows: the matching lines of the chunk
+  text: string; // the whole section
+  snippet: string; // what search_memory shows
   ordinal: number;
   suspicious: boolean; // the note contains instruction-like text somewhere
+  partial: boolean; // a weak match, returned only because nothing matched well
+  updated: string; // the note's last modification date, YYYY-MM-DD
 }
 
-// Search output size. The best hit shows its whole section (up to MAX_CHUNK_CHARS); the others show only
-// the lines that match the query, up to SNIPPET_CHARS each. read_note gives the full note when needed.
-export const TOP_HIT_CHARS = MAX_CHUNK_CHARS;
-export const SNIPPET_CHARS = 300;
-
-interface ChunkRow {
+interface SectionRow {
   id: number;
   path: string;
   ordinal: number;
   heading: string;
   text: string;
-  hash: string;
+  suspicious: number;
+  mtime: number;
+}
+
+interface PassageRow {
+  id: number;
+  section_id: number;
+  pindex: number;
+  text: string;
 }
 
 // Common English words that carry no meaning for search. Dropping them stops "what did we decide about X"
@@ -83,7 +106,7 @@ function minimumTermsMatched(termCount: number): number {
 
 export class MemoryIndex {
   private readonly db: DatabaseSync;
-  private readonly vectors = new Map<string, Float32Array>(); // keyed by chunk text hash
+  private readonly vectors = new Map<string, Float32Array>(); // keyed by section text hash
   private pending: Promise<void> | undefined;
 
   constructor(
@@ -93,7 +116,7 @@ export class MemoryIndex {
     this.db = new DatabaseSync(":memory:");
     this.db.exec(`
       CREATE TABLE files (path TEXT PRIMARY KEY, mtime REAL NOT NULL, size INTEGER NOT NULL, suspicious INTEGER NOT NULL);
-      CREATE TABLE chunks (
+      CREATE TABLE sections (
         id INTEGER PRIMARY KEY,
         path TEXT NOT NULL,
         ordinal INTEGER NOT NULL,
@@ -101,8 +124,15 @@ export class MemoryIndex {
         text TEXT NOT NULL,
         hash TEXT NOT NULL
       );
-      CREATE INDEX chunks_by_path ON chunks(path);
-      CREATE VIRTUAL TABLE chunks_fts USING fts5(title, body, tokenize = 'porter unicode61 remove_diacritics 2');
+      CREATE INDEX sections_by_path ON sections(path);
+      CREATE TABLE passages (
+        id INTEGER PRIMARY KEY,
+        section_id INTEGER NOT NULL,
+        pindex INTEGER NOT NULL,
+        text TEXT NOT NULL
+      );
+      CREATE INDEX passages_by_section ON passages(section_id);
+      CREATE VIRTUAL TABLE passages_fts USING fts5(title, body, tokenize = 'porter unicode61 remove_diacritics 2');
     `);
   }
 
@@ -120,34 +150,57 @@ export class MemoryIndex {
     await this.refresh();
 
     const terms = queryTerms(query);
-    const marked = new Map<number, string>(); // chunk id -> body with matched words wrapped in \u0001 \u0002
-    let keywordIds: number[] = [];
+    const marked = new Map<number, string>(); // passage id -> text with matched words wrapped in \u0001 \u0002
+    const sectionScore = new Map<number, number>(); // section id -> best (lowest) bm25 of its passages
+    const sectionPassages = new Map<number, number[]>(); // section id -> its matching passage ids, best first
+    let strict: number[] = [];
+    let loose: number[] = [];
+
     if (terms.length > 0) {
       const rows = this.db
         .prepare(
-          `SELECT rowid AS id, highlight(chunks_fts, 1, char(1), char(2)) AS marked FROM chunks_fts
-           WHERE chunks_fts MATCH ? ORDER BY bm25(chunks_fts, 2.0, 1.0) LIMIT ${CANDIDATES}`,
+          `SELECT f.rowid AS id, p.section_id AS section, bm25(passages_fts, 2.0, 1.0) AS score,
+                  highlight(passages_fts, 1, char(1), char(2)) AS marked
+           FROM passages_fts f JOIN passages p ON p.id = f.rowid
+           WHERE passages_fts MATCH ? ORDER BY score LIMIT ${PASSAGE_CANDIDATES}`,
         )
-        .all(terms.map((term) => `"${term}"`).join(" OR ")) as { id: number; marked: string }[];
+        .all(terms.map((term) => `"${term}"`).join(" OR ")) as { id: number; section: number; score: number; marked: string }[];
+
       for (const row of rows) {
         marked.set(row.id, row.marked);
+        if (!sectionScore.has(row.section)) {
+          sectionScore.set(row.section, row.score);
+        }
+        const list = sectionPassages.get(row.section) ?? [];
+        list.push(row.id);
+        sectionPassages.set(row.section, list);
       }
-      keywordIds = this.filterByTermCoverage(
-        rows.map((row) => row.id),
-        terms,
-      );
+
+      loose = [...sectionScore.keys()]; // already in best-score order, because rows were
+      const covered = this.sectionsCoveringEnoughTerms(rows, terms);
+      const coveredList = loose.filter((id) => covered.has(id));
+      const best = coveredList.length > 0 ? sectionScore.get(coveredList[0])! : 0;
+      strict = coveredList.filter((id) => sectionScore.get(id)! <= best * RELATIVE_CUTOFF);
     }
 
     const vectorIds = this.embedder ? await this.vectorSearch(query) : [];
-    const ranked = vectorIds.length > 0 ? fuse([keywordIds, vectorIds]) : keywordIds;
+    let ranked = vectorIds.length > 0 ? fuse([strict, vectorIds]) : strict;
+    let partial = false;
+    if (ranked.length === 0 && loose.length > 0) {
+      ranked = loose.slice(0, PARTIAL_LIMIT * 3);
+      partial = true;
+    }
 
-    const getChunk = this.db.prepare(
-      "SELECT c.id, c.path, c.ordinal, c.heading, c.text, c.hash, f.suspicious FROM chunks c JOIN files f ON f.path = c.path WHERE c.id = ?",
+    const getSection = this.db.prepare(
+      "SELECT s.id, s.path, s.ordinal, s.heading, s.text, f.suspicious, f.mtime FROM sections s JOIN files f ON f.path = s.path WHERE s.id = ?",
     );
+    const getPassages = this.db.prepare("SELECT id, section_id, pindex, text FROM passages WHERE section_id = ? ORDER BY pindex");
     const perFile = new Map<string, number>();
     const hits: SearchHit[] = [];
+    const cap = partial ? Math.min(limit, PARTIAL_LIMIT) : limit;
+
     for (const id of ranked) {
-      const row = getChunk.get(id) as (ChunkRow & { suspicious: number }) | undefined;
+      const row = getSection.get(id) as SectionRow | undefined;
       if (!row) {
         continue;
       }
@@ -156,44 +209,51 @@ export class MemoryIndex {
         continue;
       }
       perFile.set(row.path, count + 1);
-      const cap = hits.length === 0 ? TOP_HIT_CHARS : SNIPPET_CHARS;
+      const passages = getPassages.all(id) as unknown as PassageRow[];
+      const snippet = buildSnippet(passages, sectionPassages.get(id) ?? [], marked, hits.length === 0 && !partial);
       hits.push({
         path: row.path,
         heading: row.heading,
         text: row.text,
-        snippet: makeSnippet(row.text, marked.get(id), cap),
+        snippet,
         ordinal: row.ordinal,
         suspicious: row.suspicious === 1,
+        partial,
+        updated: new Date(row.mtime).toISOString().slice(0, 10),
       });
-      if (hits.length >= limit) {
+      if (hits.length >= cap) {
         break;
       }
     }
     return hits;
   }
 
-  private filterByTermCoverage(ids: number[], terms: string[]): number[] {
+  private sectionsCoveringEnoughTerms(rows: { id: number; section: number }[], terms: string[]): Set<number> {
     const needed = minimumTermsMatched(terms.length);
-    if (needed <= 1 || ids.length === 0) {
-      return ids;
+    const sections = new Set(rows.map((row) => row.section));
+    if (needed <= 1 || rows.length === 0) {
+      return sections;
     }
-    const matchedTerms = new Map<number, number>();
-    const idList = ids.join(","); // integers from the database, safe to inline
+    const sectionOf = new Map(rows.map((row) => [row.id, row.section]));
+    const matched = new Map<number, Set<string>>();
+    const idList = rows.map((row) => row.id).join(","); // integers from the database, safe to inline
     for (const term of terms) {
-      const rows = this.db
-        .prepare(`SELECT rowid AS id FROM chunks_fts WHERE chunks_fts MATCH ? AND rowid IN (${idList})`)
+      const hits = this.db
+        .prepare(`SELECT rowid AS id FROM passages_fts WHERE passages_fts MATCH ? AND rowid IN (${idList})`)
         .all(`"${term}"`) as { id: number }[];
-      for (const row of rows) {
-        matchedTerms.set(row.id, (matchedTerms.get(row.id) ?? 0) + 1);
+      for (const hit of hits) {
+        const section = sectionOf.get(hit.id)!;
+        const set = matched.get(section) ?? new Set<string>();
+        set.add(term);
+        matched.set(section, set);
       }
     }
-    return ids.filter((id) => (matchedTerms.get(id) ?? 0) >= needed);
+    return new Set([...sections].filter((section) => (matched.get(section)?.size ?? 0) >= needed));
   }
 
-  stats(): { files: number; chunks: number; vectors: number } {
-    const files = (this.db.prepare("SELECT count(*) AS n FROM files").get() as { n: number }).n;
-    const chunks = (this.db.prepare("SELECT count(*) AS n FROM chunks").get() as { n: number }).n;
-    return { files, chunks, vectors: this.vectors.size };
+  stats(): { files: number; sections: number; passages: number; vectors: number } {
+    const count = (table: string) => (this.db.prepare(`SELECT count(*) AS n FROM ${table}`).get() as { n: number }).n;
+    return { files: count("files"), sections: count("sections"), passages: count("passages"), vectors: this.vectors.size };
   }
 
   close(): void {
@@ -241,23 +301,27 @@ export class MemoryIndex {
     // Only cleaned text is indexed: hidden comments, invisible characters and secrets never enter the
     // index, so they cannot be searched for, used to push a note up the results, or sent to an embedder.
     const prepared = prepareNoteText(raw);
-    const chunks = chunkMarkdown(prepared.text);
-    const title = `${path.replace(/\.md$/, "").replace(/[/_-]+/g, " ")}`;
-    const insertChunk = this.db.prepare(
-      "INSERT INTO chunks (path, ordinal, heading, text, hash) VALUES (?, ?, ?, ?, ?)",
+    const sections = chunkMarkdown(prepared.text);
+    const title = path.replace(/\.md$/, "").replace(/[/_-]+/g, " ");
+    const insertSection = this.db.prepare(
+      "INSERT INTO sections (path, ordinal, heading, text, hash) VALUES (?, ?, ?, ?, ?)",
     );
-    const insertFts = this.db.prepare("INSERT INTO chunks_fts (rowid, title, body) VALUES (?, ?, ?)");
+    const insertPassage = this.db.prepare("INSERT INTO passages (section_id, pindex, text) VALUES (?, ?, ?)");
+    const insertFts = this.db.prepare("INSERT INTO passages_fts (rowid, title, body) VALUES (?, ?, ?)");
 
     this.db.exec("BEGIN");
     try {
-      this.deleteChunks(path);
+      this.deleteFileRows(path);
       this.db
         .prepare("INSERT OR REPLACE INTO files (path, mtime, size, suspicious) VALUES (?, ?, ?, ?)")
         .run(path, mtime, size, prepared.suspicious ? 1 : 0);
-      for (const chunk of chunks) {
-        const hash = createHash("sha256").update(chunk.text).digest("hex");
-        const result = insertChunk.run(path, chunk.ordinal, chunk.heading, chunk.text, hash);
-        insertFts.run(Number(result.lastInsertRowid), `${title} ${chunk.headingPath}`, chunk.text);
+      for (const section of sections) {
+        const hash = createHash("sha256").update(section.text).digest("hex");
+        const sectionId = Number(insertSection.run(path, section.ordinal, section.heading, section.text, hash).lastInsertRowid);
+        splitPassages(section.text).forEach((passage, pindex) => {
+          const passageId = Number(insertPassage.run(sectionId, pindex, passage.text).lastInsertRowid);
+          insertFts.run(passageId, `${title} ${section.headingPath} ${passage.context}`, passage.text);
+        });
       }
       this.db.exec("COMMIT");
     } catch (error) {
@@ -269,7 +333,7 @@ export class MemoryIndex {
   private removeFile(path: string): void {
     this.db.exec("BEGIN");
     try {
-      this.deleteChunks(path);
+      this.deleteFileRows(path);
       this.db.prepare("DELETE FROM files WHERE path = ?").run(path);
       this.db.exec("COMMIT");
     } catch (error) {
@@ -278,17 +342,20 @@ export class MemoryIndex {
     }
   }
 
-  private deleteChunks(path: string): void {
-    const ids = this.db.prepare("SELECT id FROM chunks WHERE path = ?").all(path) as { id: number }[];
-    const deleteFts = this.db.prepare("DELETE FROM chunks_fts WHERE rowid = ?");
-    for (const { id } of ids) {
+  private deleteFileRows(path: string): void {
+    const passageIds = this.db
+      .prepare("SELECT p.id FROM passages p JOIN sections s ON s.id = p.section_id WHERE s.path = ?")
+      .all(path) as { id: number }[];
+    const deleteFts = this.db.prepare("DELETE FROM passages_fts WHERE rowid = ?");
+    for (const { id } of passageIds) {
       deleteFts.run(id);
     }
-    this.db.prepare("DELETE FROM chunks WHERE path = ?").run(path);
+    this.db.prepare("DELETE FROM passages WHERE section_id IN (SELECT id FROM sections WHERE path = ?)").run(path);
+    this.db.prepare("DELETE FROM sections WHERE path = ?").run(path);
   }
 
   private async embedMissing(embedder: Embedder): Promise<void> {
-    const rows = this.db.prepare("SELECT DISTINCT hash, text FROM chunks").all() as { hash: string; text: string }[];
+    const rows = this.db.prepare("SELECT DISTINCT hash, text FROM sections").all() as { hash: string; text: string }[];
     const live = new Set(rows.map((row) => row.hash));
     for (const hash of this.vectors.keys()) {
       if (!live.has(hash)) {
@@ -304,7 +371,7 @@ export class MemoryIndex {
         const vectors = await embedder.embed(batch.map((row) => row.text));
         batch.forEach((row, j) => this.vectors.set(row.hash, vectors[j]));
       } catch {
-        // Keyword search still works. Remaining chunks are retried on the next search.
+        // Keyword search still works. Remaining sections are retried on the next search.
         logOnce("Embedding failed; search is using keywords only for now.");
         return;
       }
@@ -323,7 +390,7 @@ export class MemoryIndex {
       return [];
     }
 
-    const rows = this.db.prepare("SELECT id, hash FROM chunks").all() as { id: number; hash: string }[];
+    const rows = this.db.prepare("SELECT id, hash FROM sections").all() as { id: number; hash: string }[];
     const scored: { id: number; score: number }[] = [];
     for (const row of rows) {
       const vector = this.vectors.get(row.hash);
@@ -337,14 +404,66 @@ export class MemoryIndex {
     }
     return scored
       .sort((a, b) => b.score - a.score)
-      .slice(0, CANDIDATES)
+      .slice(0, VECTOR_CANDIDATES)
       .map((entry) => entry.id);
   }
 }
 
-// Builds the text shown for one hit. Lines (list items with their continuation lines) that contain a
-// matched word are kept, in order, up to cap characters. If no body line matched (the heading matched, or
-// the hit came from vector search) the start of the section is shown. "…" marks text that was left out.
+// Builds the text shown for one section hit from its passages.
+// - Best hit: its best passage plus the passages around it, up to TOP_HIT_CHARS.
+// - Other hits: only the matching passages, in note order, up to SNIPPET_CHARS.
+// - No matching passage (the heading matched, or a vector hit): the first passages.
+// Passages that are not next to each other are separated by "…", and "…" at the end means more text exists.
+function buildSnippet(passages: PassageRow[], matchedIds: number[], marked: Map<number, string>, isTop: boolean): string {
+  if (passages.length === 0) {
+    return "";
+  }
+  const position = new Map(passages.map((p, i) => [p.id, i]));
+  const matched = matchedIds.map((id) => position.get(id)).filter((i): i is number => i !== undefined);
+  const cap = isTop ? TOP_HIT_CHARS : SNIPPET_CHARS;
+
+  let order: number[];
+  if (matched.length === 0) {
+    order = passages.map((_, i) => i);
+  } else if (isTop) {
+    const best = matched[0];
+    order = [best, ...matched.slice(1), best - 1, best + 1, best + 2].filter((i) => i >= 0 && i < passages.length);
+  } else {
+    order = matched;
+  }
+
+  const chosen = new Set<number>();
+  let used = 0;
+  for (const i of order) {
+    if (chosen.has(i)) {
+      continue;
+    }
+    const length = passages[i].text.length + 1;
+    if (chosen.size > 0 && used + length > cap) {
+      continue;
+    }
+    chosen.add(i);
+    used += length;
+  }
+
+  const sorted = [...chosen].sort((a, b) => a - b);
+  const parts: string[] = [];
+  sorted.forEach((i, k) => {
+    if (k > 0 && i !== sorted[k - 1] + 1) {
+      parts.push("…");
+    }
+    const text = passages[i].text;
+    parts.push(text.length > cap ? clipAround(marked.get(passages[i].id) ?? text, cap) : text);
+  });
+  if (sorted.at(-1)! < passages.length - 1) {
+    parts.push("…");
+  }
+  return parts.join("\n");
+}
+
+// Builds the text shown for one hit from a whole chunk. Lines (list items with their continuation lines)
+// that contain a matched word are kept, in order, up to cap characters. Kept for callers that work on
+// whole chunks; search itself uses buildSnippet.
 export function makeSnippet(text: string, marked: string | undefined, cap: number): string {
   if (text.length <= cap) {
     return text;
@@ -397,7 +516,7 @@ function clipAround(unit: string, cap: number): string {
   return `${start > 0 ? "…" : ""}${clipped}${start + cap < plain.length ? "…" : ""}`;
 }
 
-// Reciprocal rank fusion: a chunk scores 1/(60 + rank) in each list it appears in. Chunks found by both
+// Reciprocal rank fusion: a section scores 1/(60 + rank) in each list it appears in. Sections found by both
 // keyword and vector search rise to the top without having to compare BM25 scores with cosine scores.
 function fuse(lists: number[][]): number[] {
   const scores = new Map<number, number>();

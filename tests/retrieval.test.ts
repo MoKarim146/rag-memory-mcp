@@ -93,12 +93,20 @@ describe("index", () => {
     index.close();
   });
 
-  it("for a question of three or more words, ignores notes that share only one word", async () => {
+  it("for a question of three or more words, a note sharing only one word is at most a labelled partial match", async () => {
     const config = await tempVault();
     await writeFile(path.join(config.rootDir, "menu.md"), "The name column holds the product name.\n");
+    await writeFile(path.join(config.rootDir, "k8s.md"), "Our Kubernetes cluster is called orchard.\n");
     const index = new MemoryIndex(config);
-    expect(await index.search("What is the name of our Kubernetes cluster?")).toEqual([]);
-    expect((await index.search("name")).map((h) => h.path)).toEqual(["menu.md"]);
+    // A note matching two of the three words is a full match, and the one-word coincidence is not shown.
+    const full = await index.search("What is the name of our Kubernetes cluster?");
+    expect(full.map((h) => [h.path, h.partial])).toEqual([["k8s.md", false]]);
+    // With no full match, one-word matches come back labelled partial, at most 2.
+    await writeFile(path.join(config.rootDir, "k8s.md"), "Nothing relevant here.\n");
+    await utimes(path.join(config.rootDir, "k8s.md"), new Date(), new Date(Date.now() + 5000));
+    const partial = await index.search("What is the name of our Kubernetes cluster?");
+    expect(partial.map((h) => [h.path, h.partial])).toEqual([["menu.md", true]]);
+    expect((await index.search("name")).map((h) => [h.path, h.partial])).toEqual([["menu.md", false]]);
     index.close();
   });
 
@@ -152,9 +160,11 @@ describe("main context view", () => {
       { path: "02_DECISIONS.md", content: `# Decisions\n\n${decisions}` },
       { path: "03_OPEN_TASKS.md", content: tasks },
     ]);
-    expect(parts[0].text).toContain("choice 39");
-    expect(parts[0].text).not.toContain("choice 0\n");
-    expect(parts[0].shown).toMatch(/^newest \d+ of 40 decisions$/);
+    expect(parts[0].text).toContain("choice 39\n  Reason: because 39");
+    // Older decisions appear as one line each (newest first) until their budget is used, without reasons.
+    expect(parts[0].text).toContain("Older decisions, first sentence only:");
+    expect(parts[0].text).not.toContain("Reason: because 0");
+    expect(parts[0].shown).toMatch(/^newest \d+ of 40 decisions in full, \d+ older as one line each$/);
     expect(parts[1].text).toBe("- [ ] open one\n- [ ] open two");
     expect(parts[1].shown).toBe("open tasks only, 2 done hidden");
   });

@@ -11,6 +11,10 @@ import type { MemoryFile } from "./memory.js";
 
 export const FILE_BUDGET = 4000;
 export const DECISIONS_BUDGET = 1500;
+// Older decisions that do not fit are listed by their first sentence only, up to this many characters,
+// so the AI knows they exist and can search for the reason.
+export const OLDER_DECISIONS_BUDGET = 900;
+const OLDER_DECISION_CHARS = 90;
 export const TASKS_BUDGET = 2000;
 
 export interface ContextPart {
@@ -56,7 +60,29 @@ function newestDecisions(content: string): { text: string; shown?: string } {
   if (kept.length === dated.length) {
     return { text };
   }
-  return { text, shown: `newest ${shownCount} of ${total} decisions` };
+
+  // One line per older decision, newest first, until the budget is used.
+  const older = dated.slice(0, dated.length - kept.length).reverse();
+  const lines: string[] = [];
+  let olderUsed = 0;
+  let listed = 0;
+  for (const section of older) {
+    const date = section.slice(3, section.indexOf("\n") > 0 ? section.indexOf("\n") : undefined).trim();
+    for (const match of section.matchAll(/^\s*-\s*Decision:\s*(.+)$/gm)) {
+      const firstSentence = match[1].replace(/\s+\(added by AI via MCP\)$/, "").split(/(?<=\.)\s/)[0];
+      const short = firstSentence.length > OLDER_DECISION_CHARS ? `${firstSentence.slice(0, OLDER_DECISION_CHARS - 1)}…` : firstSentence;
+      const line = `- ${date}: ${short}`;
+      if (olderUsed + line.length > OLDER_DECISIONS_BUDGET) {
+        break;
+      }
+      lines.push(line);
+      olderUsed += line.length + 1;
+      listed += 1;
+    }
+  }
+  const index = lines.length > 0 ? `\n\nOlder decisions, first sentence only:\n${lines.join("\n")}` : "";
+  const older_note = listed > 0 ? `, ${listed} older as one line each` : "";
+  return { text: text + index, shown: `newest ${shownCount} of ${total} decisions in full${older_note}` };
 }
 
 function openTasks(content: string): { text: string; shown?: string } {

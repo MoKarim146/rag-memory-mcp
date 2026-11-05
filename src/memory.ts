@@ -22,6 +22,8 @@ export interface MemoryConfig {
   embeddings?: EmbeddingSettings;
   // false: read-only mode, the write tools are not offered and every write is refused. Default true.
   writeEnabled?: boolean;
+  // true: search results show each undated note's last-change date. Default false (costs tokens).
+  showDates?: boolean;
 }
 
 // An error whose message is safe to show to the AI: it never contains a file system path.
@@ -82,6 +84,7 @@ export function getMemoryConfig(env: NodeJS.ProcessEnv = process.env): MemoryCon
     rootDir: path.resolve(expandHome(env.AI_MEMORY_DIR || DEFAULT_MEMORY_DIR)),
     embeddings: embeddings.provider === "none" ? undefined : embeddings,
     writeEnabled: writes === "true",
+    showDates: (env.RAG_SHOW_DATES ?? "false").trim().toLowerCase() === "true",
   };
 }
 

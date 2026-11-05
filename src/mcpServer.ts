@@ -23,6 +23,7 @@ const WRITE_INSTRUCTIONS = " Write only when the user wants something saved.";
 const READ_ONLY_INSTRUCTIONS = " This memory is read-only.";
 
 export const READ_PAGE_CHARS = 8000;
+const DATED = /\d{4}-\d{2}-\d{2}/;
 
 const READ_ONLY = { readOnlyHint: true, openWorldHint: false } as const;
 const APPEND = { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false } as const;
@@ -93,7 +94,18 @@ export function createObsidianMemoryMcpServer(config: MemoryConfig): McpServer {
         return text("No matching notes.");
       }
       const blocks = hits.map((hit) =>
-        noteBlock({ ...noteAttrs(hit.path, hit.suspicious), section: hit.heading }, hit.snippet),
+        noteBlock(
+          {
+            ...noteAttrs(hit.path, hit.suspicious),
+            section: hit.heading,
+            // RAG_SHOW_DATES=true: dates help an AI prefer newer information (OWASP LLM07). Off by default
+            // because it adds about 8% to search output. Most notes already carry a date in their path or
+            // heading (sessions, meetings, dated decisions), so it is only added where neither does.
+            updated: !config.showDates || DATED.test(hit.path) || DATED.test(hit.heading) ? undefined : hit.updated,
+            match: hit.partial ? "partial" : undefined,
+          },
+          hit.snippet,
+        ),
       );
       return text(`${DATA_NOTICE}\n${blocks.join("\n")}`);
     }),
