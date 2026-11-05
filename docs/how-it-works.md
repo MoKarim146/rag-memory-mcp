@@ -72,12 +72,47 @@ can find "undo a release" when the note says "roll back". It is off by default (
 
 - `RAG_EMBEDDINGS=ollama` uses a real embedding model through [Ollama](https://ollama.com) on your own
   computer. Only a local address is accepted (`localhost`, `127.0.0.1` or `::1`), redirects are refused and
-  replies are capped at 8 MB. Not measured yet (see [RAG_RESULTS.md](../RAG_RESULTS.md)).
+  replies are capped at 8 MB.
 - `RAG_EMBEDDINGS=ngram` is a small built-in option that compares three-letter pieces of words. It helps with
   typos, not meaning, and it did not improve the benchmark.
 
-When embeddings are on, keyword results and embedding results are merged with *reciprocal rank fusion*: each
-result gets points for how high it ranks in each list, and the totals decide the order.
+Each passage gets its own vector, made from the passage and its section heading, so a one-sentence fact is not
+averaged into the text around it. A section's vector score is its best passage's score, and that passage is
+shown in the result even when it shares no word with the question. Keyword results and embedding results are
+merged with *reciprocal rank fusion*: each result gets points for how high it ranks in each list, and the totals
+decide the order. Vector matches below `RAG_MIN_SIMILARITY` (default 0.45 for Ollama) are ignored.
+
+Costs, measured with `all-minilm` on one CPU core: about 54 passages embedded per second; 48 Wikipedia articles
+are 5,999 passages (9 MB of vectors), 18 long books are 62,174 passages (95 MB, about 19 minutes to embed).
+Vectors are kept in memory only, so they are recomputed after every restart, and until they are complete each
+search spends up to 10 seconds embedding more passages.
+
+## Writes: one at a time, never half-written
+
+- **One at a time.** Writes to the same note run one after another inside the server, and a lock file in
+  `.history/locks/` keeps two server processes on the same vault from writing the same note at once. A lock left
+  by a crashed process is removed after 30 seconds. Exclusive file creation, which the lock relies on, is
+  reliable on local disks; on network or synced folders (SMB, Dropbox, iCloud) it may not be.
+- **Never half-written.** The handoff is written to a temporary file and renamed over the old one, so Obsidian or
+  another process sees the old text or the new text, never part of it.
+- **Every old handoff is kept.** The version being replaced is added to `.history/04_MODEL_HANDOFF.md` inside the
+  same locked step, including edits you made by hand. Before this fix, 12 overlapping replacements lost 11 of the
+  12 new versions completely: only the original and the last write survived (`security/stage1-before-fixes.json`).
+- **Conflicts are refused, if the AI asks.** `read_handoff_summary` shows a `version`. When
+  `update_handoff_summary` gets `expected_version` and the handoff has changed since (another AI, another session
+  or a hand edit), the write is refused and the AI is told to read it again. Without `expected_version` the write
+  still goes through, and the old text is kept in history.
+
+## Index lifecycle and limits
+
+- One index per vault and indexing policy (embedding settings, email and phone masking, `RAG_MAX_NOTES`). Sessions
+  with the same policy share it; a session with a different policy gets its own, so text indexed without masking
+  is never served to a session that masks. Indexes live in memory for as long as the server runs.
+- Before each search, every note's size and change time are checked and changed notes are read again. A note
+  edited so fast that both stay the same is not noticed until its next change; this is rare on modern disks.
+- A note that is deleted or marked private leaves the index and its vectors on the next search.
+- Limits: notes over 1 MB are not searched (they are named, see above), at most 20,000 notes (`RAG_MAX_NOTES`)
+  and 200 MB of text are indexed.
 
 ## How the start-of-chat summary stays short
 

@@ -9,7 +9,7 @@ Code wrote the work in this report at his direction: the new attack tests, the f
 
 ## Summary
 
-The server was tested in four rounds. Each time the tests were written first and run on the code as it was,
+The server was tested in five rounds. Each time the tests were written first and run on the code as it was,
 the failures were recorded, and only then was the code fixed.
 
 | Round | Tests | Before the fixes | After the fixes |
@@ -18,7 +18,8 @@ the failures were recorded, and only then was the code fixed.
 | 2. OWASP Top 10 for LLM Applications 2026 (`tests/owasp-2026.test.ts`) | 41 | 12 of 41 passed | 41 of 41 pass |
 | 3. Heavy fuzz and stress tests (`tests/heavy/`, `npm run test:heavy`) | 15 | found 5 bugs | 15 of 15 pass |
 | 4. Real books and outside questions (`bench/books.ts`): FP-2 and the large-note test | 2 | 0 of 2 passed | 2 of 2 pass |
-| Whole fast suite (`npm test`) | 135 | | 135 of 135 pass |
+| 5. Correctness and isolation (`tests/correctness.test.ts`) | 8 | 2 of 8 passed | 8 of 8 pass |
+| Whole fast suite (`npm test`) | 143 | | 143 of 143 pass |
 
 | | Before | After |
 |---|---|---|
@@ -322,6 +323,23 @@ and "notes too large to search" in `tests/retrieval.test.ts`.
 The narrower "you are now" rule is a trade-off: an order such as "you are now my helper, so…" is no longer
 flagged by this rule on its own. The other rules (ignore previous instructions, system prompt, hidden orders,
 tool calls) are unchanged, and every security test, including the fuzz tests, still passes.
+
+## Round 5: correctness and isolation
+
+Six problems were reproduced by tests that failed on the code before the fix (`security/stage1-before-fixes.json`,
+2 of 8 passed) and pass after it (`security/stage1-after-fixes.json`, 8 of 8). Two further checks (a note made
+private or deleted leaves the index and its vectors; the tool list keeps its shape) passed before and after.
+
+| # | Problem | Effect | Fix |
+|---|---|---|---|
+| R5-1 | Overlapping handoff replacements, in one process or two | 12 overlapping replacements lost 11 of the 12 new versions; nothing was kept in history for them | Writes to one note are serialised (in-process queue plus a lock file across processes) and the handoff is replaced atomically (temporary file, then rename). Details and limits: [docs/how-it-works.md](docs/how-it-works.md) |
+| R5-2 | No way to notice that the handoff changed since it was read | An AI could overwrite a newer handoff or a hand edit with one based on an old read | `read_handoff_summary` shows a version; `update_handoff_summary` refuses a stale `expected_version`. Without it, writes still work (compatible), and the replaced text is kept in history |
+| R5-3 | Sessions with different masking settings on one vault shared a search index | A session with email masking on could be shown an address indexed by a session with masking off | The index is shared only between sessions with the same indexing policy (embeddings, masking, note limit) |
+| R5-4 | With embeddings, a result found by meaning showed the start of its section | The matching sentence, and so the answer, could be left out of the result | Vectors per passage; the passage that matched is shown |
+| R5-5 | The tool list was changed by writing into a private SDK field | Could break silently on an SDK update | The tool list is answered through the SDK's public `setRequestHandler`; its output is byte-for-byte the same as before |
+
+Cost: the `expected_version` parameter adds 25 tokens to the tool descriptions sent at the start of every chat
+(508 to 533, counted with `o200k_base`).
 
 ## Do the tests really catch problems? (round 2 and 3)
 

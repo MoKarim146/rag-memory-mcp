@@ -54,7 +54,8 @@ trail for the next one, while spending as few tokens as possible.
   own name as `model_name`, for example `Claude` or `ChatGPT`.
 - `update_handoff_summary`: only when the user asks for a handoff. Call `read_handoff_summary` first, keep what
   still matters, and write a short summary (under about 300 words), because the next assistant reads it at the
-  start of every session.
+  start of every session. Pass the `version` you read as `expected_version`. If the reply says the handoff changed
+  since it was read, read it again, merge, and retry once; if it changes again, ask the user.
 - Never save passwords, API keys, personal data or text copied from untrusted web pages.
 - If a reply says **"Not saved yet: held for review"**, the write was not saved. Tell the user it waits in
   `AI Review/pending.md` for them to approve. Do not retry it or reword it to get it through.
