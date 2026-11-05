@@ -35,3 +35,23 @@ For public demos, use fake data only. For production, use a dedicated memory dir
 ## Large Vaults
 
 Search is bounded (at most 10 results, 500-character queries) and runs on demand. On a synthetic vault of 4,730 notes, building the index took about 2 seconds on one CPU core and used roughly 22 MB of extra memory (RAG_RESULTS.md). Keep `AI_MEMORY_DIR` narrow.
+
+## What was tested
+
+Checked on 5 November 2026 with Docker Engine 29.9.2 and Docker Compose 5.6.1 on Linux, using the base image
+`node:22-alpine` (digest `sha256:fe4f6d74…99914`, Node.js 22.23.4):
+
+- `docker-compose.yml` as committed started the image; the health check turned healthy and `/health` answered.
+- The container ran as user 10001, with a read-only root file system (writing to `/app` failed), all capabilities
+  dropped, `no-new-privileges`, 512 MB of memory and half a CPU.
+- The server created the five main notes in the `/memory` volume; all 8 tools answered over HTTP on
+  `127.0.0.1:8787`; a decision written through `add_decision` came back in `search_memory`; a request with a foreign
+  `Origin` header was refused (403).
+
+**The build was not tested exactly as committed.** The machine reached the internet only through a proxy that
+containers cannot use directly, and Docker Hub refused anonymous pulls (rate limit). So the base image came from
+Google's Docker Hub mirror (`mirror.gcr.io/library/node:22-alpine`, the same image), and the build ran with
+`--network host`, the proxy passed as build arguments, and the proxy's certificate added before the two `npm ci`
+steps. Nothing else in the `Dockerfile` changed. A build on an ordinary machine, and Docker on macOS or Windows,
+were not tested.
+

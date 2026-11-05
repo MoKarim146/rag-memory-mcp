@@ -36,6 +36,7 @@ is made.
 | With vectors alone, the evidence turn is shown less often on long chat histories | One dataset (LongMemEval-S, 95 questions), one model |
 | Search, index and embedding times | One run on one machine, pinned to two cores; not compared across runs ([benchmarks.md](benchmarks.md)) |
 | The three setup steps work from a fresh clone, and Claude Code connects | Checked once by hand on Linux with Node.js 22.23.4 and Claude Code 2.1.318 (README, "What has been tested") |
+| The Docker image runs with the hardening in `docker-compose.yml` and answers over HTTP | Checked once by hand on Linux; the build needed the test machine's proxy settings ([container-hardening.md](container-hardening.md)) |
 | The skill improves what an AI does | The skill's rules come from the measurements above, but no model has been evaluated with or without it |
 
 ## Untested

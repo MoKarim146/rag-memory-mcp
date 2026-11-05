@@ -158,7 +158,7 @@ a replaced decision, a flagged note with planted instructions, a private note an
 | The three steps above from a fresh clone (`setup.sh`, `npm start`, `claude mcp add`) | Tested: Claude Code 2.1.318 lists the server as connected |
 | Copying the skill into `~/.claude/skills/` | The copy is tested; whether Claude Code then uses it is not |
 | `npm run demo`, `npm test`, the benchmark checks | Tested on every push in CI (Ubuntu) |
-| Docker and `docker-compose.yml` | See [container-hardening.md](docs/container-hardening.md) for what was tested |
+| Docker and `docker-compose.yml` | Tested on Linux: runs hardened and answers over HTTP. The build needed proxy settings specific to the test machine; see [container-hardening.md](docs/container-hardening.md) |
 | Vectors with Ollama (`RAG_EMBEDDINGS=ollama`) | Ollama itself not tested; its API was tested with a stand-in serving `all-minilm` |
 | macOS, Windows, Node.js 22.13 exactly | Not tested |
 | ChatGPT or other web apps through a tunnel | Not tested |
