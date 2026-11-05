@@ -69,10 +69,15 @@ export interface SearchHit {
 
 // What one search did, for benchmarks that must show their work (bench/books.ts). Only reported to an
 // onSearch callback that the benchmark sets; the server never sets one, so nothing is logged in normal use.
+// "off": no embeddings in use; "ok": vectors searched; "not-ready": no vector computed yet; "failed": the embedding
+// server failed for this query, so the search used keywords only.
+export type VectorStatus = "off" | "ok" | "not-ready" | "failed";
+
 export interface SearchDiagnostics {
   query: string;
   terms: string[];
   partial: boolean;
+  vectorStatus: VectorStatus;
   hits: {
     chunk: string; // stable id: note path # section number
     path: string;
@@ -224,7 +229,7 @@ export class MemoryIndex {
 
     const vector = this.embedder && mode !== "keyword"
       ? await this.vectorSearch(query)
-      : { sections: [], best: new Map<number, number>(), scores: new Map<number, number>() };
+      : { sections: [], best: new Map<number, number>(), scores: new Map<number, number>(), status: "off" as VectorStatus };
     let ranked = vector.sections.length > 0 ? fuse([strict, vector.sections]) : strict;
     let partial = false;
     if (ranked.length === 0 && loose.length > 0) {
@@ -290,7 +295,7 @@ export class MemoryIndex {
         break;
       }
     }
-    this.onSearch?.({ query, terms, partial, hits: diagnostics });
+    this.onSearch?.({ query, terms, partial, vectorStatus: vector.status, hits: diagnostics });
     return hits;
   }
 
@@ -467,7 +472,7 @@ export class MemoryIndex {
     for (let i = 0; i < missing.length && performance.now() < deadline; i += EMBED_BATCH) {
       const batch = missing.slice(i, i + EMBED_BATCH);
       try {
-        const vectors = await embedder.embed(batch.map((row) => row.text));
+        const vectors = await embedder.embed(batch.map((row) => row.text), "document");
         batch.forEach((row, j) => this.vectors.set(row.hash, vectors[j]));
       } catch {
         // Keyword search still works. Remaining sections are retried on the next search.
@@ -481,17 +486,20 @@ export class MemoryIndex {
   // can show it: a passage found by meaning has no matched words for the snippet to pick it by.
   private async vectorSearch(
     query: string,
-  ): Promise<{ sections: number[]; best: Map<number, number>; scores: Map<number, number> }> {
-    const none = { sections: [], best: new Map<number, number>(), scores: new Map<number, number>() };
-    if (!this.embedder || this.vectors.size === 0) {
+  ): Promise<{ sections: number[]; best: Map<number, number>; scores: Map<number, number>; status: VectorStatus }> {
+    const none = { sections: [], best: new Map<number, number>(), scores: new Map<number, number>(), status: "off" as VectorStatus };
+    if (!this.embedder) {
       return none;
+    }
+    if (this.vectors.size === 0) {
+      return { ...none, status: "not-ready" as const };
     }
     let queryVector: Float32Array;
     try {
-      [queryVector] = await this.embedder.embed([query]);
+      [queryVector] = await this.embedder.embed([query], "query");
     } catch {
       logOnce("Embedding failed; search is using keywords only for now.");
-      return none;
+      return { ...none, status: "failed" as const };
     }
 
     const rows = this.db.prepare("SELECT id, section_id AS section, vhash FROM passages WHERE vhash != ''").all() as {
@@ -521,7 +529,7 @@ export class MemoryIndex {
       sections.push(entry.section);
       if (sections.length >= VECTOR_CANDIDATES) break;
     }
-    return { sections, best, scores };
+    return { sections, best, scores, status: "ok" };
   }
 }
 

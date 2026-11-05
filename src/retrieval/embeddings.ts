@@ -9,7 +9,8 @@
 export interface Embedder {
   readonly id: string;
   readonly minSimilarity: number; // vector hits below this cosine similarity are ignored
-  embed(texts: string[]): Promise<Float32Array[]>;
+  // kind: what the texts are. Some models need a different task prefix for queries and for documents.
+  embed(texts: string[], kind?: "query" | "document"): Promise<Float32Array[]>;
 }
 
 export interface EmbeddingSettings {
@@ -18,7 +19,24 @@ export interface EmbeddingSettings {
   ollamaModel: string;
   minSimilarity?: number;
   timeoutMs: number;
+  queryPrefix: string;
+  documentPrefix: string;
 }
+
+// Task prefixes that a model's own card says to put before queries and documents. Without them such models
+// retrieve worse. Keyed by the Ollama model name without its tag; RAG_EMBED_QUERY_PREFIX and
+// RAG_EMBED_DOCUMENT_PREFIX override them (an empty value means no prefix). Models not listed get none.
+export const KNOWN_PREFIXES: Record<string, { query: string; document: string }> = {
+  // nomic-ai/nomic-embed-text-v1.5 card: "the text prompt must include a task instruction prefix"
+  "nomic-embed-text": { query: "search_query: ", document: "search_document: " },
+  // mixedbread-ai/mxbai-embed-large-v1, Snowflake/snowflake-arctic-embed, BAAI/bge-*-en-v1.5 cards: query only
+  "mxbai-embed-large": { query: "Represent this sentence for searching relevant passages: ", document: "" },
+  "snowflake-arctic-embed": { query: "Represent this sentence for searching relevant passages: ", document: "" },
+  "bge-large": { query: "Represent this sentence for searching relevant passages: ", document: "" },
+  // sentence-transformers/all-MiniLM-L6-v2 and BAAI/bge-m3: no prefix
+  "all-minilm": { query: "", document: "" },
+  "bge-m3": { query: "", document: "" },
+};
 
 export const DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434";
 // Largest embedding-server answer that is read; anything bigger is refused (OWASP LLM06).
@@ -41,12 +59,16 @@ export function parseEmbeddingSettings(env: NodeJS.ProcessEnv): EmbeddingSetting
     throw new Error("RAG_MIN_SIMILARITY must be a number from -1 to 1");
   }
 
+  const ollamaModel = (env.RAG_OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL).trim();
+  const known = provider === "ollama" ? KNOWN_PREFIXES[ollamaModel.split(":")[0]] : undefined;
   return {
     provider,
     ollamaUrl,
-    ollamaModel: (env.RAG_OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL).trim(),
+    ollamaModel,
     minSimilarity,
     timeoutMs: 30_000,
+    queryPrefix: env.RAG_EMBED_QUERY_PREFIX ?? known?.query ?? "",
+    documentPrefix: env.RAG_EMBED_DOCUMENT_PREFIX ?? known?.document ?? "",
   };
 }
 
@@ -128,12 +150,13 @@ export function createOllamaEmbedder(settings: EmbeddingSettings, fetchImpl: typ
   return {
     id: `ollama:${settings.ollamaModel}`,
     minSimilarity: settings.minSimilarity ?? 0.45,
-    async embed(texts) {
+    async embed(texts, kind = "document") {
       assertLoopbackUrl(endpoint.href);
+      const prefix = kind === "query" ? settings.queryPrefix : settings.documentPrefix;
       const response = await fetchImpl(endpoint, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ model: settings.ollamaModel, input: texts }),
+        body: JSON.stringify({ model: settings.ollamaModel, input: texts.map((t) => prefix + t) }),
         redirect: "error",
         signal: AbortSignal.timeout(settings.timeoutMs),
       });

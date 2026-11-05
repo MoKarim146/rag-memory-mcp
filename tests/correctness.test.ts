@@ -218,3 +218,51 @@ describe("retrieval modes", () => {
     await rm(config.rootDir, { recursive: true, force: true });
   });
 });
+
+describe("embedding model formatting", () => {
+  it("adds the task prefixes a model's card asks for, and none for models that take none", async () => {
+    const { createOllamaEmbedder, parseEmbeddingSettings } = await import("../src/retrieval/embeddings.js");
+    const sent: string[][] = [];
+    const fakeFetch = (async (_url: unknown, init: { body: string }) => {
+      const { input } = JSON.parse(init.body) as { input: string[] };
+      sent.push(input);
+      return new Response(JSON.stringify({ embeddings: input.map(() => [1, 0]) }), { status: 200 });
+    }) as unknown as typeof fetch;
+
+    const nomic = createOllamaEmbedder(parseEmbeddingSettings({ RAG_EMBEDDINGS: "ollama", RAG_OLLAMA_MODEL: "nomic-embed-text:latest" }), fakeFetch);
+    await nomic.embed(["where is the key"], "query");
+    await nomic.embed(["The key is under the step."], "document");
+    expect(sent.splice(0)).toEqual([["search_query: where is the key"], ["search_document: The key is under the step."]]);
+
+    const minilm = createOllamaEmbedder(parseEmbeddingSettings({ RAG_EMBEDDINGS: "ollama", RAG_OLLAMA_MODEL: "all-minilm" }), fakeFetch);
+    await minilm.embed(["where is the key"], "query");
+    expect(sent.splice(0)).toEqual([["where is the key"]]);
+
+    const custom = parseEmbeddingSettings({ RAG_EMBEDDINGS: "ollama", RAG_OLLAMA_MODEL: "nomic-embed-text", RAG_EMBED_QUERY_PREFIX: "q: ", RAG_EMBED_DOCUMENT_PREFIX: "" });
+    expect([custom.queryPrefix, custom.documentPrefix]).toEqual(["q: ", ""]);
+  });
+
+  it("falls back to keywords when the embedding server fails, and says so in the diagnostics", async () => {
+    const config = await vault();
+    await writeFile(path.join(config.rootDir, "Office.md"), "# Office\n\nThe guest network code is on the back of the green kettle.\n");
+    let failing = false;
+    const flaky: Embedder = {
+      id: "flaky",
+      minSimilarity: 0.5,
+      embed: async (texts) => {
+        if (failing) throw new Error("down");
+        return texts.map(() => Float32Array.from([1, 0]));
+      },
+    };
+    const index = new MemoryIndex(config, flaky);
+    await index.search("kettle", 5);
+    failing = true;
+    let status: string | undefined;
+    index.onSearch = (info) => (status = info.vectorStatus);
+    const hits = await index.search("green kettle", 5);
+    expect(hits.map((h) => h.path)).toEqual(["Office.md"]);
+    expect(status).toBe("failed");
+    index.close();
+    await rm(config.rootDir, { recursive: true, force: true });
+  });
+});

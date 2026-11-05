@@ -188,7 +188,7 @@ interface Hit {
 }
 
 export interface Server {
-  search(query: string, limit?: number): Promise<{ text: string; hits: Hit[]; ms: number; error: string | null }>;
+  search(query: string, limit?: number): Promise<{ text: string; hits: Hit[]; ms: number; error: string | null; vectorStatus?: SearchDiagnostics["vectorStatus"] }>;
   definitionTokens: number;
   startTokens: number;
   env: Record<string, string>;
@@ -260,7 +260,7 @@ export async function connect(system: System, vault: string, extraEnv: Record<st
       const hits = parseHits(text);
       const diagnostics = last as SearchDiagnostics | undefined;
       if (diagnostics) hits.forEach((hit, i) => (hit.diag = diagnostics.hits[i]));
-      return { text, hits, ms, error };
+      return { text, hits, ms, error, vectorStatus: diagnostics?.vectorStatus };
     },
     close: () => client.close(),
   };
@@ -314,7 +314,7 @@ const pct = (part: number, whole: number) => (whole ? round1((100 * part) / whol
 export async function runQueries(server: Server, queries: Query[], limit?: number, group = "", writer?: RunWriter): Promise<QueryRecord[]> {
   const out: QueryRecord[] = [];
   for (const q of queries) {
-    const { text, hits, ms, error } = await server.search(q.query, limit);
+    const { text, hits, ms, error, vectorStatus } = await server.search(q.query, limit);
     const gold = { answers: q.answers, evidence: q.evidence, chunk: q.goldPath, book: q.goldBook, pasteTokenEnd: q.pasteTokenEnd };
     let from = 0;
     const retrieved: Retrieved[] = hits.map((h, i) => {
@@ -347,6 +347,7 @@ export async function runQueries(server: Server, queries: Query[], limit?: numbe
       tokens: countTokens(text),
       ms: round1(ms),
       error,
+      ...(vectorStatus ? { vectorStatus } : {}),
     };
     writer?.record(record);
     out.push(record);

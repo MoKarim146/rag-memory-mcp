@@ -58,6 +58,7 @@ export interface QueryRecord {
   tokens: number; // tokens of the whole tool answer (o200k_base)
   ms: number; // time of the tool call
   error: string | null;
+  vectorStatus?: "off" | "ok" | "not-ready" | "failed"; // this server: whether vectors were used; "failed" = keywords only
   indexMs?: number; // time to build this query's own index, for datasets with one corpus per query
 }
 
@@ -104,6 +105,9 @@ export function quality(records: QueryRecord[]) {
       mrr: mean(records.map((r) => r.correct.reciprocalRank as number | null)),
       answerPresentPct: share("answerPresent"),
       evidenceShownPct: share("evidenceShown"),
+      ...(records.some((r) => r.vectorStatus !== undefined)
+        ? { embeddingFailed: records.filter((r) => r.vectorStatus === "failed" || r.vectorStatus === "not-ready").length }
+        : {}),
       tokensMean: Math.round(records.reduce((s, r) => s + r.tokens, 0) / Math.max(1, n)),
       tokensMedian: percentile(records.map((r) => r.tokens), 50),
       tokensP90: percentile(records.map((r) => r.tokens), 90),
