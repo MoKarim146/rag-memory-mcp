@@ -13,9 +13,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: 22
+          node-version-file: .nvmrc
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:heavy
+      # Free benchmark checks: a small deterministic run compared with its committed snapshot, and every committed
+      # benchmark run recomputed from its per-query records. Timings are never compared.
+      - run: npm run bench:smoke
+      - run: npm run bench:verify
       - run: npm audit --omit=dev --audit-level=high

@@ -14,27 +14,32 @@ export const SOURCES = {
     url: "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/gutenberg.zip",
     sha256: "2d3c3ab548c653944310f37f536443ec85d0a0ad855fcae217a0c9efdce2d611",
     about: "18 public-domain books from Project Gutenberg, as packaged by NLTK",
+    license: "Public domain in the USA (Project Gutenberg texts); NLTK packaging under Apache 2.0",
   },
   squad: {
     url: "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/master/dataset/dev-v1.1.json",
     sha256: "95aa6a52d5d6a735563366753ca50492a658031da74f301ac5238b03966972c9",
     about: "SQuAD 1.1 development set: 10,570 questions on 48 Wikipedia articles (CC BY-SA 4.0)",
+    license: "CC BY-SA 4.0",
   },
   narrativeqaQuestions: {
     url: "https://raw.githubusercontent.com/google-deepmind/narrativeqa/master/qaps.csv",
     sha256: "990b02af0b5280de210f0e6b80f43b3fab80dc6de630c4d5059a1b7131c26e38",
     about: "NarrativeQA questions about whole books (Apache 2.0)",
+    license: "Apache 2.0",
   },
   narrativeqaDocuments: {
     url: "https://raw.githubusercontent.com/google-deepmind/narrativeqa/master/documents.csv",
     sha256: "6dffa4cc0b5c9963fe3a097c87f04aa7767da36627500cc7a0d69e2405e1144a",
     about: "NarrativeQA list of books",
+    license: "Apache 2.0",
   },
   // Only for tuning (bench/books-tune.ts): 442 other Wikipedia articles, none of them in the development set.
   squadTrain: {
     url: "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/master/dataset/train-v1.1.json",
     sha256: "3527663986b8295af4f7fcdff1ba1ff3f72d07d61a20f487cb238a6ef92fd955",
     about: "SQuAD 1.1 training set: 87,599 questions on 442 other Wikipedia articles (CC BY-SA 4.0)",
+    license: "CC BY-SA 4.0",
   },
 } as const;
 export type SourceName = keyof typeof SOURCES;

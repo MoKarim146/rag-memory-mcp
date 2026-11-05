@@ -1,0 +1,30 @@
+{
+  "set1/current/keyword": {
+    "questions": 24,
+    "errors": 0,
+    "found": 21,
+    "foundPct": 87.5,
+    "evidencePct": null,
+    "goldListedPct": null,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.764,
+    "tokensMean": 201,
+    "tokensMedian": 209,
+    "tokensP90": 289
+  },
+  "set1/current/question": {
+    "questions": 24,
+    "errors": 0,
+    "found": 21,
+    "foundPct": 87.5,
+    "evidencePct": null,
+    "goldListedPct": null,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.713,
+    "tokensMean": 187,
+    "tokensMedian": 173,
+    "tokensP90": 309
+  }
+}

@@ -67,6 +67,24 @@ export interface SearchHit {
   updated: string; // the note's last modification date, YYYY-MM-DD
 }
 
+// What one search did, for benchmarks that must show their work (bench/books.ts). Only reported to an
+// onSearch callback that the benchmark sets; the server never sets one, so nothing is logged in normal use.
+export interface SearchDiagnostics {
+  query: string;
+  terms: string[];
+  partial: boolean;
+  hits: {
+    chunk: string; // stable id: note path # section number
+    path: string;
+    heading: string;
+    fusedRank: number; // 1-based place in the merged ranking, before the per-note limit and duplicate removal
+    bm25: number | null; // best passage's BM25 score as FTS5 reports it (more negative is better), null if no word matched
+    vector: number | null; // best passage's cosine similarity, null without embeddings or below the cutoff
+    matchedPassages: number[]; // passage numbers inside the section that matched words
+    vectorPassage: number | null; // passage number that matched by meaning
+  }[];
+}
+
 interface SectionRow {
   id: number;
   path: string;
@@ -122,6 +140,7 @@ export class MemoryIndex {
   private readonly db: DatabaseSync;
   private readonly vectors = new Map<string, Float32Array>(); // keyed by section text hash
   private pending: Promise<void> | undefined;
+  onSearch?: (info: SearchDiagnostics) => void;
 
   constructor(
     private readonly config: MemoryConfig,
@@ -201,7 +220,9 @@ export class MemoryIndex {
       strict = coveredList.filter((id) => sectionScore.get(id)! <= best * RELATIVE_CUTOFF);
     }
 
-    const vector = this.embedder ? await this.vectorSearch(query) : { sections: [], best: new Map<number, number>() };
+    const vector = this.embedder
+      ? await this.vectorSearch(query)
+      : { sections: [], best: new Map<number, number>(), scores: new Map<number, number>() };
     let ranked = vector.sections.length > 0 ? fuse([strict, vector.sections]) : strict;
     let partial = false;
     if (ranked.length === 0 && loose.length > 0) {
@@ -216,6 +237,7 @@ export class MemoryIndex {
     const getPassages = this.db.prepare("SELECT id, section_id, pindex, text FROM passages WHERE section_id = ? ORDER BY pindex");
     const perFile = new Map<string, number>();
     const hits: SearchHit[] = [];
+    const diagnostics: SearchDiagnostics["hits"] = [];
     const shownWords: Set<string>[] = [];
     const cap = partial ? Math.min(limit, PARTIAL_LIMIT) : limit;
 
@@ -238,6 +260,20 @@ export class MemoryIndex {
         continue;
       }
       shownWords.push(words);
+      if (this.onSearch) {
+        const pindex = new Map(passages.map((p) => [p.id, p.pindex]));
+        const vectorBest = vector.best.get(id);
+        diagnostics.push({
+          chunk: `${row.path}#${row.ordinal}`,
+          path: row.path,
+          heading: row.heading,
+          fusedRank: ranked.indexOf(id) + 1,
+          bm25: sectionScore.get(id) ?? null,
+          vector: vector.scores.get(id) ?? null,
+          matchedPassages: (sectionPassages.get(id) ?? []).map((p) => pindex.get(p) ?? -1),
+          vectorPassage: vectorBest === undefined ? null : (pindex.get(vectorBest) ?? null),
+        });
+      }
       hits.push({
         path: row.path,
         heading: row.heading,
@@ -252,6 +288,7 @@ export class MemoryIndex {
         break;
       }
     }
+    this.onSearch?.({ query, terms, partial, hits: diagnostics });
     return hits;
   }
 
@@ -440,8 +477,10 @@ export class MemoryIndex {
 
   // Ranks sections by their best passage's similarity to the query, and remembers that passage so the snippet
   // can show it: a passage found by meaning has no matched words for the snippet to pick it by.
-  private async vectorSearch(query: string): Promise<{ sections: number[]; best: Map<number, number> }> {
-    const none = { sections: [], best: new Map<number, number>() };
+  private async vectorSearch(
+    query: string,
+  ): Promise<{ sections: number[]; best: Map<number, number>; scores: Map<number, number> }> {
+    const none = { sections: [], best: new Map<number, number>(), scores: new Map<number, number>() };
     if (!this.embedder || this.vectors.size === 0) {
       return none;
     }
@@ -472,13 +511,15 @@ export class MemoryIndex {
     scored.sort((a, b) => b.score - a.score);
     const sections: number[] = [];
     const best = new Map<number, number>();
+    const scores = new Map<number, number>();
     for (const entry of scored) {
       if (best.has(entry.section)) continue;
       best.set(entry.section, entry.id);
+      scores.set(entry.section, entry.score);
       sections.push(entry.section);
       if (sections.length >= VECTOR_CANDIDATES) break;
     }
-    return { sections, best };
+    return { sections, best, scores };
   }
 }
 

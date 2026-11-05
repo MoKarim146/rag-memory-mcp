@@ -15,6 +15,11 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { getEncoding } from "js-tiktoken";
 import { looksLikeInjection, prepareNoteText } from "../src/safety.js";
+import type { SearchDiagnostics } from "../src/retrieval/memoryIndex.js";
+import { quality, RunWriter, shownOf, timings, type GroupPlan, type GroupSpec, type QueryRecord, type Retrieved } from "./lib/runs.js";
+import { judge } from "./lib/scoring.js";
+export { containsAnswer } from "./lib/scoring.js";
+import { containsAnswer } from "./lib/scoring.js";
 import {
   BOOK_TITLES,
   SOURCES,
@@ -30,6 +35,7 @@ import {
   type SquadQuestion,
 } from "./books-data.js";
 
+process.env.TZ = "UTC"; // dates in outputs do not depend on where the benchmark runs
 const BENCH = path.dirname(fileURLToPath(import.meta.url));
 const CACHE = path.join(BENCH, ".cache", "books");
 const QUICK = process.argv.includes("--quick");
@@ -86,22 +92,7 @@ export function plantNeedles(raw: string, needles: Needle[] = NEEDLES): string {
 }
 
 // ---------------------------------------------------------------------------------------------------------
-// Text checks, the same normalisation SQuAD uses: lower case, no punctuation, no articles.
-
-function normalise(text: string): string {
-  return ` ${text
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s]/gu, " ")
-    .replace(/\b(a|an|the)\b/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .join(" ")} `;
-}
-
-export function containsAnswer(text: string, answer: string): boolean {
-  const a = normalise(answer);
-  return a.trim().length > 0 && normalise(text).includes(a);
-}
+// Turning questions into searches
 
 const STOPWORDS = new Set(
   (
@@ -192,20 +183,20 @@ export type System = "current" | "current-ngram" | "current-ollama" | "baseline"
 interface Hit {
   path: string;
   text: string;
+  line?: number; // the old server reports matching lines
+  diag?: SearchDiagnostics["hits"][number];
 }
 
 export interface Server {
-  search(query: string, limit?: number): Promise<{ text: string; hits: Hit[]; ms: number }>;
+  search(query: string, limit?: number): Promise<{ text: string; hits: Hit[]; ms: number; error: string | null }>;
   definitionTokens: number;
   startTokens: number;
+  env: Record<string, string>;
   close(): Promise<void>;
 }
 
-export async function connect(system: System, vault: string, extraEnv: Record<string, string> = {}): Promise<Server> {
-  const dir = system === "baseline" ? path.join(BENCH, "baseline") : path.join(BENCH, "..", "src");
-  const memory = await import(pathToFileURL(path.join(dir, "memory.ts")).href);
-  const server = await import(pathToFileURL(path.join(dir, "mcpServer.ts")).href);
-  const config = memory.getMemoryConfig({
+export function systemEnv(system: System, vault: string, extraEnv: Record<string, string> = {}): Record<string, string> {
+  return {
     AI_MEMORY_DIR: vault,
     // The benchmark makes thousands of calls in one session; the per-session rate limit would stop it.
     MCP_MAX_CALLS_PER_MINUTE: "1000000000",
@@ -213,7 +204,23 @@ export async function connect(system: System, vault: string, extraEnv: Record<st
     // A local embedding model through the Ollama API (127.0.0.1 only), e.g. `ollama pull all-minilm`.
     ...(system === "current-ollama" ? { RAG_EMBEDDINGS: "ollama", RAG_OLLAMA_MODEL: process.env.RAG_OLLAMA_MODEL || "all-minilm" } : {}),
     ...extraEnv,
-  });
+  };
+}
+
+export async function connect(system: System, vault: string, extraEnv: Record<string, string> = {}): Promise<Server> {
+  const dir = system === "baseline" ? path.join(BENCH, "baseline") : path.join(BENCH, "..", "src");
+  const memory = await import(pathToFileURL(path.join(dir, "memory.ts")).href);
+  const server = await import(pathToFileURL(path.join(dir, "mcpServer.ts")).href);
+  const env = systemEnv(system, vault, extraEnv);
+  const config = memory.getMemoryConfig(env);
+  // This server's index reports each search's ranks and scores to the benchmark (the old server has no index).
+  let last: SearchDiagnostics | undefined;
+  if (system !== "baseline") {
+    const { getMemoryIndex } = await import(pathToFileURL(path.join(dir, "retrieval", "memoryIndex.ts")).href);
+    getMemoryIndex(config).onSearch = (info: SearchDiagnostics) => {
+      last = info;
+    };
+  }
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.createObsidianMemoryMcpServer(config).connect(serverTransport);
   const client = new Client({ name: "book-benchmark", version: "1.0.0" });
@@ -221,25 +228,39 @@ export async function connect(system: System, vault: string, extraEnv: Record<st
 
   const call = async (name: string, args: Record<string, unknown>) => {
     const result = await client.callTool({ name, arguments: args });
-    return (result.content as { type: string; text?: string }[])
+    const text = (result.content as { type: string; text?: string }[])
       .filter((part) => part.type === "text")
       .map((part) => part.text ?? "")
       .join("\n");
+    return { text, isError: Boolean(result.isError) };
   };
   const { tools } = await client.listTools();
   const definitionTokens =
     tools.reduce((sum, t) => sum + countTokens(JSON.stringify({ name: t.name, description: t.description, input_schema: t.inputSchema })), 0) +
     countTokens(client.getInstructions() ?? "");
-  const startTokens = countTokens(await call("read_main_context", {}));
+  const startTokens = countTokens((await call("read_main_context", {})).text);
 
   return {
     definitionTokens,
     startTokens,
+    env,
     async search(query, limit) {
+      last = undefined;
       const started = performance.now();
-      const text = await call("search_memory", system === "baseline" || limit === undefined ? { query } : { query, limit });
+      let text = "";
+      let error: string | null = null;
+      try {
+        const result = await call("search_memory", system === "baseline" || limit === undefined ? { query } : { query, limit });
+        text = result.text;
+        if (result.isError) error = result.text;
+      } catch (e) {
+        error = e instanceof Error ? e.message : String(e);
+      }
       const ms = performance.now() - started;
-      return { text, hits: parseHits(text), ms };
+      const hits = parseHits(text);
+      const diagnostics = last as SearchDiagnostics | undefined;
+      if (diagnostics) hits.forEach((hit, i) => (hit.diag = diagnostics.hits[i]));
+      return { text, hits, ms, error };
     },
     close: () => client.close(),
   };
@@ -259,8 +280,8 @@ export async function warmUp(server: Server): Promise<number> {
 function parseHits(text: string): Hit[] {
   if (text.trimStart().startsWith("{")) {
     try {
-      const json = JSON.parse(text) as { matches?: { path?: string; file?: string; text?: string; snippet?: string; line?: string }[] };
-      return (json.matches ?? []).map((m) => ({ path: m.path ?? m.file ?? "", text: m.text ?? m.snippet ?? m.line ?? JSON.stringify(m) }));
+      const json = JSON.parse(text) as { matches?: { path?: string; file?: string; text?: string; snippet?: string; line?: number }[] };
+      return (json.matches ?? []).map((m) => ({ path: m.path ?? m.file ?? "", text: m.text ?? m.snippet ?? JSON.stringify(m), line: m.line }));
     } catch {
       return [];
     }
@@ -278,86 +299,61 @@ export interface Query {
   goldPath?: string; // the note that holds the answer
   goldBook?: string; // for book-level questions: the book folder
   evidence?: string[];
+  pasteKey?: string; // "path\nparagraph" of the paragraph that holds the answer, for the paste comparison
+  pasteTokenEnd?: number;
   tags: Record<string, string>;
-}
-
-export interface QueryResult {
-  id: string;
-  found: boolean;
-  evidence: boolean | null;
-  goldListed: boolean | null;
-  rightBookShare: number | null;
-  topRightBook: boolean | null;
-  rank: number;
-  tokens: number;
-  ms: number;
-  tags: Record<string, string>;
-}
-
-export async function runQueries(server: Server, queries: Query[], limit?: number): Promise<QueryResult[]> {
-  const out: QueryResult[] = [];
-  for (const q of queries) {
-    const { text, hits, ms } = await server.search(q.query, limit);
-    const found = q.answers.some((a) => containsAnswer(text, a));
-    const rankIndex = hits.findIndex((h) => q.answers.some((a) => containsAnswer(h.text, a)));
-    const inBook = (h: Hit) => q.goldBook !== undefined && h.path.startsWith(`Books/${q.goldBook}/`);
-    out.push({
-      id: q.id,
-      found,
-      evidence: q.evidence ? q.evidence.some((w) => containsAnswer(text, w)) || (q.evidence.length === 0 && found) : null,
-      goldListed: q.goldPath ? hits.some((h) => h.path === q.goldPath) : null,
-      rightBookShare: q.goldBook ? (hits.length ? hits.filter(inBook).length / hits.length : 0) : null,
-      topRightBook: q.goldBook ? hits.length > 0 && inBook(hits[0]) : null,
-      rank: rankIndex + 1,
-      tokens: countTokens(text),
-      ms,
-      tags: q.tags,
-    });
-  }
-  return out;
-}
-
-function percentile(values: number[], p: number): number {
-  if (values.length === 0) return 0;
-  const sorted = [...values].sort((a, b) => a - b);
-  return sorted[Math.min(sorted.length - 1, Math.floor((p / 100) * sorted.length))];
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
 const pct = (part: number, whole: number) => (whole ? round1((100 * part) / whole) : 0);
 
-export function summarise(results: QueryResult[]) {
-  const n = results.length;
-  const count = (f: (r: QueryResult) => boolean | null) => results.filter((r) => f(r) === true).length;
-  const has = (f: (r: QueryResult) => unknown) => results.some((r) => f(r) !== null);
-  return {
-    questions: n,
-    found: count((r) => r.found),
-    foundPct: pct(count((r) => r.found), n),
-    evidencePct: has((r) => r.evidence) ? pct(count((r) => r.evidence), n) : undefined,
-    goldListedPct: has((r) => r.goldListed) ? pct(count((r) => r.goldListed), n) : undefined,
-    rightBookSharePct: has((r) => r.rightBookShare)
-      ? round1((100 * results.reduce((s, r) => s + (r.rightBookShare ?? 0), 0)) / n)
-      : undefined,
-    topRightBookPct: has((r) => r.topRightBook) ? pct(count((r) => r.topRightBook), n) : undefined,
-    mrr: Math.round((1000 * results.reduce((s, r) => s + (r.rank ? 1 / r.rank : 0), 0)) / Math.max(1, n)) / 1000,
-    tokensMean: Math.round(results.reduce((s, r) => s + r.tokens, 0) / Math.max(1, n)),
-    tokensMedian: percentile(results.map((r) => r.tokens), 50),
-    tokensP90: percentile(results.map((r) => r.tokens), 90),
-    msMean: round1(results.reduce((s, r) => s + r.ms, 0) / Math.max(1, n)),
-    msP95: round1(percentile(results.map((r) => r.ms), 95)),
-  };
+// Asks every query once, judges each answer with bench/lib/scoring.ts and, with a writer, records it.
+export async function runQueries(server: Server, queries: Query[], limit?: number, group = "", writer?: RunWriter): Promise<QueryRecord[]> {
+  const out: QueryRecord[] = [];
+  for (const q of queries) {
+    const { text, hits, ms, error } = await server.search(q.query, limit);
+    const gold = { answers: q.answers, evidence: q.evidence, chunk: q.goldPath, book: q.goldBook, pasteTokenEnd: q.pasteTokenEnd };
+    let from = 0;
+    const retrieved: Retrieved[] = hits.map((h, i) => {
+      // Each result is stored as a span of the whole answer when it appears there verbatim (it always does for this
+      // server), so the records do not hold the same text twice.
+      const start = text.indexOf(h.text, from);
+      if (start >= 0) from = start + h.text.length;
+      return {
+      rank: i + 1,
+      chunk: h.diag?.chunk ?? (h.line !== undefined ? `${h.path}:${h.line}` : h.path),
+      path: h.path,
+      heading: h.diag?.heading,
+      ...(start >= 0 ? { span: [start, start + h.text.length] as [number, number] } : { text: h.text }),
+      fusedRank: h.diag?.fusedRank,
+      bm25: h.diag?.bm25,
+      vector: h.diag?.vector,
+      matchedPassages: h.diag?.matchedPassages,
+      vectorPassage: h.diag?.vectorPassage,
+      };
+    });
+    const record: QueryRecord = {
+      group,
+      id: q.id,
+      query: q.query,
+      gold: JSON.parse(JSON.stringify(gold)),
+      tags: q.tags,
+      output: text,
+      retrieved: JSON.parse(JSON.stringify(retrieved)),
+      correct: judge(text, shownOf(text, retrieved), gold),
+      tokens: countTokens(text),
+      ms: round1(ms),
+      error,
+    };
+    writer?.record(record);
+    out.push(record);
+  }
+  return out;
 }
 
-export function breakdown(results: QueryResult[], tag: string) {
-  const groups = new Map<string, QueryResult[]>();
-  for (const r of results) {
-    const key = r.tags[tag] ?? "other";
-    groups.set(key, [...(groups.get(key) ?? []), r]);
-  }
-  return Object.fromEntries(
-    [...groups.entries()].sort().map(([key, rs]) => [key, { questions: rs.length, foundPct: summarise(rs).foundPct, evidencePct: summarise(rs).evidencePct }]),
-  );
+// Quality and times for a list of records (used by bench/books-tune.ts).
+export function summarise(records: QueryRecord[]) {
+  return { ...quality(records), ...timings(records) };
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -382,13 +378,6 @@ function pasteStream(notes: Note[]): PasteStream {
   return { totalTokens: total, paragraphEnd };
 }
 
-function truncationRecall(stream: PasteStream, keys: string[]) {
-  return WINDOWS.map((window) => ({
-    window,
-    pct: pct(keys.filter((k) => (stream.paragraphEnd.get(k) ?? Infinity) <= window).length, keys.length),
-  }));
-}
-
 // ---------------------------------------------------------------------------------------------------------
 
 export async function writeVault(dir: string, notes: Note[]): Promise<void> {
@@ -406,15 +395,9 @@ export function needleQueries(notes: Note[], style: "keyword" | "question" | "on
     answers: [n.answer],
     goldPath: notes.find((note) => note.text.includes(n.fact))?.path,
     evidence: [],
+    pasteKey: `${notes.find((note) => note.text.includes(n.fact))?.path}\n${n.fact}`,
     tags: { overlap: n.overlap, depth: `${Math.round((100 * i) / (needles.length - 1))}%` },
   }));
-}
-
-function needleKeys(notes: Note[]): string[] {
-  return NEEDLES.map((n) => {
-    const note = notes.find((x) => x.text.includes(n.fact));
-    return note ? `${note.path}\n${n.fact}` : "";
-  });
 }
 
 const QUESTION_TYPES = ["what", "who", "when", "where", "why", "how", "which"];
@@ -432,12 +415,20 @@ export function squadQueries(questions: SquadQuestion[], style: "question" | "ke
       answers: q.answers,
       goldPath: q.notePath,
       evidence: evidenceWindows(q.paragraph, q.answerStart, q.answers[0]),
+      pasteKey: `${q.notePath}\n${q.paragraph.trim()}`,
       tags: {
         type: first && QUESTION_TYPES.includes(first) ? first : "other",
         overlap: overlap < 1 / 3 ? "low (under 1/3 of words in the answer sentence)" : overlap < 2 / 3 ? "medium" : "high (2/3 or more)",
       },
     };
   });
+}
+
+interface PlannedGroup extends GroupPlan, GroupSpec {
+  scope: string;
+  system: System;
+  limit?: number;
+  queryList: Query[];
 }
 
 async function main(): Promise<void> {
@@ -470,185 +461,176 @@ async function main(): Promise<void> {
 
   const sample = seededShuffle(squad.questions).slice(0, SAMPLE);
   const squadSet = QUICK ? sample : squad.questions;
-  const base = await mkdtemp(path.join(os.tmpdir(), "books-bench-"));
-  const report: Record<string, unknown> = {
-    about: "Long-text benchmark (bench/books.ts). Run once; nothing here was used to tune the search.",
-    quick: QUICK,
-    node: process.version,
-    cpuModel: os.cpus()[0]?.model,
-    tokenizer: "o200k_base",
-    sources: Object.fromEntries(
-      Object.entries(SOURCES)
-        .filter(([k]) => k !== "squadTrain")
-        .map(([k, s]) => [k, { url: s.url, sha256: s.sha256, about: s.about }]),
-    ),
-    sample: { squadSampleSize: SAMPLE, seed: 1 },
-    scopes: [] as unknown[],
-  };
 
+  // 1. The plan: every group of queries, with its exact size, fixed before anything runs.
+  const plan: PlannedGroup[] = [];
+  const facts: Record<string, unknown> = {};
+  const streams = new Map<string, PasteStream>();
+  for (const scope of scopes) {
+    const stream = pasteStream(scope.notes);
+    streams.set(scope.name, stream);
+    const df = documentFrequency(scope.notes);
+    const add = (system: System, set: string, style: string, queries: Query[], spec: GroupSpec = {}, limit?: number, note?: string) => {
+      const withEnd = queries.map((q) => ({ ...q, pasteTokenEnd: q.pasteKey ? stream.paragraphEnd.get(q.pasteKey) : undefined }));
+      const name = `${scope.name}/${system}/${set}/${style}/limit-${limit ?? (system === "baseline" ? "old" : 5)}`;
+      plan.push({
+        name,
+        queries: withEnd.length,
+        about: { scope: scope.name, system, set, style, limit: limit ?? (system === "baseline" ? "old server" : 5), ...(note ? { note } : {}) },
+        ...spec,
+        scope: scope.name,
+        system,
+        limit,
+        queryList: withEnd,
+      });
+    };
+    const squadSpec: GroupSpec = { breakdowns: ["type", "overlap"], truncationWindows: WINDOWS };
+    const needleSpec: GroupSpec = { breakdowns: ["overlap", "depth"], truncationWindows: WINDOWS };
+    const needleSet = (style: "keyword" | "question" | "oneword") => needleQueries(scope.notes, style, df);
+    const setName = QUICK ? "squad-sample" : "squad-all";
+    if (scope.name === "squad") {
+      for (const style of ["keywords", "question", "oneword"] as const) add("current", setName, style, squadQueries(squadSet, style, df), squadSpec);
+      // The same 1,000-question sample as the library run, so the effect of the extra books can be compared.
+      // (In a quick run the main set already is the sample.)
+      if (!QUICK) add("current", "squad-sample", "keywords", squadQueries(sample, "keywords", df), squadSpec);
+      add("current", "squad-sample", "keywords", squadQueries(sample, "keywords", df), squadSpec, 10);
+      add("current-ngram", "squad-sample", "keywords", squadQueries(sample, "keywords", df), squadSpec);
+      add("current-ngram", "squad-sample", "question", squadQueries(sample, "question", df), squadSpec);
+      add("baseline", setName, "oneword", squadQueries(squadSet, "oneword", df), squadSpec);
+      add("baseline", "squad-sample", "question", squadQueries(sample, "question", df), squadSpec);
+    } else if (scope.name === "library") {
+      for (const style of ["keywords", "question"] as const) add("current", "squad-sample", style, squadQueries(sample, style, df), squadSpec);
+      for (const style of ["keyword", "question"] as const) add("current", "needles", style, needleSet(style), needleSpec);
+      add("baseline", "needles", "oneword", needleSet("oneword"), needleSpec);
+      add("baseline", "squad-sample", "oneword", squadQueries(sample.slice(0, Math.min(300, SAMPLE)), "oneword", df), squadSpec);
+      for (const style of ["keywords", "question"] as const) {
+        const queries = nqa.map((q: NarrativeQuestion) => ({
+          id: q.id,
+          query: style === "question" ? q.question : keywordsOf(q.question),
+          answers: q.answers,
+          goldBook: q.book,
+          tags: { book: q.book },
+        }));
+        add("current", "narrativeqa", style, queries, { breakdowns: ["book"] }, undefined,
+          "Answer found is not meaningful here: NarrativeQA answers are free text written from plot summaries, and many are not in the book word for word. Use the right-book numbers.");
+      }
+    } else {
+      for (const style of ["keyword", "question"] as const) add("current", "needles", style, needleSet(style), needleSpec);
+      if (scope.name === "moby-chapters") {
+        for (const style of ["keyword", "question"] as const) add("current-ngram", "needles", style, needleSet(style), needleSpec);
+        add("baseline", "needles", "oneword", needleSet("oneword"), needleSpec);
+        add("baseline", "needles", "keyword", needleSet("keyword"), needleSpec);
+      }
+    }
+    const chars = scope.notes.reduce((sum, n) => sum + n.text.length, 0);
+    facts[scope.name] = {
+      about: scope.about,
+      notes: scope.notes.length,
+      megabytes: round1(chars / 1e6),
+      largestNoteBytes: Math.max(...scope.notes.map((n) => Buffer.byteLength(n.text))),
+      pasteEverythingTokens: stream.totalTokens,
+      ...(scope.name === "squad"
+        ? {
+            // The most a whole-word check can find: some SQuAD answers are only part of a word ("four" in "fourth").
+            answerCeilingPct: pct(squadSet.filter((q) => q.answers.some((a) => containsAnswer(q.paragraph, a))).length, squadSet.length),
+            rightArticleTokensMean: Math.round(scope.notes.reduce((sum, n) => sum + countTokens(n.text), 0) / scope.notes.length),
+          }
+        : {}),
+      ...(scope.name === "library"
+        ? { bookTokens: Object.fromEntries([...books.entries()].map(([id, raw]) => [BOOK_TITLES[id], countTokens(paragraphsOf(raw).join("\n\n"))])) }
+        : {}),
+    };
+  }
+
+  const writer = await RunWriter.start(path.join(BENCH, ".."), path.join(BENCH, "runs"), QUICK ? "books-quick" : "books", {
+    config: {
+      about: "Long-text benchmark (bench/books.ts). Run once per change; nothing here is used to tune the search.",
+      quick: QUICK,
+      squadSampleSize: SAMPLE,
+      squadSampleSeed: 1,
+      pasteWindows: WINDOWS,
+      defaultLimit: 5,
+      tokenizer: "o200k_base",
+      timeZone: process.env.TZ,
+      systems: Object.fromEntries((["current", "current-ngram", "baseline"] as System[]).map((s) => [s, systemEnv(s, "<vault>")])),
+    },
+    data: {
+      sources: Object.fromEntries(
+        Object.entries(SOURCES)
+          .filter(([k]) => k !== "squadTrain")
+          .map(([k, src]) => [k, { url: src.url, sha256: src.sha256, about: src.about, license: src.license }]),
+      ),
+      plantedFacts: NEEDLES,
+    },
+    plan: plan.map(({ name, queries, about, breakdowns, truncationWindows }) => ({ name, queries, about, breakdowns, truncationWindows })),
+  });
+
+  // 2. Run it, scope by scope.
+  const timingFacts: Record<string, unknown> = {};
+  const base = await mkdtemp(path.join(os.tmpdir(), "books-bench-"));
   try {
     for (const scope of scopes) {
       const vault = path.join(base, scope.name);
       await writeVault(vault, scope.notes);
-      const stream = pasteStream(scope.notes);
-      const df = documentFrequency(scope.notes);
-      const chars = scope.notes.reduce((s, n) => s + n.text.length, 0);
-      const largestNoteBytes = Math.max(...scope.notes.map((n) => Buffer.byteLength(n.text)));
-      console.log(`\n== ${scope.name}: ${scope.notes.length} notes, ${stream.totalTokens.toLocaleString()} tokens if pasted`);
-
-      const entry: Record<string, unknown> = {
-        name: scope.name,
-        about: scope.about,
-        notes: scope.notes.length,
-        megabytes: round1(chars / 1e6),
-        largestNoteBytes,
-        pasteEverythingTokens: stream.totalTokens,
-        runs: [] as unknown[],
-      };
-      const runs = entry.runs as unknown[];
-
-      const plan: { system: System; set: string; style: string; limit?: number; queries: Query[]; keys?: string[] }[] = [];
-      const needleSet = (style: "keyword" | "question" | "oneword") => needleQueries(scope.notes, style, df);
-      if (scope.name === "squad") {
-        for (const style of ["keywords", "question", "oneword"] as const) {
-          plan.push({ system: "current", set: QUICK ? "squad-sample" : "squad-all", style, queries: squadQueries(squadSet, style, df) });
-        }
-        // The same 1,000-question sample as the library run, so the effect of the extra books can be compared.
-        plan.push({ system: "current", set: "squad-sample", style: "keywords", queries: squadQueries(sample, "keywords", df) });
-        plan.push({ system: "current", set: "squad-sample", style: "keywords", limit: 10, queries: squadQueries(sample, "keywords", df) });
-        plan.push({ system: "current-ngram", set: "squad-sample", style: "keywords", queries: squadQueries(sample, "keywords", df) });
-        plan.push({ system: "current-ngram", set: "squad-sample", style: "question", queries: squadQueries(sample, "question", df) });
-        plan.push({ system: "baseline", set: QUICK ? "squad-sample" : "squad-all", style: "oneword", queries: squadQueries(squadSet, "oneword", df) });
-        plan.push({ system: "baseline", set: "squad-sample", style: "question", queries: squadQueries(sample, "question", df) });
-        entry.truncation = truncationRecall(stream, squadSet.map((q) => `${q.notePath}\n${q.paragraph.trim()}`));
-        // The most a whole-word check can find: some SQuAD answers are only part of a word ("four" in "fourth").
-        entry.answerCeilingPct = pct(squadSet.filter((q) => q.answers.some((a) => containsAnswer(q.paragraph, a))).length, squadSet.length);
-        entry.rightArticleTokensMean = Math.round(scope.notes.reduce((s, n) => s + countTokens(n.text), 0) / scope.notes.length);
-      } else if (scope.name === "library") {
-        for (const style of ["keywords", "question"] as const) {
-          plan.push({ system: "current", set: "squad-sample", style, queries: squadQueries(sample, style, df) });
-        }
-        for (const style of ["keyword", "question"] as const) plan.push({ system: "current", set: "needles", style, queries: needleSet(style) });
-        plan.push({ system: "baseline", set: "needles", style: "oneword", queries: needleSet("oneword") });
-        plan.push({ system: "baseline", set: "squad-sample", style: "oneword", queries: squadQueries(sample.slice(0, Math.min(300, SAMPLE)), "oneword", df) });
-        for (const style of ["keywords", "question"] as const) {
-          plan.push({
-            system: "current",
-            set: "narrativeqa",
-            style,
-            queries: nqa.map((q: NarrativeQuestion) => ({
-              id: q.id,
-              query: style === "question" ? q.question : keywordsOf(q.question),
-              answers: q.answers,
-              goldBook: q.book,
-              tags: { book: q.book },
-            })),
-          });
-        }
-        entry.truncation = truncationRecall(stream, [...sample.map((q) => `${q.notePath}\n${q.paragraph.trim()}`)]);
-        entry.needleTruncation = truncationRecall(stream, needleKeys(scope.notes));
-        entry.bookTokens = Object.fromEntries(
-          [...books.entries()].map(([id, raw]) => [BOOK_TITLES[id], countTokens(paragraphsOf(raw).join("\n\n"))]),
-        );
-      } else {
-        for (const style of ["keyword", "question"] as const) plan.push({ system: "current", set: "needles", style, queries: needleSet(style) });
-        if (scope.name === "moby-chapters") {
-          for (const style of ["keyword", "question"] as const) plan.push({ system: "current-ngram", set: "needles", style, queries: needleSet(style) });
-          plan.push({ system: "baseline", set: "needles", style: "oneword", queries: needleSet("oneword") });
-          plan.push({ system: "baseline", set: "needles", style: "keyword", queries: needleSet("keyword") });
-        }
-        entry.needleTruncation = truncationRecall(stream, needleKeys(scope.notes));
-      }
-
+      console.log(`\n== ${scope.name}: ${scope.notes.length} notes, ${streams.get(scope.name)!.totalTokens.toLocaleString()} tokens if pasted`);
       const servers = new Map<System, Server>();
-      for (const run of plan) {
-        let server = servers.get(run.system);
+      for (const group of plan.filter((g) => g.scope === scope.name)) {
+        let server = servers.get(group.system);
         if (!server) {
-          server = await connect(run.system, vault);
-          servers.set(run.system, server);
-          // The first search builds the index (and, with embeddings, every vector); time it on its own.
-          entry[`${run.system}FirstSearchMs`] = round1(await warmUp(server));
-          entry[`${run.system}DefinitionTokens`] = server.definitionTokens;
-          entry[`${run.system}StartTokens`] = server.startTokens;
+          server = await connect(group.system, vault);
+          servers.set(group.system, server);
+          // The first search builds the index (and, with embeddings, every vector); timed on its own.
+          timingFacts[`${scope.name}/${group.system}/firstSearchMs`] = round1(await warmUp(server));
+          (facts[scope.name] as Record<string, unknown>)[`${group.system}DefinitionTokens`] = server.definitionTokens;
+          (facts[scope.name] as Record<string, unknown>)[`${group.system}StartTokens`] = server.startTokens;
         }
-        const results = await runQueries(server, run.queries, run.limit);
-        const summary = summarise(results);
-        const record: Record<string, unknown> = { system: run.system, set: run.set, style: run.style, limit: run.limit ?? (run.system === "baseline" ? "old server" : 5), ...summary };
-        if (run.set.startsWith("squad") && run.system === "current") {
-          record.byType = breakdown(results, "type");
-          record.byOverlap = breakdown(results, "overlap");
-        }
-        if (run.set === "needles") {
-          record.byOverlap = breakdown(results, "overlap");
-          record.perNeedle = results.map((r) => ({ id: r.id, found: r.found, listed: r.goldListed, rank: r.rank, tokens: r.tokens }));
-        }
-        if (run.set === "narrativeqa") {
-          record.byBook = breakdown(results, "book");
-          record.note = "found is not meaningful here: NarrativeQA answers are free text written from plot summaries, and many are not in the book word for word. Use topRightBookPct.";
-        }
-        if (run.set.startsWith("squad") && run.system === "current" && run.style === "keywords" && run.limit === undefined) {
-          record.missedExamples = results
-            .filter((r) => !r.found)
-            .slice(0, 12)
-            .map((r) => {
-              const q = squad.questions.find((x) => x.id === r.id)!;
-              return { question: q.question, answer: q.answers[0], query: keywordsOf(q.question), article: q.title };
-            });
-        }
-        runs.push(record);
+        const records = await runQueries(server, group.queryList, group.limit, group.name, writer);
+        const q = quality(records);
+        const t = timings(records);
         console.log(
-          `${run.system.padEnd(13)} ${run.set.padEnd(12)} ${run.style.padEnd(9)} limit ${String(record.limit).padEnd(10)} found ${summary.foundPct}%` +
-            `${summary.evidencePct !== undefined ? ` evidence ${summary.evidencePct}%` : ""}${summary.goldListedPct !== undefined ? ` listed ${summary.goldListedPct}%` : ""}` +
-            `${summary.topRightBookPct !== undefined ? ` top hit right book ${summary.topRightBookPct}%` : ""} tokens ${summary.tokensMean} ms ${summary.msMean}`,
+          `${group.name.padEnd(56)} found ${q.foundPct}%${q.evidencePct !== null ? ` context ${q.evidencePct}%` : ""}` +
+            `${q.goldListedPct !== null ? ` listed ${q.goldListedPct}%` : ""}${q.topRightBookPct !== null ? ` top hit right book ${q.topRightBookPct}%` : ""}` +
+            ` tokens ${q.tokensMean} ms ${t.msMean}${q.errors ? ` ERRORS ${q.errors}` : ""}`,
         );
       }
       for (const server of servers.values()) await server.close();
-      (report.scopes as unknown[]).push(entry);
     }
-
-    // What the safety filters do to real, harmless text: everything they flag here is a false alarm.
-    const library = scopes.find((s) => s.name === "library")!.notes;
-    const safety = { notes: library.length, flaggedAsInstructions: 0, withSecretsMasked: 0, withPersonalDataMasked: 0, withHiddenTextRemoved: 0, examples: [] as { kind: string; note: string; text: string }[] };
-    for (const note of library) {
-      const prepared = prepareNoteText(note.text);
-      if (prepared.suspicious) {
-        safety.flaggedAsInstructions++;
-        const paragraph = note.text.split("\n\n").find((p) => looksLikeInjection(p));
-        if (paragraph && safety.examples.filter((e) => e.kind === "instructions").length < 8) {
-          safety.examples.push({ kind: "instructions", note: note.path, text: paragraph.slice(0, 240) });
-        }
-      }
-      if (prepared.secretsRemoved) safety.withSecretsMasked++;
-      if (prepared.personalRemoved) safety.withPersonalDataMasked++;
-      if (prepared.hiddenRemoved) safety.withHiddenTextRemoved++;
-      if ((prepared.secretsRemoved || prepared.personalRemoved) && safety.examples.filter((e) => e.kind === "mask").length < 8) {
-        const paragraph = note.text.split("\n\n").find((p) => {
-          const c = prepareNoteText(p);
-          return c.secretsRemoved || c.personalRemoved;
-        });
-        if (paragraph) safety.examples.push({ kind: "mask", note: note.path, text: `${paragraph.slice(0, 200)} => ${prepareNoteText(paragraph).text.slice(0, 200)}` });
-      }
-    }
-    // An answer the masking hid: it appears as whole words in the original paragraph but not after cleaning.
-    const destroyed = squad.questions.filter(
-      (q) =>
-        q.answers.some((a) => containsAnswer(q.paragraph, a)) &&
-        !q.answers.some((a) => containsAnswer(prepareNoteText(q.paragraph).text, a)),
-    );
-    report.safety = {
-      ...safety,
-      squadAnswersHiddenByMasking: destroyed.length,
-      squadAnswersHiddenExamples: destroyed.slice(0, 8).map((q) => ({ question: q.question, answer: q.answers[0] })),
-    };
-    console.log(`\nsafety on real text: ${JSON.stringify({ ...safety, examples: undefined })}, SQuAD answers hidden by masking: ${destroyed.length}`);
   } finally {
     await rm(base, { recursive: true, force: true });
   }
 
-  report.minutes = round1((Date.now() - started) / 60000);
-  const file = path.join(BENCH, "results", QUICK ? "books-quick.json" : "books.json");
-  await writeFile(file, `${JSON.stringify(report, null, 2)}\n`);
-  console.log(`\nWrote ${path.relative(process.cwd(), file)} in ${report.minutes} minutes`);
+  // 3. What the safety filters do to real, harmless text: everything they flag here is a false alarm.
+  const library = scopes.find((sc) => sc.name === "library")!.notes;
+  const safety = { notes: library.length, flaggedAsInstructions: 0, withSecretsMasked: 0, withPersonalDataMasked: 0, withHiddenTextRemoved: 0, examples: [] as { kind: string; note: string; text: string }[] };
+  for (const note of library) {
+    const prepared = prepareNoteText(note.text);
+    if (prepared.suspicious) {
+      safety.flaggedAsInstructions++;
+      const paragraph = note.text.split("\n\n").find((p) => looksLikeInjection(p));
+      if (paragraph && safety.examples.filter((e) => e.kind === "instructions").length < 8) {
+        safety.examples.push({ kind: "instructions", note: note.path, text: paragraph.slice(0, 240) });
+      }
+    }
+    if (prepared.secretsRemoved) safety.withSecretsMasked++;
+    if (prepared.personalRemoved) safety.withPersonalDataMasked++;
+    if (prepared.hiddenRemoved) safety.withHiddenTextRemoved++;
+    if ((prepared.secretsRemoved || prepared.personalRemoved) && safety.examples.filter((e) => e.kind === "mask").length < 8) {
+      const paragraph = note.text.split("\n\n").find((p) => {
+        const c = prepareNoteText(p);
+        return c.secretsRemoved || c.personalRemoved;
+      });
+      if (paragraph) safety.examples.push({ kind: "mask", note: note.path, text: `${paragraph.slice(0, 200)} => ${prepareNoteText(paragraph).text.slice(0, 200)}` });
+    }
+  }
+  // An answer the masking hid: it appears as whole words in the original paragraph but not after cleaning.
+  const destroyed = squad.questions.filter(
+    (q) => q.answers.some((a) => containsAnswer(q.paragraph, a)) && !q.answers.some((a) => containsAnswer(prepareNoteText(q.paragraph).text, a)),
+  );
+  facts.safety = { ...safety, squadAnswersHiddenByMasking: destroyed.length };
+
+  timingFacts.minutes = round1((Date.now() - started) / 60000);
+  await writer.finish(facts, timingFacts);
+  console.log(`\nWrote ${path.relative(process.cwd(), writer.dir)} in ${timingFacts.minutes} minutes. Check it with: npm run bench:verify -- ${path.relative(process.cwd(), writer.dir)}`);
 }
 
 // Runs only when this file is executed, not when bench/books-tune.ts imports its helpers.

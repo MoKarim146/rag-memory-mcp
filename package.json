@@ -19,6 +19,10 @@
     "test:unit": "vitest run",
     "bench": "tsx bench/run.ts",
     "charts": "tsx bench/charts.ts",
+    "bench:books": "tsx bench/books.ts",
+    "bench:books:quick": "tsx bench/books.ts --quick",
+    "bench:verify": "tsx bench/verify.ts",
+    "bench:smoke": "tsx bench/smoke.ts",
     "test:heavy": "vitest run --config vitest.heavy.config.ts",
     "audit": "npm audit --omit=dev --audit-level=high",
     "sbom": "npm sbom --sbom-format cyclonedx --omit dev > sbom.cdx.json"

@@ -100,7 +100,7 @@ async function main(): Promise<void> {
       await warmUp(bookServer);
       for (const style of ["keyword", "question"] as const) {
         const results = await runQueries(bookServer, needleQueries(bookNotes, style, bookDf, TUNING_NEEDLES));
-        const by = (o: string) => results.filter((r) => r.tags.overlap === o && r.found).length;
+        const by = (o: string) => results.filter((r) => r.tags.overlap === o && r.correct.found).length;
         const s = summarise(results);
         parts.push(`facts ${style}: ${s.found}/20 (name ${by("name")}/10, none ${by("none")}/10) tokens ${s.tokensMean}`);
       }
