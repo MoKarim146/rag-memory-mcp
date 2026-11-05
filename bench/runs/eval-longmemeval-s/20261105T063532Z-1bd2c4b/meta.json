@@ -1,0 +1,184 @@
+{
+  "benchmark": "eval-longmemeval-s",
+  "runId": "20261105T063532Z-1bd2c4b",
+  "startedAt": "2026-11-05T06:35:32.685Z",
+  "git": {
+    "commit": "1bd2c4b6bb7c47f3be4d0cfee322755fca15106e",
+    "dirty": false,
+    "dirtyFiles": []
+  },
+  "environment": {
+    "node": "v22.23.4",
+    "platform": "linux 6.18.44-fc-v236",
+    "arch": "x64",
+    "cpuModel": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "logicalCpus": 4,
+    "cpuAffinity": "0-1",
+    "memoryGB": 16.9,
+    "timeZone": "UTC",
+    "TZ": "UTC",
+    "packageLockSha256": "f124fefbec3ac18e0ba2d6cda1887b5950d28ecd10d71549a67716feb92aa549"
+  },
+  "config": {
+    "about": "Retrieval evaluation (bench/eval/run.ts) through the MCP server's search_memory tool. Queries are the dataset's text, unchanged.",
+    "dataset": "longmemeval-s",
+    "split": "evaluation",
+    "quick": null,
+    "quickSeed": null,
+    "limits": [
+      5,
+      10
+    ],
+    "systems": {
+      "bm25": {
+        "about": "this server, keyword search only (FTS5 BM25)",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+          "RAG_RETRIEVAL": "keyword"
+        }
+      },
+      "old": {
+        "about": "the original project, searched with the query's rarest word",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000"
+        }
+      }
+    },
+    "embeddingModel": null,
+    "tokenizer": "o200k_base",
+    "timeZone": "UTC"
+  },
+  "data": {
+    "dataset": "longmemeval-s",
+    "split": "evaluation",
+    "sources": [
+      "longmemevalS"
+    ],
+    "splitFile": "bench/eval/splits/longmemeval-s.json",
+    "meanSessionsPerQuestion": 48
+  },
+  "plan": [
+    {
+      "name": "longmemeval-s/evaluation/bm25/limit-5",
+      "queries": 377,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation/bm25/limit-5/abstention",
+      "queries": 25,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 5,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation/bm25/limit-10",
+      "queries": 377,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation/bm25/limit-10/abstention",
+      "queries": 25,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 10,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation/old/limit-5",
+      "queries": 377,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "old",
+        "systemAbout": "the original project, searched with the query's rarest word",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation/old/limit-5/abstention",
+      "queries": 25,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "old",
+        "systemAbout": "the original project, searched with the query's rarest word",
+        "limit": 5,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation/old/limit-10",
+      "queries": 377,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "old",
+        "systemAbout": "the original project, searched with the query's rarest word",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "longmemeval-s/evaluation/old/limit-10/abstention",
+      "queries": 25,
+      "about": {
+        "dataset": "longmemeval-s",
+        "split": "evaluation",
+        "system": "old",
+        "systemAbout": "the original project, searched with the query's rarest word",
+        "limit": 10,
+        "note": "No-answer questions: LongMemEval leaves them out of retrieval measures; shown for tokens and answer presence only."
+      },
+      "breakdowns": [
+        "type"
+      ]
+    }
+  ],
+  "finishedAt": "2026-11-05T06:38:27.660Z",
+  "facts": {
+    "embeddingIncomplete": 0
+  }
+}

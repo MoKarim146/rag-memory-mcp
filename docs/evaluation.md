@@ -131,12 +131,47 @@ Paired differences on the same questions (95% bootstrap interval of the mean dif
 ### LongMemEval-S, evaluation split (402 questions), keyword search and the old server
 
 <!-- generated: retrieval eval-longmemeval-s evaluation -->
-_No clean run of eval-longmemeval-s (evaluation) yet._
+Run `bench/runs/eval-longmemeval-s/20261105T063532Z-1bd2c4b` (commit `1bd2c4b`). Recall@5 interval: 95% bootstrap over questions (2,000 resamples, seed 1). Warm search: one search once the index is built. Cold start: building the index, with embedding for dense and hybrid. Memory: growth of the benchmark process's resident memory while the index was built, a rough reading that garbage collection can make negative.
+
+| System | Results | Questions | Recall@5 | Recall@5, 95% interval | Recall@10 | nDCG@10 | MRR | Evidence shown | Answer present | Without vectors | Tokens (mean) | Warm search ms (mean) | Cold start ms (mean) | Memory MB (rough) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| bm25 | 5 | 377 | 0.852 | 0.823 to 0.881 |  |  | 0.875 | 72.7% | 31.8% | 0 | 340 | 32.9 | 165 | 0 |
+| bm25 (no-answer questions) | 5 | 25 | 0.790 |  |  |  | 0.890 | 55.6% | 0% | 0 | 332 | 24.2 | 162 | 0 |
+| bm25 | 10 | 377 | 0.864 | 0.835 to 0.892 | 0.890 | 0.848 | 0.877 | 74.8% | 33.4% | 0 | 438 | 33.2 |  | 0 |
+| bm25 (no-answer questions) | 10 | 25 | 0.803 |  | 0.813 | 0.783 | 0.890 | 55.6% | 0% | 0 | 458 | 26.2 |  | 0 |
+| old | 5 | 377 | 0.589 | 0.548 to 0.628 |  |  | 0.638 | 63.1% | 29.4% |  | 860 | 26.3 | 28 | -0.2 |
+| old (no-answer questions) | 5 | 25 | 0.570 |  |  |  | 0.637 | 55.6% | 0% |  | 914 | 27.8 | 28 | -0.2 |
+| old | 10 | 377 | 0.589 | 0.548 to 0.628 | 0.608 | 0.563 | 0.638 | 63.1% | 29.4% |  | 860 | 27 |  | -0.2 |
+| old (no-answer questions) | 10 | 25 | 0.570 |  | 0.570 | 0.520 | 0.637 | 55.6% | 0% |  | 914 | 27 |  | -0.2 |
+
+Paired differences on the same questions (95% bootstrap interval of the mean difference, 2,000 resamples, seed 1). An interval that includes 0 means the difference may be chance.
+
+| Difference | Results | Same questions | Recall@5 | Recall@5, 95% interval | MRR | MRR, 95% interval |
+|---|---:|---:|---:|---:|---:|---:|
+| old minus bm25 | 5 | 377 | -0.263 | -0.307 to -0.220 | -0.237 | -0.286 to -0.192 |
+| old minus bm25 | 10 | 377 | -0.274 | -0.317 to -0.233 | -0.239 | -0.287 to -0.195 |
+<!-- /generated -->
+
+<!-- generated: retrieval-by eval-longmemeval-s evaluation 5 -->
+Recall@5 by question type, 5 results per search, same run. 95% bootstrap interval over that type's questions (2,000 resamples, seed 1).
+
+| Question type | Questions | bm25 Recall@5 | old Recall@5 |
+|---|---:|---:|---:|
+| knowledge-update | 58 | 0.940 (0.90 to 0.97) | 0.724 (0.62 to 0.82) |
+| multi-session | 97 | 0.804 (0.75 to 0.85) | 0.460 (0.39 to 0.53) |
+| single-session-assistant | 45 | 1.000 (1.00 to 1.00) | 0.778 (0.64 to 0.89) |
+| single-session-preference | 24 | 0.583 (0.38 to 0.79) | 0.583 (0.38 to 0.79) |
+| single-session-user | 51 | 0.961 (0.90 to 1.00) | 0.882 (0.78 to 0.96) |
+| temporal-reasoning | 102 | 0.793 (0.73 to 0.85) | 0.407 (0.34 to 0.47) |
 <!-- /generated -->
 
 ### LongMemEval-S, evaluation-dense subset (101 questions), all three ranking methods
 
 <!-- generated: retrieval eval-longmemeval-s evaluation-dense -->
+_No clean run of eval-longmemeval-s (evaluation-dense) yet._
+<!-- /generated -->
+
+<!-- generated: retrieval-by eval-longmemeval-s evaluation-dense 5 -->
 _No clean run of eval-longmemeval-s (evaluation-dense) yet._
 <!-- /generated -->
 

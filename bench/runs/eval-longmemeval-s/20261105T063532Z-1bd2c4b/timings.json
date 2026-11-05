@@ -1,0 +1,49 @@
+{
+  "groups": {
+    "longmemeval-s/evaluation/bm25/limit-5": {
+      "msMean": 32.9,
+      "msP95": 68.1,
+      "indexMsMean": 164.7,
+      "indexMsP95": 207.8
+    },
+    "longmemeval-s/evaluation/bm25/limit-5/abstention": {
+      "msMean": 24.2,
+      "msP95": 58.3,
+      "indexMsMean": 162.1,
+      "indexMsP95": 195.6
+    },
+    "longmemeval-s/evaluation/bm25/limit-10": {
+      "msMean": 33.2,
+      "msP95": 70.2
+    },
+    "longmemeval-s/evaluation/bm25/limit-10/abstention": {
+      "msMean": 26.2,
+      "msP95": 62.4
+    },
+    "longmemeval-s/evaluation/old/limit-5": {
+      "msMean": 26.3,
+      "msP95": 33.7,
+      "indexMsMean": 27.6,
+      "indexMsP95": 35.7
+    },
+    "longmemeval-s/evaluation/old/limit-5/abstention": {
+      "msMean": 27.8,
+      "msP95": 34.1,
+      "indexMsMean": 28,
+      "indexMsP95": 34.2
+    },
+    "longmemeval-s/evaluation/old/limit-10": {
+      "msMean": 27,
+      "msP95": 36
+    },
+    "longmemeval-s/evaluation/old/limit-10/abstention": {
+      "msMean": 27,
+      "msP95": 34
+    }
+  },
+  "other": {
+    "bm25/rssGrowthMBMean": 0,
+    "old/rssGrowthMBMean": -0.2,
+    "minutes": 2.8
+  }
+}
