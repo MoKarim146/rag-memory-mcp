@@ -156,8 +156,11 @@ export function qualityBy(records: QueryRecord[], tag: string) {
     [...groups.entries()]
       .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
       .map(([key, rs]) => {
-        const q = quality(rs);
-        return [key, { questions: q.questions, found: q.found, foundPct: q.foundPct, evidencePct: q.evidencePct }];
+        const q = quality(rs) as Record<string, unknown>;
+        // Retrieval records break down by their retrieval measures; answer records by found and evidence.
+        return rs.some((r) => r.kind === "retrieval")
+          ? [key, { questions: q.questions, recallAt5: q.recallAt5, mrr: q.mrr, evidenceShownPct: q.evidenceShownPct, distractorFirstPct: q.distractorFirstPct }]
+          : [key, { questions: q.questions, found: q.found, foundPct: q.foundPct, evidencePct: q.evidencePct }];
       }),
   );
 }
