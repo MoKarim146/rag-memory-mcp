@@ -21,6 +21,8 @@ export interface EmbeddingSettings {
 }
 
 export const DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434";
+// Largest embedding-server answer that is read; anything bigger is refused (OWASP LLM06).
+export const MAX_EMBED_RESPONSE_BYTES = 8 * 1024 * 1024;
 export const DEFAULT_OLLAMA_MODEL = "nomic-embed-text";
 
 export function parseEmbeddingSettings(env: NodeJS.ProcessEnv): EmbeddingSettings {
@@ -119,6 +121,9 @@ function fnv1a(input: string): number {
 export function createOllamaEmbedder(settings: EmbeddingSettings, fetchImpl: typeof fetch = fetch): Embedder {
   const base = assertLoopbackUrl(settings.ollamaUrl);
   const endpoint = new URL("/api/embed", base);
+  // Every vector from one embedder must have the same length; a batch with any other length is rejected,
+  // so vectors of different models or sizes are never mixed (OWASP LLM09).
+  let dimensions: number | undefined;
 
   return {
     id: `ollama:${settings.ollamaModel}`,
@@ -136,20 +141,54 @@ export function createOllamaEmbedder(settings: EmbeddingSettings, fetchImpl: typ
         throw new Error(`Embedding server answered HTTP ${response.status}`);
       }
 
-      const body = (await response.json()) as { embeddings?: unknown };
+      const body = JSON.parse(await readLimited(response, MAX_EMBED_RESPONSE_BYTES)) as { embeddings?: unknown };
       const embeddings = body.embeddings;
       if (!Array.isArray(embeddings) || embeddings.length !== texts.length) {
         throw new Error("Embedding server returned an unexpected response");
       }
 
-      return embeddings.map((row) => {
+      const vectors = embeddings.map((row) => {
         if (!Array.isArray(row) || row.length === 0 || row.length > 8192 || !row.every(Number.isFinite)) {
           throw new Error("Embedding server returned an invalid vector");
         }
         return normalizeVector(Float32Array.from(row as number[]));
       });
+      const size = dimensions ?? vectors[0]?.length;
+      if (vectors.some((vector) => vector.length !== size)) {
+        throw new Error("Embedding server returned vectors of different sizes");
+      }
+      dimensions = size;
+      return vectors;
     },
   };
+}
+
+// Reads a response body, giving up as soon as it passes maxBytes.
+async function readLimited(response: Response, maxBytes: number): Promise<string> {
+  const declared = Number(response.headers.get("content-length") ?? "0");
+  if (declared > maxBytes) {
+    await response.body?.cancel();
+    throw new Error("Embedding server answer is too large");
+  }
+  if (!response.body) {
+    return "";
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      throw new Error("Embedding server answer is too large");
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 export function normalizeVector(vector: Float32Array): Float32Array {

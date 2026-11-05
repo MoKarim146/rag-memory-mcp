@@ -666,9 +666,9 @@ describe("SL: secret leakage", () => {
 });
 
 describe("FP: no false alarms on ordinary notes", () => {
-  it("FP-1 the 32 benchmark notes and the sample vault get no warnings, no masking and no removed text", async () => {
+  it("FP-1 the 56 benchmark notes and the sample vault get no warnings, no masking and no removed text", async () => {
     const { prepareNoteText } = await import("../src/safety.js");
-    const roots = [path.join(__dirname, "..", "bench", "fixture-vault"), path.join(__dirname, "..", "examples", "sample-vault")];
+    const roots = ["bench/fixture-vault", "bench/holdout-vault", "examples/sample-vault"].map((dir) => path.join(__dirname, "..", dir));
     let checked = 0;
     for (const root of roots) {
       for (const file of await listAll(root)) {
@@ -676,11 +676,13 @@ describe("FP: no false alarms on ordinary notes", () => {
         const raw = await readFile(file, "utf8");
         const prepared = prepareNoteText(raw);
         expect(prepared.suspicious, file).toBe(false);
+        expect(prepared.private, file).toBe(false);
         expect(prepared.secretsRemoved, file).toBe(0);
+        expect(prepared.personalRemoved, file).toBe(0);
         expect(prepared.text, file).toBe(raw.replace(/\r\n?/g, "\n"));
         checked += 1;
       }
     }
-    expect(checked).toBe(37);
+    expect(checked).toBe(61);
   });
 });

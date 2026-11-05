@@ -1,0 +1,6170 @@
+[
+  {
+    "set": "holdout",
+    "variant": "baseline",
+    "label": "the original project before this work (frozen copy)",
+    "style": "keyword",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 831,
+      "fullListTokens": 1118,
+      "instructionsTokens": 55,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 95
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 61
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 88
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 104
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 113
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 144
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 103
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 123
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1506,
+            "resultChars": 5646,
+            "wireTokens": 3124,
+            "isError": false,
+            "ms": 16
+          }
+        ],
+        "resultTokens": 1506,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "login-method",
+        "kind": "lookup",
+        "query": "login",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "login"
+            },
+            "argTokens": 5,
+            "resultTokens": 147,
+            "resultChars": 474,
+            "wireTokens": 295,
+            "isError": false,
+            "ms": 22.7
+          }
+        ],
+        "resultTokens": 147,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "frontend",
+        "kind": "lookup",
+        "query": "Astro",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Astro"
+            },
+            "argTokens": 6,
+            "resultTokens": 146,
+            "resultChars": 521,
+            "wireTokens": 291,
+            "isError": false,
+            "ms": 13.9
+          }
+        ],
+        "resultTokens": 146,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "db-choice",
+        "kind": "lookup",
+        "query": "Postgres",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Postgres"
+            },
+            "argTokens": 6,
+            "resultTokens": 198,
+            "resultChars": 693,
+            "wireTokens": 391,
+            "isError": false,
+            "ms": 15.5
+          }
+        ],
+        "resultTokens": 198,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "loan-length",
+        "kind": "lookup",
+        "query": "loan",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "loan"
+            },
+            "argTokens": 5,
+            "resultTokens": 250,
+            "resultChars": 918,
+            "wireTokens": 488,
+            "isError": false,
+            "ms": 15.2
+          }
+        ],
+        "resultTokens": 250,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "max-tools",
+        "kind": "lookup",
+        "query": "three tools",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "three tools"
+            },
+            "argTokens": 6,
+            "resultTokens": 122,
+            "resultChars": 444,
+            "wireTokens": 250,
+            "isError": false,
+            "ms": 13.6
+          }
+        ],
+        "resultTokens": 122,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "power-tools",
+        "kind": "lookup",
+        "query": "induction",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "induction"
+            },
+            "argTokens": 6,
+            "resultTokens": 274,
+            "resultChars": 1037,
+            "wireTokens": 542,
+            "isError": false,
+            "ms": 14.3
+          }
+        ],
+        "resultTokens": 274,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "overdue",
+        "kind": "lookup",
+        "query": "overdue",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "overdue"
+            },
+            "argTokens": 6,
+            "resultTokens": 180,
+            "resultChars": 622,
+            "wireTokens": 353,
+            "isError": false,
+            "ms": 13.7
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/tool-library.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 296,
+            "resultChars": 1087,
+            "wireTokens": 628,
+            "isError": false,
+            "ms": 3.2
+          }
+        ],
+        "resultTokens": 476,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "slot-length",
+        "kind": "lookup",
+        "query": "slot",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "slot"
+            },
+            "argTokens": 5,
+            "resultTokens": 826,
+            "resultChars": 3014,
+            "wireTokens": 1599,
+            "isError": false,
+            "ms": 16.9
+          }
+        ],
+        "resultTokens": 826,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 7
+      },
+      {
+        "id": "holiday-swap",
+        "kind": "lookup",
+        "query": "swap",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "swap"
+            },
+            "argTokens": 5,
+            "resultTokens": 839,
+            "resultChars": 3077,
+            "wireTokens": 1619,
+            "isError": false,
+            "ms": 15.3
+          }
+        ],
+        "resultTokens": 839,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "swap-expiry",
+        "kind": "lookup",
+        "query": "48 hours",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "48 hours"
+            },
+            "argTokens": 6,
+            "resultTokens": 62,
+            "resultChars": 217,
+            "wireTokens": 131,
+            "isError": false,
+            "ms": 11.9
+          }
+        ],
+        "resultTokens": 62,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "slot-colour",
+        "kind": "lookup",
+        "query": "contrast",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "contrast"
+            },
+            "argTokens": 5,
+            "resultTokens": 223,
+            "resultChars": 818,
+            "wireTokens": 444,
+            "isError": false,
+            "ms": 12.1
+          }
+        ],
+        "resultTokens": 223,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "retention",
+        "kind": "lookup",
+        "query": "privacy notice",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "privacy notice"
+            },
+            "argTokens": 6,
+            "resultTokens": 243,
+            "resultChars": 911,
+            "wireTokens": 483,
+            "isError": false,
+            "ms": 11.6
+          }
+        ],
+        "resultTokens": 243,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "waiting-count",
+        "kind": "lookup",
+        "query": "waiting list",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "waiting list"
+            },
+            "argTokens": 6,
+            "resultTokens": 242,
+            "resultChars": 920,
+            "wireTokens": 478,
+            "isError": false,
+            "ms": 10.8
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/waiting-list.md"
+            },
+            "argTokens": 10,
+            "resultTokens": 180,
+            "resultChars": 727,
+            "wireTokens": 384,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 422,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "inactive",
+        "kind": "lookup",
+        "query": "inactive",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "inactive"
+            },
+            "argTokens": 5,
+            "resultTokens": 74,
+            "resultChars": 267,
+            "wireTokens": 159,
+            "isError": false,
+            "ms": 11.8
+          }
+        ],
+        "resultTokens": 74,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "plot-offer",
+        "kind": "lookup",
+        "query": "plot frees up",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "plot frees up"
+            },
+            "argTokens": 7,
+            "resultTokens": 87,
+            "resultChars": 310,
+            "wireTokens": 181,
+            "isError": false,
+            "ms": 10.6
+          }
+        ],
+        "resultTokens": 87,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "polytunnel-hours",
+        "kind": "lookup",
+        "query": "half-day",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "half-day"
+            },
+            "argTokens": 6,
+            "resultTokens": 210,
+            "resultChars": 680,
+            "wireTokens": 416,
+            "isError": false,
+            "ms": 11.6
+          }
+        ],
+        "resultTokens": 210,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "polytunnel-capacity",
+        "kind": "lookup",
+        "query": "fire safety",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "fire safety"
+            },
+            "argTokens": 6,
+            "resultTokens": 60,
+            "resultChars": 199,
+            "wireTokens": 127,
+            "isError": false,
+            "ms": 11.2
+          }
+        ],
+        "resultTokens": 60,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-size",
+        "kind": "lookup",
+        "query": "1280",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "1280"
+            },
+            "argTokens": 6,
+            "resultTokens": 230,
+            "resultChars": 838,
+            "wireTokens": 454,
+            "isError": false,
+            "ms": 12.3
+          }
+        ],
+        "resultTokens": 230,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-location",
+        "kind": "lookup",
+        "query": "GPS",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "GPS"
+            },
+            "argTokens": 5,
+            "resultTokens": 256,
+            "resultChars": 951,
+            "wireTokens": 506,
+            "isError": false,
+            "ms": 14.1
+          }
+        ],
+        "resultTokens": 256,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "funding",
+        "kind": "lookup",
+        "query": "grant",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "grant"
+            },
+            "argTokens": 5,
+            "resultTokens": 144,
+            "resultChars": 501,
+            "wireTokens": 290,
+            "isError": false,
+            "ms": 19.5
+          }
+        ],
+        "resultTokens": 144,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "vm-cost",
+        "kind": "lookup",
+        "query": "VM",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "VM"
+            },
+            "argTokens": 5,
+            "resultTokens": 187,
+            "resultChars": 655,
+            "wireTokens": 371,
+            "isError": false,
+            "ms": 26.3
+          }
+        ],
+        "resultTokens": 187,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "deposit",
+        "kind": "lookup",
+        "query": "deposit",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "deposit"
+            },
+            "argTokens": 5,
+            "resultTokens": 90,
+            "resultChars": 346,
+            "wireTokens": 187,
+            "isError": false,
+            "ms": 10.7
+          }
+        ],
+        "resultTokens": 90,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "email-quota",
+        "kind": "lookup",
+        "query": "free tier",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "free tier"
+            },
+            "argTokens": 6,
+            "resultTokens": 84,
+            "resultChars": 282,
+            "wireTokens": 175,
+            "isError": false,
+            "ms": 14.8
+          }
+        ],
+        "resultTokens": 84,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "reminder-time",
+        "kind": "lookup",
+        "query": "reminder job",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "reminder job"
+            },
+            "argTokens": 7,
+            "resultTokens": 257,
+            "resultChars": 941,
+            "wireTokens": 510,
+            "isError": false,
+            "ms": 11.7
+          }
+        ],
+        "resultTokens": 257,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-recovery",
+        "kind": "lookup",
+        "query": "restore",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restore"
+            },
+            "argTokens": 5,
+            "resultTokens": 14,
+            "resultChars": 41,
+            "wireTokens": 40,
+            "isError": false,
+            "ms": 10.4
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 5,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "service-name",
+        "kind": "lookup",
+        "query": "systemd",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "systemd"
+            },
+            "argTokens": 6,
+            "resultTokens": 121,
+            "resultChars": 407,
+            "wireTokens": 247,
+            "isError": false,
+            "ms": 11.1
+          }
+        ],
+        "resultTokens": 121,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "whatsapp",
+        "kind": "lookup",
+        "query": "WhatsApp",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "WhatsApp"
+            },
+            "argTokens": 6,
+            "resultTokens": 345,
+            "resultChars": 1252,
+            "wireTokens": 676,
+            "isError": false,
+            "ms": 12.3
+          }
+        ],
+        "resultTokens": 345,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "double-accept",
+        "kind": "lookup",
+        "query": "accepted twice",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "accepted twice"
+            },
+            "argTokens": 6,
+            "resultTokens": 164,
+            "resultChars": 649,
+            "wireTokens": 331,
+            "isError": false,
+            "ms": 11.5
+          }
+        ],
+        "resultTokens": 164,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "holiday-source",
+        "kind": "lookup",
+        "query": "bank holidays",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "bank holidays"
+            },
+            "argTokens": 6,
+            "resultTokens": 94,
+            "resultChars": 351,
+            "wireTokens": 197,
+            "isError": false,
+            "ms": 11.8
+          }
+        ],
+        "resultTokens": 94,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "load-time",
+        "kind": "lookup",
+        "query": "3G",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "3G"
+            },
+            "argTokens": 6,
+            "resultTokens": 124,
+            "resultChars": 448,
+            "wireTokens": 254,
+            "isError": false,
+            "ms": 12.2
+          }
+        ],
+        "resultTokens": 124,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "lucia-plot",
+        "kind": "lookup",
+        "query": "Lucia",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Lucia"
+            },
+            "argTokens": 6,
+            "resultTokens": 485,
+            "resultChars": 1759,
+            "wireTokens": 944,
+            "isError": false,
+            "ms": 12.9
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "People/Lucia Ferreira.md"
+            },
+            "argTokens": 9,
+            "resultTokens": 48,
+            "resultChars": 203,
+            "wireTokens": 111,
+            "isError": false,
+            "ms": 1.4
+          }
+        ],
+        "resultTokens": 533,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-k8s",
+        "kind": "lookup",
+        "query": "Kubernetes",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Kubernetes"
+            },
+            "argTokens": 6,
+            "resultTokens": 15,
+            "resultChars": 44,
+            "wireTokens": 42,
+            "isError": false,
+            "ms": 12.1
+          }
+        ],
+        "resultTokens": 15,
+        "argTokens": 6,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-fees",
+        "kind": "lookup",
+        "query": "Stripe",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Stripe"
+            },
+            "argTokens": 5,
+            "resultTokens": 14,
+            "resultChars": 40,
+            "wireTokens": 40,
+            "isError": false,
+            "ms": 11.4
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 5,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Children's groups may book the polytunnel on weekday mornings in term time.",
+              "reason": "The insurer confirmed cover for supervised school groups."
+            },
+            "argTokens": 31,
+            "resultTokens": 30,
+            "resultChars": 83,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.3
+          }
+        ],
+        "resultTokens": 30,
+        "argTokens": 31,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add the school's Tuesday booking to the polytunnel calendar",
+              "priority": "medium",
+              "project": "polytunnel"
+            },
+            "argTokens": 25,
+            "resultTokens": 30,
+            "resultChars": 84,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 1.6
+          }
+        ],
+        "resultTokens": 30,
+        "argTokens": 25,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Bank holiday swaps",
+              "content": "Finished the bank holiday rule for swaps: the API checks both slots against the bank_holidays table inside the same transaction as the swap. Added tests for Easter Monday and Christmas Day."
+            },
+            "argTokens": 51,
+            "resultTokens": 36,
+            "resultChars": 100,
+            "wireTokens": 82,
+            "isError": false,
+            "ms": 2.3
+          }
+        ],
+        "resultTokens": 36,
+        "argTokens": 51,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 157,
+            "resultChars": 596,
+            "wireTokens": 336,
+            "isError": false,
+            "ms": 1.7
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nUpdated by Claude on 2 November 2026.\n\nSlot swap is finished, including bank holidays. Next: overdue tool reminders on day 8, sent with the 07:30 reminder job, then the polytunnel half-day blocks.\n"
+            },
+            "argTokens": 62,
+            "resultTokens": 30,
+            "resultChars": 92,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.1
+          }
+        ],
+        "resultTokens": 187,
+        "argTokens": 63,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 33,
+      "answerableLookups": 31,
+      "answered": 30,
+      "answeredBySearchAlone": 27,
+      "lookupResultTokens": 7331,
+      "lookupCalls": 36,
+      "startTokens": 1506,
+      "startAnswersCovered": 8,
+      "writeResultTokens": 283,
+      "writesLanded": 4,
+      "argTokens": 386,
+      "sessionTotalTokens": 10392,
+      "meanReciprocalRank": 0.618
+    }
+  },
+  {
+    "set": "holdout",
+    "variant": "baseline",
+    "label": "the original project before this work (frozen copy)",
+    "style": "question",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 831,
+      "fullListTokens": 1118,
+      "instructionsTokens": 55,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 95
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 61
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 88
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 104
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 113
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 144
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 103
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 123
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1506,
+            "resultChars": 5646,
+            "wireTokens": 3124,
+            "isError": false,
+            "ms": 7.2
+          }
+        ],
+        "resultTokens": 1506,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "login-method",
+        "kind": "lookup",
+        "query": "How do members log in to Sprout?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do members log in to Sprout?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 66,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 15.6
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "frontend",
+        "kind": "lookup",
+        "query": "Why was Astro chosen for the frontend?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why was Astro chosen for the frontend?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 72,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 10.8
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "db-choice",
+        "kind": "lookup",
+        "query": "Why did we pick Postgres over SQLite?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why did we pick Postgres over SQLite?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 71,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 11.3
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "loan-length",
+        "kind": "lookup",
+        "query": "How long can a member borrow a tool?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long can a member borrow a tool?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 70,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 11.1
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "max-tools",
+        "kind": "lookup",
+        "query": "How many tools can one member borrow at once?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many tools can one member borrow at once?"
+            },
+            "argTokens": 14,
+            "resultTokens": 22,
+            "resultChars": 79,
+            "wireTokens": 58,
+            "isError": false,
+            "ms": 12.9
+          }
+        ],
+        "resultTokens": 22,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "power-tools",
+        "kind": "lookup",
+        "query": "Who is allowed to borrow the hedge trimmer?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who is allowed to borrow the hedge trimmer?"
+            },
+            "argTokens": 14,
+            "resultTokens": 22,
+            "resultChars": 77,
+            "wireTokens": 58,
+            "isError": false,
+            "ms": 11.4
+          }
+        ],
+        "resultTokens": 22,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "overdue",
+        "kind": "lookup",
+        "query": "When does a borrower get a reminder for a late tool?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When does a borrower get a reminder for a late tool?"
+            },
+            "argTokens": 16,
+            "resultTokens": 24,
+            "resultChars": 86,
+            "wireTokens": 62,
+            "isError": false,
+            "ms": 10.1
+          }
+        ],
+        "resultTokens": 24,
+        "argTokens": 16,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "slot-length",
+        "kind": "lookup",
+        "query": "How long is a watering slot?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is a watering slot?"
+            },
+            "argTokens": 11,
+            "resultTokens": 19,
+            "resultChars": 62,
+            "wireTokens": 52,
+            "isError": false,
+            "ms": 10.8
+          }
+        ],
+        "resultTokens": 19,
+        "argTokens": 11,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "holiday-swap",
+        "kind": "lookup",
+        "query": "Can a bank holiday slot be swapped for a normal one?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Can a bank holiday slot be swapped for a normal one?"
+            },
+            "argTokens": 16,
+            "resultTokens": 24,
+            "resultChars": 86,
+            "wireTokens": 62,
+            "isError": false,
+            "ms": 16.5
+          }
+        ],
+        "resultTokens": 24,
+        "argTokens": 16,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "swap-expiry",
+        "kind": "lookup",
+        "query": "How long do people have to accept a swap request?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long do people have to accept a swap request?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 83,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 17
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "slot-colour",
+        "kind": "lookup",
+        "query": "What colour is the free slot in the calendar now?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What colour is the free slot in the calendar now?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 83,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 11.4
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "retention",
+        "kind": "lookup",
+        "query": "How long is waiting-list data kept after someone leaves?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is waiting-list data kept after someone leaves?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 90,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 11.8
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "waiting-count",
+        "kind": "lookup",
+        "query": "How many people are waiting for a plot?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many people are waiting for a plot?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 73,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 11.4
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "inactive",
+        "kind": "lookup",
+        "query": "What happens to people who don't answer the yearly email?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What happens to people who don't answer the yearly email?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 91,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 13.7
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "plot-offer",
+        "kind": "lookup",
+        "query": "Who gets offered a plot when one becomes free?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who gets offered a plot when one becomes free?"
+            },
+            "argTokens": 14,
+            "resultTokens": 22,
+            "resultChars": 80,
+            "wireTokens": 58,
+            "isError": false,
+            "ms": 10.4
+          }
+        ],
+        "resultTokens": 22,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "polytunnel-hours",
+        "kind": "lookup",
+        "query": "What are the polytunnel booking times?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What are the polytunnel booking times?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 72,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 10.7
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "polytunnel-capacity",
+        "kind": "lookup",
+        "query": "How many people can be in the polytunnel at once?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many people can be in the polytunnel at once?"
+            },
+            "argTokens": 17,
+            "resultTokens": 25,
+            "resultChars": 83,
+            "wireTokens": 64,
+            "isError": false,
+            "ms": 10.5
+          }
+        ],
+        "resultTokens": 25,
+        "argTokens": 17,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "photo-size",
+        "kind": "lookup",
+        "query": "What size are uploaded photos resized to?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What size are uploaded photos resized to?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 75,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 11.1
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "photo-location",
+        "kind": "lookup",
+        "query": "Do we keep the place where a photo was taken?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do we keep the place where a photo was taken?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 79,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 10.8
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "funding",
+        "kind": "lookup",
+        "query": "Who pays for the server?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who pays for the server?"
+            },
+            "argTokens": 10,
+            "resultTokens": 18,
+            "resultChars": 58,
+            "wireTokens": 50,
+            "isError": false,
+            "ms": 12
+          }
+        ],
+        "resultTokens": 18,
+        "argTokens": 10,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "vm-cost",
+        "kind": "lookup",
+        "query": "What does the hosting cost per month?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What does the hosting cost per month?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 71,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 10.8
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "deposit",
+        "kind": "lookup",
+        "query": "Do members have to pay anything to borrow power tools?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do members have to pay anything to borrow power tools?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 88,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 11.1
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "email-quota",
+        "kind": "lookup",
+        "query": "How many emails can we send without paying?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many emails can we send without paying?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 77,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 12.4
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "reminder-time",
+        "kind": "lookup",
+        "query": "What time do reminder emails go out?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What time do reminder emails go out?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 70,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 12.6
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "db-recovery",
+        "kind": "lookup",
+        "query": "How do I bring the database back after a crash?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do I bring the database back after a crash?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 81,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 12.4
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "service-name",
+        "kind": "lookup",
+        "query": "What is the app's service called on the server?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the app's service called on the server?"
+            },
+            "argTokens": 15,
+            "resultTokens": 23,
+            "resultChars": 81,
+            "wireTokens": 60,
+            "isError": false,
+            "ms": 12.3
+          }
+        ],
+        "resultTokens": 23,
+        "argTokens": 15,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "whatsapp",
+        "kind": "lookup",
+        "query": "Until when will the WhatsApp group keep running?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Until when will the WhatsApp group keep running?"
+            },
+            "argTokens": 14,
+            "resultTokens": 22,
+            "resultChars": 82,
+            "wireTokens": 58,
+            "isError": false,
+            "ms": 15.4
+          }
+        ],
+        "resultTokens": 22,
+        "argTokens": 14,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "double-accept",
+        "kind": "lookup",
+        "query": "What went wrong when two people confirmed a swap at the same moment, and how was it fixed?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What went wrong when two people confirmed a swap at the same moment, and how was it fixed?"
+            },
+            "argTokens": 24,
+            "resultTokens": 32,
+            "resultChars": 124,
+            "wireTokens": 78,
+            "isError": false,
+            "ms": 12.3
+          }
+        ],
+        "resultTokens": 32,
+        "argTokens": 24,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "holiday-source",
+        "kind": "lookup",
+        "query": "Where does the app get the list of public holidays from?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Where does the app get the list of public holidays from?"
+            },
+            "argTokens": 16,
+            "resultTokens": 24,
+            "resultChars": 90,
+            "wireTokens": 62,
+            "isError": false,
+            "ms": 12.5
+          }
+        ],
+        "resultTokens": 24,
+        "argTokens": 16,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "load-time",
+        "kind": "lookup",
+        "query": "How fast does Sprout load on a slow mobile connection now?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How fast does Sprout load on a slow mobile connection now?"
+            },
+            "argTokens": 17,
+            "resultTokens": 25,
+            "resultChars": 92,
+            "wireTokens": 64,
+            "isError": false,
+            "ms": 16
+          }
+        ],
+        "resultTokens": 25,
+        "argTokens": 17,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "lucia-plot",
+        "kind": "lookup",
+        "query": "Which plot does the accessibility lead have?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which plot does the accessibility lead have?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 78,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 12.7
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-k8s",
+        "kind": "lookup",
+        "query": "Which Kubernetes namespace does Sprout use?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which Kubernetes namespace does Sprout use?"
+            },
+            "argTokens": 12,
+            "resultTokens": 20,
+            "resultChars": 77,
+            "wireTokens": 54,
+            "isError": false,
+            "ms": 12.8
+          }
+        ],
+        "resultTokens": 20,
+        "argTokens": 12,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-fees",
+        "kind": "lookup",
+        "query": "How do members pay their plot fee online?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do members pay their plot fee online?"
+            },
+            "argTokens": 13,
+            "resultTokens": 21,
+            "resultChars": 75,
+            "wireTokens": 56,
+            "isError": false,
+            "ms": 13.1
+          }
+        ],
+        "resultTokens": 21,
+        "argTokens": 13,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Children's groups may book the polytunnel on weekday mornings in term time.",
+              "reason": "The insurer confirmed cover for supervised school groups."
+            },
+            "argTokens": 31,
+            "resultTokens": 30,
+            "resultChars": 83,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.2
+          }
+        ],
+        "resultTokens": 30,
+        "argTokens": 31,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add the school's Tuesday booking to the polytunnel calendar",
+              "priority": "medium",
+              "project": "polytunnel"
+            },
+            "argTokens": 25,
+            "resultTokens": 30,
+            "resultChars": 84,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.1
+          }
+        ],
+        "resultTokens": 30,
+        "argTokens": 25,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Bank holiday swaps",
+              "content": "Finished the bank holiday rule for swaps: the API checks both slots against the bank_holidays table inside the same transaction as the swap. Added tests for Easter Monday and Christmas Day."
+            },
+            "argTokens": 51,
+            "resultTokens": 36,
+            "resultChars": 100,
+            "wireTokens": 82,
+            "isError": false,
+            "ms": 2.6
+          }
+        ],
+        "resultTokens": 36,
+        "argTokens": 51,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 157,
+            "resultChars": 596,
+            "wireTokens": 336,
+            "isError": false,
+            "ms": 2.7
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nUpdated by Claude on 2 November 2026.\n\nSlot swap is finished, including bank holidays. Next: overdue tool reminders on day 8, sent with the 07:30 reminder job, then the polytunnel half-day blocks.\n"
+            },
+            "argTokens": 62,
+            "resultTokens": 30,
+            "resultChars": 92,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 2.7
+          }
+        ],
+        "resultTokens": 187,
+        "argTokens": 63,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 33,
+      "answerableLookups": 31,
+      "answered": 0,
+      "answeredBySearchAlone": 0,
+      "lookupResultTokens": 730,
+      "lookupCalls": 33,
+      "startTokens": 1506,
+      "startAnswersCovered": 8,
+      "writeResultTokens": 283,
+      "writesLanded": 4,
+      "argTokens": 637,
+      "sessionTotalTokens": 4042,
+      "meanReciprocalRank": 0
+    }
+  },
+  {
+    "set": "holdout",
+    "variant": "current",
+    "label": "this project, default settings (FTS5 keyword search only)",
+    "style": "keyword",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1246,
+            "resultChars": 5012,
+            "wireTokens": 1358,
+            "isError": false,
+            "ms": 9.4
+          }
+        ],
+        "resultTokens": 1246,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "login-method",
+        "kind": "lookup",
+        "query": "login",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "login"
+            },
+            "argTokens": 5,
+            "resultTokens": 201,
+            "resultChars": 714,
+            "wireTokens": 231,
+            "isError": false,
+            "ms": 35.1
+          }
+        ],
+        "resultTokens": 201,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "frontend",
+        "kind": "lookup",
+        "query": "Astro",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Astro"
+            },
+            "argTokens": 6,
+            "resultTokens": 139,
+            "resultChars": 576,
+            "wireTokens": 162,
+            "isError": false,
+            "ms": 10.1
+          }
+        ],
+        "resultTokens": 139,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-choice",
+        "kind": "lookup",
+        "query": "Postgres",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Postgres"
+            },
+            "argTokens": 6,
+            "resultTokens": 147,
+            "resultChars": 549,
+            "wireTokens": 172,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 147,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "loan-length",
+        "kind": "lookup",
+        "query": "loan",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "loan"
+            },
+            "argTokens": 5,
+            "resultTokens": 179,
+            "resultChars": 710,
+            "wireTokens": 207,
+            "isError": false,
+            "ms": 4.2
+          }
+        ],
+        "resultTokens": 179,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "max-tools",
+        "kind": "lookup",
+        "query": "three tools",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "three tools"
+            },
+            "argTokens": 6,
+            "resultTokens": 181,
+            "resultChars": 700,
+            "wireTokens": 202,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 181,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "power-tools",
+        "kind": "lookup",
+        "query": "induction",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "induction"
+            },
+            "argTokens": 6,
+            "resultTokens": 273,
+            "resultChars": 1073,
+            "wireTokens": 308,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 273,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "overdue",
+        "kind": "lookup",
+        "query": "overdue",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "overdue"
+            },
+            "argTokens": 6,
+            "resultTokens": 256,
+            "resultChars": 902,
+            "wireTokens": 283,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 256,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "slot-length",
+        "kind": "lookup",
+        "query": "slot",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "slot"
+            },
+            "argTokens": 5,
+            "resultTokens": 376,
+            "resultChars": 1415,
+            "wireTokens": 413,
+            "isError": false,
+            "ms": 6
+          }
+        ],
+        "resultTokens": 376,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "holiday-swap",
+        "kind": "lookup",
+        "query": "swap",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "swap"
+            },
+            "argTokens": 5,
+            "resultTokens": 326,
+            "resultChars": 1229,
+            "wireTokens": 363,
+            "isError": false,
+            "ms": 5.7
+          }
+        ],
+        "resultTokens": 326,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "swap-expiry",
+        "kind": "lookup",
+        "query": "48 hours",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "48 hours"
+            },
+            "argTokens": 6,
+            "resultTokens": 212,
+            "resultChars": 779,
+            "wireTokens": 243,
+            "isError": false,
+            "ms": 8.9
+          }
+        ],
+        "resultTokens": 212,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "slot-colour",
+        "kind": "lookup",
+        "query": "contrast",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "contrast"
+            },
+            "argTokens": 5,
+            "resultTokens": 259,
+            "resultChars": 957,
+            "wireTokens": 288,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 259,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "retention",
+        "kind": "lookup",
+        "query": "privacy notice",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "privacy notice"
+            },
+            "argTokens": 6,
+            "resultTokens": 335,
+            "resultChars": 1180,
+            "wireTokens": 369,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 335,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 5
+      },
+      {
+        "id": "waiting-count",
+        "kind": "lookup",
+        "query": "waiting list",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "waiting list"
+            },
+            "argTokens": 6,
+            "resultTokens": 331,
+            "resultChars": 1382,
+            "wireTokens": 370,
+            "isError": false,
+            "ms": 5.6
+          }
+        ],
+        "resultTokens": 331,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "inactive",
+        "kind": "lookup",
+        "query": "inactive",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "inactive"
+            },
+            "argTokens": 5,
+            "resultTokens": 123,
+            "resultChars": 505,
+            "wireTokens": 141,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 123,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "plot-offer",
+        "kind": "lookup",
+        "query": "plot frees up",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "plot frees up"
+            },
+            "argTokens": 7,
+            "resultTokens": 337,
+            "resultChars": 1341,
+            "wireTokens": 373,
+            "isError": false,
+            "ms": 6
+          }
+        ],
+        "resultTokens": 337,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "polytunnel-hours",
+        "kind": "lookup",
+        "query": "half-day",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "half-day"
+            },
+            "argTokens": 6,
+            "resultTokens": 275,
+            "resultChars": 953,
+            "wireTokens": 304,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 275,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "polytunnel-capacity",
+        "kind": "lookup",
+        "query": "fire safety",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "fire safety"
+            },
+            "argTokens": 6,
+            "resultTokens": 104,
+            "resultChars": 445,
+            "wireTokens": 125,
+            "isError": false,
+            "ms": 4.1
+          }
+        ],
+        "resultTokens": 104,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-size",
+        "kind": "lookup",
+        "query": "1280",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "1280"
+            },
+            "argTokens": 6,
+            "resultTokens": 168,
+            "resultChars": 676,
+            "wireTokens": 194,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 168,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-location",
+        "kind": "lookup",
+        "query": "GPS",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "GPS"
+            },
+            "argTokens": 5,
+            "resultTokens": 335,
+            "resultChars": 1210,
+            "wireTokens": 363,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 335,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "funding",
+        "kind": "lookup",
+        "query": "grant",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "grant"
+            },
+            "argTokens": 5,
+            "resultTokens": 142,
+            "resultChars": 537,
+            "wireTokens": 164,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 142,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "vm-cost",
+        "kind": "lookup",
+        "query": "VM",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "VM"
+            },
+            "argTokens": 5,
+            "resultTokens": 198,
+            "resultChars": 776,
+            "wireTokens": 222,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 198,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "deposit",
+        "kind": "lookup",
+        "query": "deposit",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "deposit"
+            },
+            "argTokens": 5,
+            "resultTokens": 167,
+            "resultChars": 731,
+            "wireTokens": 185,
+            "isError": false,
+            "ms": 4.4
+          }
+        ],
+        "resultTokens": 167,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "email-quota",
+        "kind": "lookup",
+        "query": "free tier",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "free tier"
+            },
+            "argTokens": 6,
+            "resultTokens": 128,
+            "resultChars": 543,
+            "wireTokens": 149,
+            "isError": false,
+            "ms": 4.2
+          }
+        ],
+        "resultTokens": 128,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "reminder-time",
+        "kind": "lookup",
+        "query": "reminder job",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "reminder job"
+            },
+            "argTokens": 7,
+            "resultTokens": 345,
+            "resultChars": 1389,
+            "wireTokens": 382,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 345,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-recovery",
+        "kind": "lookup",
+        "query": "restore",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restore"
+            },
+            "argTokens": 5,
+            "resultTokens": 102,
+            "resultChars": 426,
+            "wireTokens": 120,
+            "isError": false,
+            "ms": 6.9
+          }
+        ],
+        "resultTokens": 102,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "service-name",
+        "kind": "lookup",
+        "query": "systemd",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "systemd"
+            },
+            "argTokens": 6,
+            "resultTokens": 128,
+            "resultChars": 499,
+            "wireTokens": 150,
+            "isError": false,
+            "ms": 4.8
+          }
+        ],
+        "resultTokens": 128,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "whatsapp",
+        "kind": "lookup",
+        "query": "WhatsApp",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "WhatsApp"
+            },
+            "argTokens": 6,
+            "resultTokens": 280,
+            "resultChars": 1055,
+            "wireTokens": 311,
+            "isError": false,
+            "ms": 4.9
+          }
+        ],
+        "resultTokens": 280,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "double-accept",
+        "kind": "lookup",
+        "query": "accepted twice",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "accepted twice"
+            },
+            "argTokens": 6,
+            "resultTokens": 178,
+            "resultChars": 719,
+            "wireTokens": 196,
+            "isError": false,
+            "ms": 4.5
+          }
+        ],
+        "resultTokens": 178,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "holiday-source",
+        "kind": "lookup",
+        "query": "bank holidays",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "bank holidays"
+            },
+            "argTokens": 6,
+            "resultTokens": 306,
+            "resultChars": 1213,
+            "wireTokens": 338,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 306,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "load-time",
+        "kind": "lookup",
+        "query": "3G",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "3G"
+            },
+            "argTokens": 6,
+            "resultTokens": 124,
+            "resultChars": 503,
+            "wireTokens": 145,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 124,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "lucia-plot",
+        "kind": "lookup",
+        "query": "Lucia",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Lucia"
+            },
+            "argTokens": 6,
+            "resultTokens": 225,
+            "resultChars": 898,
+            "wireTokens": 263,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 225,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "no-answer-k8s",
+        "kind": "lookup",
+        "query": "Kubernetes",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Kubernetes"
+            },
+            "argTokens": 6,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 4
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 6,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-fees",
+        "kind": "lookup",
+        "query": "Stripe",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Stripe"
+            },
+            "argTokens": 5,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 3.5
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 5,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Children's groups may book the polytunnel on weekday mornings in term time.",
+              "reason": "The insurer confirmed cover for supervised school groups."
+            },
+            "argTokens": 31,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 3.9
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 31,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add the school's Tuesday booking to the polytunnel calendar",
+              "priority": "medium",
+              "project": "polytunnel"
+            },
+            "argTokens": 25,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 25,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Bank holiday swaps",
+              "content": "Finished the bank holiday rule for swaps: the API checks both slots against the bank_holidays table inside the same transaction as the swap. Added tests for Easter Monday and Christmas Day."
+            },
+            "argTokens": 51,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 2.6
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 51,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 154,
+            "resultChars": 628,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 1.8
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nUpdated by Claude on 2 November 2026.\n\nSlot swap is finished, including bank holidays. Next: overdue tool reminders on day 8, sent with the 07:30 reminder job, then the polytunnel half-day blocks.\n"
+            },
+            "argTokens": 62,
+            "resultTokens": 15,
+            "resultChars": 60,
+            "wireTokens": 27,
+            "isError": false,
+            "ms": 3.9
+          }
+        ],
+        "resultTokens": 169,
+        "argTokens": 63,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 33,
+      "answerableLookups": 31,
+      "answered": 31,
+      "answeredBySearchAlone": 31,
+      "lookupResultTokens": 6888,
+      "lookupCalls": 33,
+      "startTokens": 1246,
+      "startAnswersCovered": 7,
+      "writeResultTokens": 201,
+      "writesLanded": 4,
+      "argTokens": 359,
+      "sessionTotalTokens": 9252,
+      "meanReciprocalRank": 0.748
+    }
+  },
+  {
+    "set": "holdout",
+    "variant": "current",
+    "label": "this project, default settings (FTS5 keyword search only)",
+    "style": "question",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1246,
+            "resultChars": 5012,
+            "wireTokens": 1358,
+            "isError": false,
+            "ms": 8.3
+          }
+        ],
+        "resultTokens": 1246,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "login-method",
+        "kind": "lookup",
+        "query": "How do members log in to Sprout?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do members log in to Sprout?"
+            },
+            "argTokens": 13,
+            "resultTokens": 187,
+            "resultChars": 766,
+            "wireTokens": 214,
+            "isError": false,
+            "ms": 26
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "00_MAIN_CONTEXT.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 368,
+            "resultChars": 1558,
+            "wireTokens": 419,
+            "isError": false,
+            "ms": 3.2
+          }
+        ],
+        "resultTokens": 555,
+        "argTokens": 21,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "frontend",
+        "kind": "lookup",
+        "query": "Why was Astro chosen for the frontend?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why was Astro chosen for the frontend?"
+            },
+            "argTokens": 12,
+            "resultTokens": 139,
+            "resultChars": 576,
+            "wireTokens": 162,
+            "isError": false,
+            "ms": 4.5
+          }
+        ],
+        "resultTokens": 139,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-choice",
+        "kind": "lookup",
+        "query": "Why did we pick Postgres over SQLite?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why did we pick Postgres over SQLite?"
+            },
+            "argTokens": 13,
+            "resultTokens": 68,
+            "resultChars": 275,
+            "wireTokens": 84,
+            "isError": false,
+            "ms": 3.9
+          }
+        ],
+        "resultTokens": 68,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "loan-length",
+        "kind": "lookup",
+        "query": "How long can a member borrow a tool?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long can a member borrow a tool?"
+            },
+            "argTokens": 13,
+            "resultTokens": 355,
+            "resultChars": 1423,
+            "wireTokens": 395,
+            "isError": false,
+            "ms": 7.4
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/tool-library.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 278,
+            "resultChars": 1102,
+            "wireTokens": 317,
+            "isError": false,
+            "ms": 2.3
+          }
+        ],
+        "resultTokens": 633,
+        "argTokens": 21,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "max-tools",
+        "kind": "lookup",
+        "query": "How many tools can one member borrow at once?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many tools can one member borrow at once?"
+            },
+            "argTokens": 14,
+            "resultTokens": 326,
+            "resultChars": 1325,
+            "wireTokens": 370,
+            "isError": false,
+            "ms": 8.3
+          }
+        ],
+        "resultTokens": 326,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "power-tools",
+        "kind": "lookup",
+        "query": "Who is allowed to borrow the hedge trimmer?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who is allowed to borrow the hedge trimmer?"
+            },
+            "argTokens": 14,
+            "resultTokens": 90,
+            "resultChars": 373,
+            "wireTokens": 107,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 90,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "overdue",
+        "kind": "lookup",
+        "query": "When does a borrower get a reminder for a late tool?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When does a borrower get a reminder for a late tool?"
+            },
+            "argTokens": 16,
+            "resultTokens": 267,
+            "resultChars": 965,
+            "wireTokens": 299,
+            "isError": false,
+            "ms": 6.7
+          }
+        ],
+        "resultTokens": 267,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "slot-length",
+        "kind": "lookup",
+        "query": "How long is a watering slot?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is a watering slot?"
+            },
+            "argTokens": 11,
+            "resultTokens": 320,
+            "resultChars": 1250,
+            "wireTokens": 356,
+            "isError": false,
+            "ms": 6
+          }
+        ],
+        "resultTokens": 320,
+        "argTokens": 11,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "holiday-swap",
+        "kind": "lookup",
+        "query": "Can a bank holiday slot be swapped for a normal one?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Can a bank holiday slot be swapped for a normal one?"
+            },
+            "argTokens": 16,
+            "resultTokens": 323,
+            "resultChars": 1284,
+            "wireTokens": 356,
+            "isError": false,
+            "ms": 8.2
+          }
+        ],
+        "resultTokens": 323,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "swap-expiry",
+        "kind": "lookup",
+        "query": "How long do people have to accept a swap request?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long do people have to accept a swap request?"
+            },
+            "argTokens": 15,
+            "resultTokens": 204,
+            "resultChars": 817,
+            "wireTokens": 227,
+            "isError": false,
+            "ms": 9
+          }
+        ],
+        "resultTokens": 204,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "slot-colour",
+        "kind": "lookup",
+        "query": "What colour is the free slot in the calendar now?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What colour is the free slot in the calendar now?"
+            },
+            "argTokens": 15,
+            "resultTokens": 340,
+            "resultChars": 1317,
+            "wireTokens": 379,
+            "isError": false,
+            "ms": 5.6
+          }
+        ],
+        "resultTokens": 340,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "retention",
+        "kind": "lookup",
+        "query": "How long is waiting-list data kept after someone leaves?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is waiting-list data kept after someone leaves?"
+            },
+            "argTokens": 15,
+            "resultTokens": 298,
+            "resultChars": 1243,
+            "wireTokens": 334,
+            "isError": false,
+            "ms": 9
+          }
+        ],
+        "resultTokens": 298,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "waiting-count",
+        "kind": "lookup",
+        "query": "How many people are waiting for a plot?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many people are waiting for a plot?"
+            },
+            "argTokens": 13,
+            "resultTokens": 354,
+            "resultChars": 1478,
+            "wireTokens": 390,
+            "isError": false,
+            "ms": 6.4
+          }
+        ],
+        "resultTokens": 354,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "inactive",
+        "kind": "lookup",
+        "query": "What happens to people who don't answer the yearly email?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What happens to people who don't answer the yearly email?"
+            },
+            "argTokens": 15,
+            "resultTokens": 133,
+            "resultChars": 572,
+            "wireTokens": 156,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 133,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "plot-offer",
+        "kind": "lookup",
+        "query": "Who gets offered a plot when one becomes free?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who gets offered a plot when one becomes free?"
+            },
+            "argTokens": 14,
+            "resultTokens": 153,
+            "resultChars": 637,
+            "wireTokens": 174,
+            "isError": false,
+            "ms": 6.3
+          }
+        ],
+        "resultTokens": 153,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "polytunnel-hours",
+        "kind": "lookup",
+        "query": "What are the polytunnel booking times?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What are the polytunnel booking times?"
+            },
+            "argTokens": 13,
+            "resultTokens": 408,
+            "resultChars": 1563,
+            "wireTokens": 450,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 408,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "polytunnel-capacity",
+        "kind": "lookup",
+        "query": "How many people can be in the polytunnel at once?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many people can be in the polytunnel at once?"
+            },
+            "argTokens": 17,
+            "resultTokens": 152,
+            "resultChars": 629,
+            "wireTokens": 171,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 152,
+        "argTokens": 17,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-size",
+        "kind": "lookup",
+        "query": "What size are uploaded photos resized to?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What size are uploaded photos resized to?"
+            },
+            "argTokens": 12,
+            "resultTokens": 357,
+            "resultChars": 1348,
+            "wireTokens": 396,
+            "isError": false,
+            "ms": 4.9
+          }
+        ],
+        "resultTokens": 357,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-location",
+        "kind": "lookup",
+        "query": "Do we keep the place where a photo was taken?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do we keep the place where a photo was taken?"
+            },
+            "argTokens": 15,
+            "resultTokens": 114,
+            "resultChars": 473,
+            "wireTokens": 137,
+            "isError": false,
+            "ms": 4.1
+          }
+        ],
+        "resultTokens": 114,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "funding",
+        "kind": "lookup",
+        "query": "Who pays for the server?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who pays for the server?"
+            },
+            "argTokens": 10,
+            "resultTokens": 144,
+            "resultChars": 572,
+            "wireTokens": 165,
+            "isError": false,
+            "ms": 3.6
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Reference/server-runbook.md"
+            },
+            "argTokens": 9,
+            "resultTokens": 143,
+            "resultChars": 565,
+            "wireTokens": 165,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 287,
+        "argTokens": 19,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "vm-cost",
+        "kind": "lookup",
+        "query": "What does the hosting cost per month?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What does the hosting cost per month?"
+            },
+            "argTokens": 12,
+            "resultTokens": 214,
+            "resultChars": 866,
+            "wireTokens": 236,
+            "isError": false,
+            "ms": 4.4
+          }
+        ],
+        "resultTokens": 214,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "deposit",
+        "kind": "lookup",
+        "query": "Do members have to pay anything to borrow power tools?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do members have to pay anything to borrow power tools?"
+            },
+            "argTokens": 15,
+            "resultTokens": 372,
+            "resultChars": 1474,
+            "wireTokens": 413,
+            "isError": false,
+            "ms": 6.4
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Meetings/2026-07-07_committee.md"
+            },
+            "argTokens": 16,
+            "resultTokens": 185,
+            "resultChars": 794,
+            "wireTokens": 209,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 557,
+        "argTokens": 31,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "email-quota",
+        "kind": "lookup",
+        "query": "How many emails can we send without paying?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many emails can we send without paying?"
+            },
+            "argTokens": 13,
+            "resultTokens": 274,
+            "resultChars": 1108,
+            "wireTokens": 305,
+            "isError": false,
+            "ms": 8.3
+          }
+        ],
+        "resultTokens": 274,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "reminder-time",
+        "kind": "lookup",
+        "query": "What time do reminder emails go out?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What time do reminder emails go out?"
+            },
+            "argTokens": 12,
+            "resultTokens": 288,
+            "resultChars": 1047,
+            "wireTokens": 325,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 288,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-recovery",
+        "kind": "lookup",
+        "query": "How do I bring the database back after a crash?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do I bring the database back after a crash?"
+            },
+            "argTokens": 15,
+            "resultTokens": 157,
+            "resultChars": 651,
+            "wireTokens": 175,
+            "isError": false,
+            "ms": 4.4
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Meetings/2026-09-15_committee.md"
+            },
+            "argTokens": 16,
+            "resultTokens": 156,
+            "resultChars": 647,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 313,
+        "argTokens": 31,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "service-name",
+        "kind": "lookup",
+        "query": "What is the app's service called on the server?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the app's service called on the server?"
+            },
+            "argTokens": 15,
+            "resultTokens": 144,
+            "resultChars": 572,
+            "wireTokens": 165,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 144,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "whatsapp",
+        "kind": "lookup",
+        "query": "Until when will the WhatsApp group keep running?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Until when will the WhatsApp group keep running?"
+            },
+            "argTokens": 14,
+            "resultTokens": 181,
+            "resultChars": 695,
+            "wireTokens": 205,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 181,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "double-accept",
+        "kind": "lookup",
+        "query": "What went wrong when two people confirmed a swap at the same moment, and how was it fixed?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What went wrong when two people confirmed a swap at the same moment, and how was it fixed?"
+            },
+            "argTokens": 24,
+            "resultTokens": 347,
+            "resultChars": 1347,
+            "wireTokens": 382,
+            "isError": false,
+            "ms": 8.7
+          }
+        ],
+        "resultTokens": 347,
+        "argTokens": 24,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "holiday-source",
+        "kind": "lookup",
+        "query": "Where does the app get the list of public holidays from?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Where does the app get the list of public holidays from?"
+            },
+            "argTokens": 16,
+            "resultTokens": 238,
+            "resultChars": 951,
+            "wireTokens": 262,
+            "isError": false,
+            "ms": 6.1
+          }
+        ],
+        "resultTokens": 238,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "load-time",
+        "kind": "lookup",
+        "query": "How fast does Sprout load on a slow mobile connection now?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How fast does Sprout load on a slow mobile connection now?"
+            },
+            "argTokens": 17,
+            "resultTokens": 121,
+            "resultChars": 467,
+            "wireTokens": 140,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 121,
+        "argTokens": 17,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "lucia-plot",
+        "kind": "lookup",
+        "query": "Which plot does the accessibility lead have?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which plot does the accessibility lead have?"
+            },
+            "argTokens": 12,
+            "resultTokens": 55,
+            "resultChars": 250,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 55,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "no-answer-k8s",
+        "kind": "lookup",
+        "query": "Which Kubernetes namespace does Sprout use?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which Kubernetes namespace does Sprout use?"
+            },
+            "argTokens": 12,
+            "resultTokens": 144,
+            "resultChars": 572,
+            "wireTokens": 165,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 144,
+        "argTokens": 12,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-fees",
+        "kind": "lookup",
+        "query": "How do members pay their plot fee online?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do members pay their plot fee online?"
+            },
+            "argTokens": 13,
+            "resultTokens": 280,
+            "resultChars": 1169,
+            "wireTokens": 319,
+            "isError": false,
+            "ms": 6.7
+          }
+        ],
+        "resultTokens": 280,
+        "argTokens": 13,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Children's groups may book the polytunnel on weekday mornings in term time.",
+              "reason": "The insurer confirmed cover for supervised school groups."
+            },
+            "argTokens": 31,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 2.8
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 31,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add the school's Tuesday booking to the polytunnel calendar",
+              "priority": "medium",
+              "project": "polytunnel"
+            },
+            "argTokens": 25,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 2.5
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 25,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Bank holiday swaps",
+              "content": "Finished the bank holiday rule for swaps: the API checks both slots against the bank_holidays table inside the same transaction as the swap. Added tests for Easter Monday and Christmas Day."
+            },
+            "argTokens": 51,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 5.8
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 51,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 154,
+            "resultChars": 628,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 1.8
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nUpdated by Claude on 2 November 2026.\n\nSlot swap is finished, including bank holidays. Next: overdue tool reminders on day 8, sent with the 07:30 reminder job, then the polytunnel half-day blocks.\n"
+            },
+            "argTokens": 62,
+            "resultTokens": 15,
+            "resultChars": 60,
+            "wireTokens": 27,
+            "isError": false,
+            "ms": 3.8
+          }
+        ],
+        "resultTokens": 169,
+        "argTokens": 63,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 33,
+      "answerableLookups": 31,
+      "answered": 29,
+      "answeredBySearchAlone": 26,
+      "lookupResultTokens": 8677,
+      "lookupCalls": 38,
+      "startTokens": 1246,
+      "startAnswersCovered": 7,
+      "writeResultTokens": 201,
+      "writesLanded": 4,
+      "argTokens": 694,
+      "sessionTotalTokens": 11376,
+      "meanReciprocalRank": 0.753
+    }
+  },
+  {
+    "set": "holdout",
+    "variant": "current-ngram",
+    "label": "this project, FTS5 + built-in character n-gram vectors",
+    "style": "keyword",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1246,
+            "resultChars": 5012,
+            "wireTokens": 1358,
+            "isError": false,
+            "ms": 6.9
+          }
+        ],
+        "resultTokens": 1246,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "login-method",
+        "kind": "lookup",
+        "query": "login",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "login"
+            },
+            "argTokens": 5,
+            "resultTokens": 201,
+            "resultChars": 714,
+            "wireTokens": 231,
+            "isError": false,
+            "ms": 32
+          }
+        ],
+        "resultTokens": 201,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "frontend",
+        "kind": "lookup",
+        "query": "Astro",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Astro"
+            },
+            "argTokens": 6,
+            "resultTokens": 139,
+            "resultChars": 576,
+            "wireTokens": 162,
+            "isError": false,
+            "ms": 4.9
+          }
+        ],
+        "resultTokens": 139,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-choice",
+        "kind": "lookup",
+        "query": "Postgres",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Postgres"
+            },
+            "argTokens": 6,
+            "resultTokens": 147,
+            "resultChars": 549,
+            "wireTokens": 172,
+            "isError": false,
+            "ms": 5
+          }
+        ],
+        "resultTokens": 147,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "loan-length",
+        "kind": "lookup",
+        "query": "loan",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "loan"
+            },
+            "argTokens": 5,
+            "resultTokens": 179,
+            "resultChars": 710,
+            "wireTokens": 207,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 179,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "max-tools",
+        "kind": "lookup",
+        "query": "three tools",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "three tools"
+            },
+            "argTokens": 6,
+            "resultTokens": 223,
+            "resultChars": 872,
+            "wireTokens": 247,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 223,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "power-tools",
+        "kind": "lookup",
+        "query": "induction",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "induction"
+            },
+            "argTokens": 6,
+            "resultTokens": 251,
+            "resultChars": 970,
+            "wireTokens": 285,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 251,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "overdue",
+        "kind": "lookup",
+        "query": "overdue",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "overdue"
+            },
+            "argTokens": 6,
+            "resultTokens": 256,
+            "resultChars": 902,
+            "wireTokens": 283,
+            "isError": false,
+            "ms": 7
+          }
+        ],
+        "resultTokens": 256,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "slot-length",
+        "kind": "lookup",
+        "query": "slot",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "slot"
+            },
+            "argTokens": 5,
+            "resultTokens": 340,
+            "resultChars": 1262,
+            "wireTokens": 376,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 340,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "holiday-swap",
+        "kind": "lookup",
+        "query": "swap",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "swap"
+            },
+            "argTokens": 5,
+            "resultTokens": 326,
+            "resultChars": 1229,
+            "wireTokens": 363,
+            "isError": false,
+            "ms": 5
+          }
+        ],
+        "resultTokens": 326,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "swap-expiry",
+        "kind": "lookup",
+        "query": "48 hours",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "48 hours"
+            },
+            "argTokens": 6,
+            "resultTokens": 212,
+            "resultChars": 779,
+            "wireTokens": 243,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 212,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "slot-colour",
+        "kind": "lookup",
+        "query": "contrast",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "contrast"
+            },
+            "argTokens": 5,
+            "resultTokens": 259,
+            "resultChars": 957,
+            "wireTokens": 288,
+            "isError": false,
+            "ms": 5
+          }
+        ],
+        "resultTokens": 259,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "retention",
+        "kind": "lookup",
+        "query": "privacy notice",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "privacy notice"
+            },
+            "argTokens": 6,
+            "resultTokens": 335,
+            "resultChars": 1180,
+            "wireTokens": 369,
+            "isError": false,
+            "ms": 5.4
+          }
+        ],
+        "resultTokens": 335,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 5
+      },
+      {
+        "id": "waiting-count",
+        "kind": "lookup",
+        "query": "waiting list",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "waiting list"
+            },
+            "argTokens": 6,
+            "resultTokens": 317,
+            "resultChars": 1293,
+            "wireTokens": 355,
+            "isError": false,
+            "ms": 5.3
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/waiting-list.md"
+            },
+            "argTokens": 10,
+            "resultTokens": 176,
+            "resultChars": 757,
+            "wireTokens": 201,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 493,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "inactive",
+        "kind": "lookup",
+        "query": "inactive",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "inactive"
+            },
+            "argTokens": 5,
+            "resultTokens": 123,
+            "resultChars": 505,
+            "wireTokens": 141,
+            "isError": false,
+            "ms": 3.9
+          }
+        ],
+        "resultTokens": 123,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "plot-offer",
+        "kind": "lookup",
+        "query": "plot frees up",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "plot frees up"
+            },
+            "argTokens": 7,
+            "resultTokens": 337,
+            "resultChars": 1341,
+            "wireTokens": 373,
+            "isError": false,
+            "ms": 4.8
+          }
+        ],
+        "resultTokens": 337,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "polytunnel-hours",
+        "kind": "lookup",
+        "query": "half-day",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "half-day"
+            },
+            "argTokens": 6,
+            "resultTokens": 275,
+            "resultChars": 953,
+            "wireTokens": 304,
+            "isError": false,
+            "ms": 4.8
+          }
+        ],
+        "resultTokens": 275,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "polytunnel-capacity",
+        "kind": "lookup",
+        "query": "fire safety",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "fire safety"
+            },
+            "argTokens": 6,
+            "resultTokens": 104,
+            "resultChars": 445,
+            "wireTokens": 125,
+            "isError": false,
+            "ms": 4.2
+          }
+        ],
+        "resultTokens": 104,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-size",
+        "kind": "lookup",
+        "query": "1280",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "1280"
+            },
+            "argTokens": 6,
+            "resultTokens": 168,
+            "resultChars": 676,
+            "wireTokens": 194,
+            "isError": false,
+            "ms": 4
+          }
+        ],
+        "resultTokens": 168,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-location",
+        "kind": "lookup",
+        "query": "GPS",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "GPS"
+            },
+            "argTokens": 5,
+            "resultTokens": 335,
+            "resultChars": 1210,
+            "wireTokens": 363,
+            "isError": false,
+            "ms": 4.9
+          }
+        ],
+        "resultTokens": 335,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "funding",
+        "kind": "lookup",
+        "query": "grant",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "grant"
+            },
+            "argTokens": 5,
+            "resultTokens": 142,
+            "resultChars": 537,
+            "wireTokens": 164,
+            "isError": false,
+            "ms": 6.5
+          }
+        ],
+        "resultTokens": 142,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "vm-cost",
+        "kind": "lookup",
+        "query": "VM",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "VM"
+            },
+            "argTokens": 5,
+            "resultTokens": 198,
+            "resultChars": 776,
+            "wireTokens": 222,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 198,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "deposit",
+        "kind": "lookup",
+        "query": "deposit",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "deposit"
+            },
+            "argTokens": 5,
+            "resultTokens": 167,
+            "resultChars": 731,
+            "wireTokens": 185,
+            "isError": false,
+            "ms": 3.8
+          }
+        ],
+        "resultTokens": 167,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "email-quota",
+        "kind": "lookup",
+        "query": "free tier",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "free tier"
+            },
+            "argTokens": 6,
+            "resultTokens": 128,
+            "resultChars": 543,
+            "wireTokens": 149,
+            "isError": false,
+            "ms": 4
+          }
+        ],
+        "resultTokens": 128,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "reminder-time",
+        "kind": "lookup",
+        "query": "reminder job",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "reminder job"
+            },
+            "argTokens": 7,
+            "resultTokens": 345,
+            "resultChars": 1389,
+            "wireTokens": 382,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 345,
+        "argTokens": 7,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-recovery",
+        "kind": "lookup",
+        "query": "restore",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "restore"
+            },
+            "argTokens": 5,
+            "resultTokens": 102,
+            "resultChars": 426,
+            "wireTokens": 120,
+            "isError": false,
+            "ms": 4
+          }
+        ],
+        "resultTokens": 102,
+        "argTokens": 5,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "service-name",
+        "kind": "lookup",
+        "query": "systemd",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "systemd"
+            },
+            "argTokens": 6,
+            "resultTokens": 128,
+            "resultChars": 499,
+            "wireTokens": 150,
+            "isError": false,
+            "ms": 4.3
+          }
+        ],
+        "resultTokens": 128,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "whatsapp",
+        "kind": "lookup",
+        "query": "WhatsApp",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "WhatsApp"
+            },
+            "argTokens": 6,
+            "resultTokens": 266,
+            "resultChars": 1005,
+            "wireTokens": 296,
+            "isError": false,
+            "ms": 4.5
+          }
+        ],
+        "resultTokens": 266,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "double-accept",
+        "kind": "lookup",
+        "query": "accepted twice",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "accepted twice"
+            },
+            "argTokens": 6,
+            "resultTokens": 178,
+            "resultChars": 719,
+            "wireTokens": 196,
+            "isError": false,
+            "ms": 3.9
+          }
+        ],
+        "resultTokens": 178,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "holiday-source",
+        "kind": "lookup",
+        "query": "bank holidays",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "bank holidays"
+            },
+            "argTokens": 6,
+            "resultTokens": 306,
+            "resultChars": 1213,
+            "wireTokens": 338,
+            "isError": false,
+            "ms": 4.4
+          }
+        ],
+        "resultTokens": 306,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "load-time",
+        "kind": "lookup",
+        "query": "3G",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "3G"
+            },
+            "argTokens": 6,
+            "resultTokens": 124,
+            "resultChars": 503,
+            "wireTokens": 145,
+            "isError": false,
+            "ms": 3.9
+          }
+        ],
+        "resultTokens": 124,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "lucia-plot",
+        "kind": "lookup",
+        "query": "Lucia",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Lucia"
+            },
+            "argTokens": 6,
+            "resultTokens": 225,
+            "resultChars": 898,
+            "wireTokens": 263,
+            "isError": false,
+            "ms": 4.5
+          }
+        ],
+        "resultTokens": 225,
+        "argTokens": 6,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "no-answer-k8s",
+        "kind": "lookup",
+        "query": "Kubernetes",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Kubernetes"
+            },
+            "argTokens": 6,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 3.3
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 6,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-fees",
+        "kind": "lookup",
+        "query": "Stripe",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Stripe"
+            },
+            "argTokens": 5,
+            "resultTokens": 4,
+            "resultChars": 18,
+            "wireTokens": 16,
+            "isError": false,
+            "ms": 3.2
+          }
+        ],
+        "resultTokens": 4,
+        "argTokens": 5,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Children's groups may book the polytunnel on weekday mornings in term time.",
+              "reason": "The insurer confirmed cover for supervised school groups."
+            },
+            "argTokens": 31,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 31,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add the school's Tuesday booking to the polytunnel calendar",
+              "priority": "medium",
+              "project": "polytunnel"
+            },
+            "argTokens": 25,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 25,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Bank holiday swaps",
+              "content": "Finished the bank holiday rule for swaps: the API checks both slots against the bank_holidays table inside the same transaction as the swap. Added tests for Easter Monday and Christmas Day."
+            },
+            "argTokens": 51,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 2.1
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 51,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 154,
+            "resultChars": 628,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 1.5
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nUpdated by Claude on 2 November 2026.\n\nSlot swap is finished, including bank holidays. Next: overdue tool reminders on day 8, sent with the 07:30 reminder job, then the polytunnel half-day blocks.\n"
+            },
+            "argTokens": 62,
+            "resultTokens": 15,
+            "resultChars": 60,
+            "wireTokens": 27,
+            "isError": false,
+            "ms": 2.9
+          }
+        ],
+        "resultTokens": 169,
+        "argTokens": 63,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 33,
+      "answerableLookups": 31,
+      "answered": 31,
+      "answeredBySearchAlone": 30,
+      "lookupResultTokens": 7020,
+      "lookupCalls": 34,
+      "startTokens": 1246,
+      "startAnswersCovered": 7,
+      "writeResultTokens": 201,
+      "writesLanded": 4,
+      "argTokens": 369,
+      "sessionTotalTokens": 9394,
+      "meanReciprocalRank": 0.74
+    }
+  },
+  {
+    "set": "holdout",
+    "variant": "current-ngram",
+    "label": "this project, FTS5 + built-in character n-gram vectors",
+    "style": "question",
+    "tokenizer": "o200k_base (js-tiktoken)",
+    "frozenClock": "2026-11-02T10:00:00.000Z",
+    "node": "v22.23.4",
+    "definitions": {
+      "tools": 8,
+      "toolNames": [
+        "read_main_context",
+        "read_handoff_summary",
+        "search_memory",
+        "read_note",
+        "update_handoff_summary",
+        "append_session_note",
+        "add_decision",
+        "add_open_task"
+      ],
+      "modelFacingTokens": 508,
+      "fullListTokens": 723,
+      "instructionsTokens": 50,
+      "perTool": [
+        {
+          "name": "read_main_context",
+          "modelFacingTokens": 43
+        },
+        {
+          "name": "read_handoff_summary",
+          "modelFacingTokens": 37
+        },
+        {
+          "name": "search_memory",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "read_note",
+          "modelFacingTokens": 74
+        },
+        {
+          "name": "update_handoff_summary",
+          "modelFacingTokens": 58
+        },
+        {
+          "name": "append_session_note",
+          "modelFacingTokens": 78
+        },
+        {
+          "name": "add_decision",
+          "modelFacingTokens": 60
+        },
+        {
+          "name": "add_open_task",
+          "modelFacingTokens": 80
+        }
+      ]
+    },
+    "tasks": [
+      {
+        "id": "start",
+        "kind": "start",
+        "calls": [
+          {
+            "tool": "read_main_context",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 1246,
+            "resultChars": 5012,
+            "wireTokens": 1358,
+            "isError": false,
+            "ms": 5.9
+          }
+        ],
+        "resultTokens": 1246,
+        "argTokens": 1,
+        "answered": true,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "login-method",
+        "kind": "lookup",
+        "query": "How do members log in to Sprout?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do members log in to Sprout?"
+            },
+            "argTokens": 13,
+            "resultTokens": 187,
+            "resultChars": 766,
+            "wireTokens": 214,
+            "isError": false,
+            "ms": 23.5
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "00_MAIN_CONTEXT.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 368,
+            "resultChars": 1558,
+            "wireTokens": 419,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 555,
+        "argTokens": 21,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "frontend",
+        "kind": "lookup",
+        "query": "Why was Astro chosen for the frontend?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why was Astro chosen for the frontend?"
+            },
+            "argTokens": 12,
+            "resultTokens": 329,
+            "resultChars": 1267,
+            "wireTokens": 372,
+            "isError": false,
+            "ms": 4.8
+          }
+        ],
+        "resultTokens": 329,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-choice",
+        "kind": "lookup",
+        "query": "Why did we pick Postgres over SQLite?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Why did we pick Postgres over SQLite?"
+            },
+            "argTokens": 13,
+            "resultTokens": 68,
+            "resultChars": 275,
+            "wireTokens": 84,
+            "isError": false,
+            "ms": 5
+          }
+        ],
+        "resultTokens": 68,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "loan-length",
+        "kind": "lookup",
+        "query": "How long can a member borrow a tool?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long can a member borrow a tool?"
+            },
+            "argTokens": 13,
+            "resultTokens": 355,
+            "resultChars": 1423,
+            "wireTokens": 395,
+            "isError": false,
+            "ms": 6
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Projects/tool-library.md"
+            },
+            "argTokens": 8,
+            "resultTokens": 278,
+            "resultChars": 1102,
+            "wireTokens": 317,
+            "isError": false,
+            "ms": 2.3
+          }
+        ],
+        "resultTokens": 633,
+        "argTokens": 21,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "max-tools",
+        "kind": "lookup",
+        "query": "How many tools can one member borrow at once?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many tools can one member borrow at once?"
+            },
+            "argTokens": 14,
+            "resultTokens": 320,
+            "resultChars": 1292,
+            "wireTokens": 365,
+            "isError": false,
+            "ms": 7.6
+          }
+        ],
+        "resultTokens": 320,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "power-tools",
+        "kind": "lookup",
+        "query": "Who is allowed to borrow the hedge trimmer?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who is allowed to borrow the hedge trimmer?"
+            },
+            "argTokens": 14,
+            "resultTokens": 314,
+            "resultChars": 1206,
+            "wireTokens": 351,
+            "isError": false,
+            "ms": 7.9
+          }
+        ],
+        "resultTokens": 314,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "overdue",
+        "kind": "lookup",
+        "query": "When does a borrower get a reminder for a late tool?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "When does a borrower get a reminder for a late tool?"
+            },
+            "argTokens": 16,
+            "resultTokens": 311,
+            "resultChars": 1151,
+            "wireTokens": 344,
+            "isError": false,
+            "ms": 6.1
+          }
+        ],
+        "resultTokens": 311,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 3
+      },
+      {
+        "id": "slot-length",
+        "kind": "lookup",
+        "query": "How long is a watering slot?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is a watering slot?"
+            },
+            "argTokens": 11,
+            "resultTokens": 279,
+            "resultChars": 1076,
+            "wireTokens": 315,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 279,
+        "argTokens": 11,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 4
+      },
+      {
+        "id": "holiday-swap",
+        "kind": "lookup",
+        "query": "Can a bank holiday slot be swapped for a normal one?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Can a bank holiday slot be swapped for a normal one?"
+            },
+            "argTokens": 16,
+            "resultTokens": 323,
+            "resultChars": 1284,
+            "wireTokens": 356,
+            "isError": false,
+            "ms": 8.2
+          }
+        ],
+        "resultTokens": 323,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "swap-expiry",
+        "kind": "lookup",
+        "query": "How long do people have to accept a swap request?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long do people have to accept a swap request?"
+            },
+            "argTokens": 15,
+            "resultTokens": 204,
+            "resultChars": 817,
+            "wireTokens": 227,
+            "isError": false,
+            "ms": 5.8
+          }
+        ],
+        "resultTokens": 204,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "slot-colour",
+        "kind": "lookup",
+        "query": "What colour is the free slot in the calendar now?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What colour is the free slot in the calendar now?"
+            },
+            "argTokens": 15,
+            "resultTokens": 340,
+            "resultChars": 1317,
+            "wireTokens": 379,
+            "isError": false,
+            "ms": 5.7
+          }
+        ],
+        "resultTokens": 340,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "retention",
+        "kind": "lookup",
+        "query": "How long is waiting-list data kept after someone leaves?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How long is waiting-list data kept after someone leaves?"
+            },
+            "argTokens": 15,
+            "resultTokens": 298,
+            "resultChars": 1243,
+            "wireTokens": 334,
+            "isError": false,
+            "ms": 6.5
+          }
+        ],
+        "resultTokens": 298,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "waiting-count",
+        "kind": "lookup",
+        "query": "How many people are waiting for a plot?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many people are waiting for a plot?"
+            },
+            "argTokens": 13,
+            "resultTokens": 354,
+            "resultChars": 1478,
+            "wireTokens": 390,
+            "isError": false,
+            "ms": 5.7
+          }
+        ],
+        "resultTokens": 354,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "inactive",
+        "kind": "lookup",
+        "query": "What happens to people who don't answer the yearly email?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What happens to people who don't answer the yearly email?"
+            },
+            "argTokens": 15,
+            "resultTokens": 310,
+            "resultChars": 1213,
+            "wireTokens": 344,
+            "isError": false,
+            "ms": 5.9
+          }
+        ],
+        "resultTokens": 310,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "plot-offer",
+        "kind": "lookup",
+        "query": "Who gets offered a plot when one becomes free?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who gets offered a plot when one becomes free?"
+            },
+            "argTokens": 14,
+            "resultTokens": 260,
+            "resultChars": 1115,
+            "wireTokens": 290,
+            "isError": false,
+            "ms": 6.9
+          }
+        ],
+        "resultTokens": 260,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "polytunnel-hours",
+        "kind": "lookup",
+        "query": "What are the polytunnel booking times?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What are the polytunnel booking times?"
+            },
+            "argTokens": 13,
+            "resultTokens": 384,
+            "resultChars": 1547,
+            "wireTokens": 422,
+            "isError": false,
+            "ms": 5.6
+          }
+        ],
+        "resultTokens": 384,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "polytunnel-capacity",
+        "kind": "lookup",
+        "query": "How many people can be in the polytunnel at once?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many people can be in the polytunnel at once?"
+            },
+            "argTokens": 17,
+            "resultTokens": 204,
+            "resultChars": 828,
+            "wireTokens": 227,
+            "isError": false,
+            "ms": 4.7
+          }
+        ],
+        "resultTokens": 204,
+        "argTokens": 17,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-size",
+        "kind": "lookup",
+        "query": "What size are uploaded photos resized to?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What size are uploaded photos resized to?"
+            },
+            "argTokens": 12,
+            "resultTokens": 341,
+            "resultChars": 1302,
+            "wireTokens": 375,
+            "isError": false,
+            "ms": 9.6
+          }
+        ],
+        "resultTokens": 341,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "photo-location",
+        "kind": "lookup",
+        "query": "Do we keep the place where a photo was taken?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do we keep the place where a photo was taken?"
+            },
+            "argTokens": 15,
+            "resultTokens": 116,
+            "resultChars": 446,
+            "wireTokens": 131,
+            "isError": false,
+            "ms": 6
+          }
+        ],
+        "resultTokens": 116,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "funding",
+        "kind": "lookup",
+        "query": "Who pays for the server?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Who pays for the server?"
+            },
+            "argTokens": 10,
+            "resultTokens": 410,
+            "resultChars": 1602,
+            "wireTokens": 460,
+            "isError": false,
+            "ms": 6.9
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Reference/server-runbook.md"
+            },
+            "argTokens": 9,
+            "resultTokens": 143,
+            "resultChars": 565,
+            "wireTokens": 165,
+            "isError": false,
+            "ms": 2.4
+          }
+        ],
+        "resultTokens": 553,
+        "argTokens": 19,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "vm-cost",
+        "kind": "lookup",
+        "query": "What does the hosting cost per month?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What does the hosting cost per month?"
+            },
+            "argTokens": 12,
+            "resultTokens": 409,
+            "resultChars": 1637,
+            "wireTokens": 454,
+            "isError": false,
+            "ms": 7.5
+          }
+        ],
+        "resultTokens": 409,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "deposit",
+        "kind": "lookup",
+        "query": "Do members have to pay anything to borrow power tools?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Do members have to pay anything to borrow power tools?"
+            },
+            "argTokens": 15,
+            "resultTokens": 373,
+            "resultChars": 1495,
+            "wireTokens": 412,
+            "isError": false,
+            "ms": 7.1
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Meetings/2026-07-07_committee.md"
+            },
+            "argTokens": 16,
+            "resultTokens": 185,
+            "resultChars": 794,
+            "wireTokens": 209,
+            "isError": false,
+            "ms": 1.8
+          }
+        ],
+        "resultTokens": 558,
+        "argTokens": 31,
+        "answered": true,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "email-quota",
+        "kind": "lookup",
+        "query": "How many emails can we send without paying?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How many emails can we send without paying?"
+            },
+            "argTokens": 13,
+            "resultTokens": 274,
+            "resultChars": 1108,
+            "wireTokens": 305,
+            "isError": false,
+            "ms": 5.1
+          }
+        ],
+        "resultTokens": 274,
+        "argTokens": 13,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "reminder-time",
+        "kind": "lookup",
+        "query": "What time do reminder emails go out?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What time do reminder emails go out?"
+            },
+            "argTokens": 12,
+            "resultTokens": 288,
+            "resultChars": 1047,
+            "wireTokens": 325,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 288,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "db-recovery",
+        "kind": "lookup",
+        "query": "How do I bring the database back after a crash?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do I bring the database back after a crash?"
+            },
+            "argTokens": 15,
+            "resultTokens": 196,
+            "resultChars": 797,
+            "wireTokens": 219,
+            "isError": false,
+            "ms": 4.6
+          },
+          {
+            "tool": "read_note",
+            "args": {
+              "path": "Meetings/2026-09-15_committee.md"
+            },
+            "argTokens": 16,
+            "resultTokens": 156,
+            "resultChars": 647,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 1.7
+          }
+        ],
+        "resultTokens": 352,
+        "argTokens": 31,
+        "answered": false,
+        "answeredBySearchAlone": false,
+        "answerRank": null
+      },
+      {
+        "id": "service-name",
+        "kind": "lookup",
+        "query": "What is the app's service called on the server?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What is the app's service called on the server?"
+            },
+            "argTokens": 15,
+            "resultTokens": 399,
+            "resultChars": 1530,
+            "wireTokens": 443,
+            "isError": false,
+            "ms": 5.2
+          }
+        ],
+        "resultTokens": 399,
+        "argTokens": 15,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "whatsapp",
+        "kind": "lookup",
+        "query": "Until when will the WhatsApp group keep running?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Until when will the WhatsApp group keep running?"
+            },
+            "argTokens": 14,
+            "resultTokens": 244,
+            "resultChars": 952,
+            "wireTokens": 271,
+            "isError": false,
+            "ms": 5.5
+          }
+        ],
+        "resultTokens": 244,
+        "argTokens": 14,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "double-accept",
+        "kind": "lookup",
+        "query": "What went wrong when two people confirmed a swap at the same moment, and how was it fixed?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "What went wrong when two people confirmed a swap at the same moment, and how was it fixed?"
+            },
+            "argTokens": 24,
+            "resultTokens": 336,
+            "resultChars": 1290,
+            "wireTokens": 371,
+            "isError": false,
+            "ms": 9.9
+          }
+        ],
+        "resultTokens": 336,
+        "argTokens": 24,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "holiday-source",
+        "kind": "lookup",
+        "query": "Where does the app get the list of public holidays from?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Where does the app get the list of public holidays from?"
+            },
+            "argTokens": 16,
+            "resultTokens": 358,
+            "resultChars": 1383,
+            "wireTokens": 392,
+            "isError": false,
+            "ms": 6.2
+          }
+        ],
+        "resultTokens": 358,
+        "argTokens": 16,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "load-time",
+        "kind": "lookup",
+        "query": "How fast does Sprout load on a slow mobile connection now?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How fast does Sprout load on a slow mobile connection now?"
+            },
+            "argTokens": 17,
+            "resultTokens": 121,
+            "resultChars": 467,
+            "wireTokens": 140,
+            "isError": false,
+            "ms": 5.3
+          }
+        ],
+        "resultTokens": 121,
+        "argTokens": 17,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 2
+      },
+      {
+        "id": "lucia-plot",
+        "kind": "lookup",
+        "query": "Which plot does the accessibility lead have?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which plot does the accessibility lead have?"
+            },
+            "argTokens": 12,
+            "resultTokens": 55,
+            "resultChars": 250,
+            "wireTokens": 70,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 55,
+        "argTokens": 12,
+        "answered": true,
+        "answeredBySearchAlone": true,
+        "answerRank": 1
+      },
+      {
+        "id": "no-answer-k8s",
+        "kind": "lookup",
+        "query": "Which Kubernetes namespace does Sprout use?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "Which Kubernetes namespace does Sprout use?"
+            },
+            "argTokens": 12,
+            "resultTokens": 144,
+            "resultChars": 572,
+            "wireTokens": 165,
+            "isError": false,
+            "ms": 4.6
+          }
+        ],
+        "resultTokens": 144,
+        "argTokens": 12,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "no-answer-fees",
+        "kind": "lookup",
+        "query": "How do members pay their plot fee online?",
+        "calls": [
+          {
+            "tool": "search_memory",
+            "args": {
+              "query": "How do members pay their plot fee online?"
+            },
+            "argTokens": 13,
+            "resultTokens": 313,
+            "resultChars": 1258,
+            "wireTokens": 354,
+            "isError": false,
+            "ms": 6.8
+          }
+        ],
+        "resultTokens": 313,
+        "argTokens": 13,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null
+      },
+      {
+        "id": "add-decision",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_decision",
+            "args": {
+              "decision": "Children's groups may book the polytunnel on weekday mornings in term time.",
+              "reason": "The insurer confirmed cover for supervised school groups."
+            },
+            "argTokens": 31,
+            "resultTokens": 9,
+            "resultChars": 25,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 2.6
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 31,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "add-task",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "add_open_task",
+            "args": {
+              "task": "Add the school's Tuesday booking to the polytunnel calendar",
+              "priority": "medium",
+              "project": "polytunnel"
+            },
+            "argTokens": 25,
+            "resultTokens": 9,
+            "resultChars": 26,
+            "wireTokens": 21,
+            "isError": false,
+            "ms": 2.1
+          }
+        ],
+        "resultTokens": 9,
+        "argTokens": 25,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "session-note",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "append_session_note",
+            "args": {
+              "model_name": "Claude",
+              "title": "Bank holiday swaps",
+              "content": "Finished the bank holiday rule for swaps: the API checks both slots against the bank_holidays table inside the same transaction as the swap. Added tests for Easter Monday and Christmas Day."
+            },
+            "argTokens": 51,
+            "resultTokens": 14,
+            "resultChars": 39,
+            "wireTokens": 26,
+            "isError": false,
+            "ms": 2
+          }
+        ],
+        "resultTokens": 14,
+        "argTokens": 51,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      },
+      {
+        "id": "handoff",
+        "kind": "write",
+        "calls": [
+          {
+            "tool": "read_handoff_summary",
+            "args": {},
+            "argTokens": 1,
+            "resultTokens": 154,
+            "resultChars": 628,
+            "wireTokens": 178,
+            "isError": false,
+            "ms": 1.5
+          },
+          {
+            "tool": "update_handoff_summary",
+            "args": {
+              "content": "# Model Handoff\n\nUpdated by Claude on 2 November 2026.\n\nSlot swap is finished, including bank holidays. Next: overdue tool reminders on day 8, sent with the 07:30 reminder job, then the polytunnel half-day blocks.\n"
+            },
+            "argTokens": 62,
+            "resultTokens": 15,
+            "resultChars": 60,
+            "wireTokens": 27,
+            "isError": false,
+            "ms": 2.8
+          }
+        ],
+        "resultTokens": 169,
+        "argTokens": 63,
+        "answered": null,
+        "answeredBySearchAlone": null,
+        "answerRank": null,
+        "writeLanded": true
+      }
+    ],
+    "summary": {
+      "lookupTasks": 33,
+      "answerableLookups": 31,
+      "answered": 29,
+      "answeredBySearchAlone": 26,
+      "lookupResultTokens": 10347,
+      "lookupCalls": 38,
+      "startTokens": 1246,
+      "startAnswersCovered": 7,
+      "writeResultTokens": 201,
+      "writesLanded": 4,
+      "argTokens": 694,
+      "sessionTotalTokens": 13046,
+      "meanReciprocalRank": 0.761
+    }
+  }
+]

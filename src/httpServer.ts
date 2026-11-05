@@ -12,6 +12,7 @@ interface ActiveSession {
   server: ReturnType<typeof createObsidianMemoryMcpServer>;
   transport: StreamableHTTPServerTransport;
   role: Role;
+  lastSeen: number;
 }
 
 // Optional token login. With a write token a client can use every tool; with a read token it only gets
@@ -28,7 +29,12 @@ export interface HttpServerOptions {
   allowedHosts?: string[];
   allowedOrigins?: string[];
   auth?: AuthOptions;
+  maxSessions?: number; // open MCP sessions at once; default 32
+  sessionIdleMs?: number; // a session unused this long is closed; default 30 minutes
 }
+
+const DEFAULT_MAX_SESSIONS = 32;
+const DEFAULT_SESSION_IDLE_MS = 30 * 60 * 1000;
 
 const MIN_TOKEN_LENGTH = 32;
 
@@ -71,6 +77,10 @@ export function createHttpApp(options: HttpServerOptions): express.Express {
   const app = express();
   const sessions = new Map<string, ActiveSession>();
   const authenticate = authenticator(options.auth);
+  const limits = {
+    maxSessions: options.maxSessions ?? DEFAULT_MAX_SESSIONS,
+    idleMs: options.sessionIdleMs ?? DEFAULT_SESSION_IDLE_MS,
+  };
 
   app.disable("x-powered-by");
   app.use(express.json({ limit: "1mb" }));
@@ -87,7 +97,7 @@ export function createHttpApp(options: HttpServerOptions): express.Express {
 
   app.post("/mcp", async (req, res) => {
     const role = authenticate(req, res);
-    if (role) await handleMcpPost(req, res, options.config, sessions, role);
+    if (role) await handleMcpPost(req, res, options.config, sessions, role, limits);
   });
 
   app.get("/mcp", async (req, res) => {
@@ -114,6 +124,10 @@ export function startHttpServer(options: HttpServerOptions): Promise<Server> {
     const server = app.listen(options.port, options.host, () => {
       resolve(server);
     });
+    // A client must send its headers within 10 seconds and its whole request within 30 (OWASP LLM06).
+    // This covers receiving the request only; long-lived event streams from the server are not cut off.
+    server.headersTimeout = 10_000;
+    server.requestTimeout = 30_000;
 
     server.once("error", reject);
   });
@@ -125,12 +139,15 @@ async function handleMcpPost(
   config: MemoryConfig,
   sessions: Map<string, ActiveSession>,
   role: Role,
+  limits: { maxSessions: number; idleMs: number },
 ): Promise<void> {
   try {
+    closeIdleSessions(sessions, limits.idleMs);
     const sessionId = getHeader(req, "mcp-session-id");
     const existingSession = sessionId ? sessions.get(sessionId) : undefined;
 
     if (existingSession) {
+      existingSession.lastSeen = Date.now();
       if (existingSession.role !== role) {
         sendJsonRpcError(res, 403, -32000, "This session was opened with a different token");
         return;
@@ -149,6 +166,11 @@ async function handleMcpPost(
       return;
     }
 
+    if (sessions.size >= limits.maxSessions) {
+      sendJsonRpcError(res, 503, -32000, "Too many open sessions. Close one or try again later.");
+      return;
+    }
+
     let activeSession: ActiveSession | undefined;
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: () => randomUUID(),
@@ -162,7 +184,7 @@ async function handleMcpPost(
     // A read token gets a server without write tools, whatever AI_MEMORY_WRITE_ENABLED says.
     const sessionConfig = role === "read" ? { ...config, writeEnabled: false } : config;
     const mcpServer = createObsidianMemoryMcpServer(sessionConfig);
-    activeSession = { server: mcpServer, transport, role };
+    activeSession = { server: mcpServer, transport, role, lastSeen: Date.now() };
 
     transport.onclose = () => {
       const closedSessionId = transport.sessionId;
@@ -199,6 +221,7 @@ async function handleExistingSessionRequest(
       res.status(404).send("Unknown MCP session ID");
       return;
     }
+    activeSession.lastSeen = Date.now();
     if (activeSession.role !== role) {
       res.status(403).send("This session was opened with a different token");
       return;
@@ -209,6 +232,17 @@ async function handleExistingSessionRequest(
     logServerError(`MCP ${req.method} request failed`, error);
     if (!res.headersSent) {
       res.status(500).send("Internal server error");
+    }
+  }
+}
+
+// Closes sessions nobody has used for idleMs, so abandoned sessions cannot pile up (OWASP LLM06).
+function closeIdleSessions(sessions: Map<string, ActiveSession>, idleMs: number): void {
+  const now = Date.now();
+  for (const [id, session] of sessions) {
+    if (now - session.lastSeen > idleMs) {
+      sessions.delete(id);
+      void session.transport.close().catch(() => undefined);
     }
   }
 }

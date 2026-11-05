@@ -1,8 +1,10 @@
 import { constants as fsConstants } from "node:fs";
-import { access, appendFile, lstat, mkdir, opendir, readFile, realpath, stat, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { access, appendFile, lstat, mkdir, opendir, readFile, realpath, rename, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { type EmbeddingSettings, parseEmbeddingSettings } from "./retrieval/embeddings.js";
+import { findWriteProblem, looksLikeInjection, maskSecrets } from "./safety.js";
 
 export const DEFAULT_MEMORY_DIR = "~/ObsidianVault/AI-Memory";
 
@@ -16,6 +18,14 @@ export const MAIN_MEMORY_FILES = [
 
 export type MainMemoryFile = (typeof MAIN_MEMORY_FILES)[number];
 
+export const READ_TOOLS = ["read_main_context", "read_handoff_summary", "search_memory", "read_note"] as const;
+export const WRITE_TOOLS = ["update_handoff_summary", "append_session_note", "add_decision", "add_open_task"] as const;
+export const ALL_TOOLS: readonly string[] = [...READ_TOOLS, ...WRITE_TOOLS];
+
+// "suspicious": writes that look like instructions to an AI are held for the owner to review (default).
+// "all": every write is held for review. "off": nothing is held (writes are still labelled and screened).
+export type WriteReview = "suspicious" | "all" | "off";
+
 export interface MemoryConfig {
   rootDir: string;
   // Optional vector add-on for search. Undefined means keyword search only.
@@ -24,6 +34,21 @@ export interface MemoryConfig {
   writeEnabled?: boolean;
   // true: search results show each undated note's last-change date. Default false (costs tokens).
   showDates?: boolean;
+  writeReview?: WriteReview;
+  // Tools to offer. Undefined means all of them (minus the write tools in read-only mode).
+  tools?: string[];
+  maskEmails?: boolean; // default true
+  maskPhones?: boolean; // default true (phone and card numbers)
+  maxNotes?: number; // most notes the search index takes in; default 20,000
+  maxCallsPerMinute?: number; // per MCP session; default 120
+  maxWritesPer10Minutes?: number; // per MCP session; default 20
+  auditLog?: boolean; // record every write in .history/audit.jsonl; default true
+  sessionId?: string; // set per MCP session, only used in the audit log
+}
+
+export interface WriteResult extends MemoryFile {
+  held: boolean; // true: not saved, waiting in AI Review/pending.md for the owner
+  masked: number; // secret-looking strings replaced before saving
 }
 
 // An error whose message is safe to show to the AI: it never contains a file system path.
@@ -42,6 +67,13 @@ export interface MemoryFile {
 
 const SESSION_DIR = "Sessions";
 const HISTORY_DIR = ".history";
+// Writes held for review go here. Obsidian shows it to the owner; no tool can read, search or list it.
+export const REVIEW_DIR = "AI Review";
+export const REVIEW_FILE = `${REVIEW_DIR}/pending.md`;
+const AUDIT_FILE = "audit.jsonl";
+const MAX_AUDIT_FILE_BYTES = 5 * 1024 * 1024;
+const MAX_FOLDER_DEPTH = 32;
+const MAX_INDEXED_TOTAL_BYTES = 200 * 1024 * 1024;
 // Notes larger than this are not indexed for search (read_note can still read them).
 export const MAX_INDEXED_FILE_BYTES = 1024 * 1024;
 // Appends are refused once a note would grow past this size. It stops a looping AI from filling the disk.
@@ -76,16 +108,50 @@ export function expandHome(input: string): string {
 
 export function getMemoryConfig(env: NodeJS.ProcessEnv = process.env): MemoryConfig {
   const embeddings = parseEmbeddingSettings(env);
-  const writes = (env.AI_MEMORY_WRITE_ENABLED ?? "true").trim().toLowerCase();
-  if (writes !== "true" && writes !== "false") {
-    throw new Error("AI_MEMORY_WRITE_ENABLED must be true or false");
+  const review = (env.AI_MEMORY_WRITE_REVIEW ?? "suspicious").trim().toLowerCase();
+  if (review !== "suspicious" && review !== "all" && review !== "off") {
+    throw new Error("AI_MEMORY_WRITE_REVIEW must be suspicious, all or off");
+  }
+  let tools: string[] | undefined;
+  if (env.AI_MEMORY_TOOLS?.trim()) {
+    tools = env.AI_MEMORY_TOOLS.split(",").map((name) => name.trim()).filter(Boolean);
+    const unknown = tools.filter((name) => !ALL_TOOLS.includes(name));
+    if (unknown.length > 0) {
+      throw new Error(`AI_MEMORY_TOOLS has unknown tool names: ${unknown.join(", ")}. Known: ${ALL_TOOLS.join(", ")}`);
+    }
   }
   return {
     rootDir: path.resolve(expandHome(env.AI_MEMORY_DIR || DEFAULT_MEMORY_DIR)),
     embeddings: embeddings.provider === "none" ? undefined : embeddings,
-    writeEnabled: writes === "true",
-    showDates: (env.RAG_SHOW_DATES ?? "false").trim().toLowerCase() === "true",
+    writeEnabled: parseBoolean(env, "AI_MEMORY_WRITE_ENABLED", true),
+    showDates: parseBoolean(env, "RAG_SHOW_DATES", false),
+    writeReview: review,
+    tools,
+    maskEmails: parseBoolean(env, "MASK_EMAILS", true),
+    maskPhones: parseBoolean(env, "MASK_PHONE_NUMBERS", true),
+    maxNotes: parsePositiveInt(env, "RAG_MAX_NOTES", 20_000),
+    maxCallsPerMinute: parsePositiveInt(env, "MCP_MAX_CALLS_PER_MINUTE", 120),
+    maxWritesPer10Minutes: parsePositiveInt(env, "MCP_MAX_WRITES_PER_10_MIN", 20),
+    auditLog: parseBoolean(env, "AI_MEMORY_AUDIT_LOG", true),
   };
+}
+
+function parseBoolean(env: NodeJS.ProcessEnv, name: string, fallback: boolean): boolean {
+  const value = env[name]?.trim().toLowerCase();
+  if (value === undefined || value === "") return fallback;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  throw new Error(`${name} must be true or false`);
+}
+
+function parsePositiveInt(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
+  const value = env[name]?.trim();
+  if (!value) return fallback;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    throw new Error(`${name} must be a whole number above 0`);
+  }
+  return parsed;
 }
 
 export async function ensureMemoryLayout(config: MemoryConfig): Promise<void> {
@@ -132,26 +198,26 @@ export async function updateHandoffSummary(
   config: MemoryConfig,
   content: string,
   now = new Date(),
-): Promise<MemoryFile> {
-  assertWritable(config);
-  await ensureMemoryLayout(config);
-  assertMultiLineInput("content", content);
-  const target = await resolveWritableFixedFile(config, "04_MODEL_HANDOFF.md");
-
-  // Keep the old handoff before replacing it, in .history/, which no tool can read or write.
-  const previous = await readFile(target, "utf8");
-  if (previous.trim()) {
-    const history = await resolveHistoryFile(config, "04_MODEL_HANDOFF.md");
-    const entry = `\n## Replaced at ${now.toISOString()}\n\n${normalizeTrailingNewline(previous)}`;
-    await assertRoomToAppend(history, entry, MAX_HISTORY_FILE_BYTES, "The handoff history");
-    await appendFile(history, entry, "utf8");
-  }
-
-  await writeFile(target, normalizeTrailingNewline(content), "utf8");
-  return {
-    path: "04_MODEL_HANDOFF.md",
-    content: await readFile(target, "utf8"),
-  };
+): Promise<WriteResult> {
+  return guardedWrite(config, "update_handoff_summary", "04_MODEL_HANDOFF.md", { content }, now, async (fields) => {
+    const target = await resolveWritableFixedFile(config, "04_MODEL_HANDOFF.md");
+    const entry = normalizeTrailingNewline(fields.content);
+    return {
+      entry,
+      apply: async () => {
+        // Keep the old handoff before replacing it, in .history/, which no tool can read or write.
+        const previous = await readFile(target, "utf8");
+        if (previous.trim()) {
+          const history = await resolveHistoryFile(config, "04_MODEL_HANDOFF.md");
+          const record = `\n## Replaced at ${now.toISOString()}\n\n${normalizeTrailingNewline(previous)}`;
+          await assertRoomToAppend(history, record, MAX_HISTORY_FILE_BYTES, "The handoff history");
+          await appendFile(history, record, "utf8");
+        }
+        await writeFile(target, entry, "utf8");
+        return readFile(target, "utf8");
+      },
+    };
+  });
 }
 
 export async function appendSessionNote(
@@ -160,33 +226,29 @@ export async function appendSessionNote(
   title: string,
   content: string,
   now = new Date(),
-): Promise<MemoryFile> {
-  assertWritable(config);
-  await ensureMemoryLayout(config);
-  assertSingleLineInput("model_name", modelName);
-  assertSingleLineInput("title", title);
-  assertMultiLineInput("content", content);
-
-  const modelSlug = slugify(modelName);
-  const relativePath = `${SESSION_DIR}/${formatLocalDate(now)}_${modelSlug}.md`;
-  const target = await resolveWritableGeneratedMarkdownFile(config, relativePath);
-  const entry = [
-    "",
-    `## ${now.toISOString()} - ${title.trim()}`,
-    "",
-    `Model: ${modelName.trim()}`,
-    "",
-    normalizeTrailingNewline(content).trimEnd(),
-    "",
-  ].join("\n");
-
-  await assertRoomToAppend(target, entry, MAX_APPEND_FILE_BYTES, relativePath);
-  await appendFile(target, entry, "utf8");
-
-  return {
-    path: relativePath,
-    content: await readFile(target, "utf8"),
-  };
+): Promise<WriteResult> {
+  const fields = { model_name: modelName, title, content };
+  const relativePath = `${SESSION_DIR}/${formatLocalDate(now)}_${slugify(String(modelName ?? ""))}.md`;
+  return guardedWrite(config, "append_session_note", relativePath, fields, now, async (safe) => {
+    const target = await resolveWritableGeneratedMarkdownFile(config, relativePath);
+    const entry = [
+      "",
+      `## ${now.toISOString()} - ${safe.title.trim()}`,
+      "",
+      `Model: ${safe.model_name.trim()}`,
+      "",
+      normalizeTrailingNewline(safe.content).trimEnd(),
+      "",
+    ].join("\n");
+    return {
+      entry,
+      apply: async () => {
+        await assertRoomToAppend(target, entry, MAX_APPEND_FILE_BYTES, relativePath);
+        await appendFile(target, entry, "utf8");
+        return readFile(target, "utf8");
+      },
+    };
+  });
 }
 
 export async function addDecision(
@@ -194,28 +256,26 @@ export async function addDecision(
   decision: string,
   reason: string,
   now = new Date(),
-): Promise<MemoryFile> {
-  assertWritable(config);
-  await ensureMemoryLayout(config);
-  assertSingleLineInput("decision", decision);
-  assertSingleLineInput("reason", reason);
-
-  const target = await resolveWritableFixedFile(config, "02_DECISIONS.md");
-  const entry = [
-    "",
-    `## ${formatLocalDate(now)}`,
-    "",
-    `- Decision: ${decision.trim()} ${AI_MARK}`,
-    `  Reason: ${reason.trim()}`,
-    "",
-  ].join("\n");
-
-  await assertRoomToAppend(target, entry, MAX_APPEND_FILE_BYTES, "02_DECISIONS.md");
-  await appendFile(target, entry, "utf8");
-  return {
-    path: "02_DECISIONS.md",
-    content: await readFile(target, "utf8"),
-  };
+): Promise<WriteResult> {
+  return guardedWrite(config, "add_decision", "02_DECISIONS.md", { decision, reason }, now, async (safe) => {
+    const target = await resolveWritableFixedFile(config, "02_DECISIONS.md");
+    const entry = [
+      "",
+      `## ${formatLocalDate(now)}`,
+      "",
+      `- Decision: ${safe.decision.trim()} ${AI_MARK}`,
+      `  Reason: ${safe.reason.trim()}`,
+      "",
+    ].join("\n");
+    return {
+      entry,
+      apply: async () => {
+        await assertRoomToAppend(target, entry, MAX_APPEND_FILE_BYTES, "02_DECISIONS.md");
+        await appendFile(target, entry, "utf8");
+        return readFile(target, "utf8");
+      },
+    };
+  });
 }
 
 export async function addOpenTask(
@@ -224,33 +284,190 @@ export async function addOpenTask(
   priority: string,
   project: string | undefined,
   now = new Date(),
-): Promise<MemoryFile> {
-  assertWritable(config);
-  await ensureMemoryLayout(config);
-  assertSingleLineInput("task", task);
-  assertSingleLineInput("priority", priority);
+): Promise<WriteResult> {
+  const fields: Record<string, string> = { task, priority };
   if (project !== undefined) {
-    assertSingleLineInput("project", project);
+    fields.project = project;
   }
+  return guardedWrite(config, "add_open_task", "03_OPEN_TASKS.md", fields, now, async (safe) => {
+    const target = await resolveWritableFixedFile(config, "03_OPEN_TASKS.md");
+    const projectPrefix = safe.project?.trim() ? ` (${safe.project.trim()})` : "";
+    const entry = `- [ ] ${formatLocalDate(now)} [${safe.priority.trim()}]${projectPrefix} ${safe.task.trim()} ${AI_MARK}\n`;
+    return {
+      entry,
+      apply: async () => {
+        await assertRoomToAppend(target, entry, MAX_APPEND_FILE_BYTES, "03_OPEN_TASKS.md");
+        await appendFile(target, entry, "utf8");
+        return readFile(target, "utf8");
+      },
+    };
+  });
+}
 
-  const safeProject = project?.trim();
-  const projectPrefix = safeProject ? ` (${safeProject})` : "";
-  const target = await resolveWritableFixedFile(config, "03_OPEN_TASKS.md");
-  const entry = `- [ ] ${formatLocalDate(now)} [${priority.trim()}]${projectPrefix} ${task.trim()} ${AI_MARK}\n`;
+// Every write goes through here (OWASP LLM01 control 9: memory writes are privileged operations):
+//   1. field checks: non-empty, size limits, no line breaks in one-line fields;
+//   2. refuse text the owner could not see in Obsidian (hidden comments, invisible characters, hidden HTML)
+//      and active content (remote images, embedded pages, scripts, javascript: links);
+//   3. replace secret-looking strings, so credentials never reach the shared notes on disk;
+//   4. hold instruction-like writes (or every write, with AI_MEMORY_WRITE_REVIEW=all) in AI Review/pending.md
+//      for the owner instead of saving them;
+//   5. record the outcome in the audit log.
+async function guardedWrite<F extends Record<string, string>>(
+  config: MemoryConfig,
+  tool: string,
+  target: string,
+  fields: F,
+  now: Date,
+  prepare: (safe: F) => Promise<{ entry: string; apply: () => Promise<string> }>,
+): Promise<WriteResult> {
+  try {
+    assertWritable(config);
+    await ensureMemoryLayout(config);
+    for (const [name, value] of Object.entries(fields)) {
+      if (name === "content") {
+        assertMultiLineInput("content", value);
+      } else {
+        assertSingleLineInput(name as keyof typeof FIELD_LIMITS, value);
+      }
+      const problem = findWriteProblem(value);
+      if (problem) {
+        const why =
+          problem.kind === "hidden"
+            ? "Hidden text is not allowed: the owner would not see it in Obsidian."
+            : "Remote images, embedded pages, scripts and javascript: links are not allowed in memory notes.";
+        throw new MemoryError(`Not saved: ${name} ${problem.message}. ${why}`);
+      }
+    }
 
-  await assertRoomToAppend(target, entry, MAX_APPEND_FILE_BYTES, "03_OPEN_TASKS.md");
-  await appendFile(target, entry, "utf8");
-  return {
-    path: "03_OPEN_TASKS.md",
-    content: await readFile(target, "utf8"),
-  };
+    let masked = 0;
+    const safe = Object.fromEntries(
+      Object.entries(fields).map(([name, value]) => {
+        const result = maskSecrets(value);
+        masked += result.count;
+        return [name, result.text];
+      }),
+    ) as F;
+
+    const { entry, apply } = await prepare(safe);
+    const review = config.writeReview ?? "suspicious";
+    const instructionLike = looksLikeInjection(Object.values(safe).join("\n"));
+    if (review === "all" || (review === "suspicious" && instructionLike)) {
+      const reason = instructionLike ? "it looks like instructions to an AI" : "every write needs the owner's approval";
+      await holdForReview(config, tool, target, entry, reason, now);
+      await audit(config, { tool, target, outcome: "held", entry, now });
+      return { path: REVIEW_FILE, content: "", held: true, masked };
+    }
+
+    const content = await apply();
+    await audit(config, { tool, target, outcome: "saved", entry, now });
+    return { path: target, content, held: false, masked };
+  } catch (error) {
+    await audit(config, { tool, target, outcome: "refused", entry: "", now }).catch(() => undefined);
+    throw error;
+  }
+}
+
+async function holdForReview(
+  config: MemoryConfig,
+  tool: string,
+  target: string,
+  entry: string,
+  reason: string,
+  now: Date,
+): Promise<void> {
+  const dir = path.join(config.rootDir, REVIEW_DIR);
+  await mkdir(dir, { recursive: true });
+  await assertDirectory(dir, REVIEW_DIR);
+  const file = path.join(config.rootDir, REVIEW_FILE);
+  await assertInsideRoot(config.rootDir, file);
+  try {
+    await assertRegularFile(file);
+  } catch (error) {
+    if (!isNotFoundError(error)) throw error;
+  }
+  // A code fence longer than any run of backticks in the entry, so the entry is shown exactly as written.
+  const fence = "`".repeat(Math.max(3, ...[...entry.matchAll(/`+/g)].map((m) => m[0].length + 1)));
+  const record = [
+    "",
+    `## ${now.toISOString()} - ${tool} for ${target}`,
+    "",
+    `Held because ${reason}. If it is right, copy it into ${target} yourself; otherwise delete this section.`,
+    "",
+    `${fence}text`,
+    entry.trim(),
+    fence,
+    "",
+  ].join("\n");
+  await assertRoomToAppend(file, record, MAX_APPEND_FILE_BYTES, REVIEW_FILE);
+  await appendFile(file, record, "utf8");
+}
+
+// One JSON line per write attempt: when, which session, which tool, which file, the outcome, and the
+// size and SHA-256 hash of what was (or would have been) written. Never the text itself. Lives in .history/,
+// which no tool can read. Rotates to audit.1.jsonl at 5 MB.
+async function audit(
+  config: MemoryConfig,
+  record: { tool: string; target: string; outcome: "saved" | "held" | "refused"; entry: string; now: Date },
+): Promise<void> {
+  if (config.auditLog === false) {
+    return;
+  }
+  try {
+    const dir = path.join(config.rootDir, HISTORY_DIR);
+    await mkdir(dir, { recursive: true });
+    await assertDirectory(dir, HISTORY_DIR);
+    const file = path.join(dir, AUDIT_FILE);
+    await assertInsideRoot(config.rootDir, file);
+    try {
+      await assertRegularFile(file);
+      if ((await stat(file)).size > MAX_AUDIT_FILE_BYTES) {
+        await rename(file, path.join(dir, "audit.1.jsonl"));
+      }
+    } catch (error) {
+      if (!isNotFoundError(error)) throw error;
+    }
+    const line = JSON.stringify({
+      time: record.now.toISOString(),
+      session: config.sessionId ?? null,
+      tool: record.tool,
+      target: record.target,
+      outcome: record.outcome,
+      bytes: Buffer.byteLength(record.entry, "utf8"),
+      sha256: record.entry ? createHash("sha256").update(record.entry).digest("hex") : null,
+    });
+    await appendFile(file, `${line}\n`, "utf8");
+  } catch {
+    // A read-only or full disk must not stop the server. The write itself has its own error handling.
+    console.error("Audit log could not be written");
+  }
 }
 
 // Every note search may look at: the same markdown files read_note accepts, with the same checks.
 export async function listNoteFiles(config: MemoryConfig): Promise<NoteFileInfo[]> {
   await ensureMemoryLayout(config);
-  const files = await listMarkdownFiles(config);
-  return files.filter((file) => file.size <= MAX_INDEXED_FILE_BYTES);
+  const files = (await listMarkdownFiles(config)).filter((file) => file.size <= MAX_INDEXED_FILE_BYTES);
+  // Caps against a vault so large it would exhaust memory (OWASP LLM06): at most maxNotes notes and
+  // MAX_INDEXED_TOTAL_BYTES of text, taken in path order so the result is the same every time.
+  const limit = config.maxNotes ?? 20_000;
+  const kept: NoteFileInfo[] = [];
+  let bytes = 0;
+  for (const file of files) {
+    if (kept.length >= limit || bytes + file.size > MAX_INDEXED_TOTAL_BYTES) {
+      warnOnce(`Search covers only the first ${kept.length} notes (RAG_MAX_NOTES or the 200 MB cap was reached).`);
+      break;
+    }
+    kept.push(file);
+    bytes += file.size;
+  }
+  return kept;
+}
+
+const warned = new Set<string>();
+function warnOnce(message: string): void {
+  if (!warned.has(message)) {
+    warned.add(message);
+    console.error(message);
+  }
 }
 
 // Reads one note's raw text through the same path checks as read_note.
@@ -362,6 +579,11 @@ function normalizeRelativeMarkdownPath(input: string): string {
     throw new MemoryError("Hidden folders and files are not available");
   }
 
+  // Writes held for review are for the owner only.
+  if (segments[0].toLowerCase() === REVIEW_DIR.toLowerCase()) {
+    throw new MemoryError(`The ${REVIEW_DIR} folder is for the owner only`);
+  }
+
   if (!normalized.endsWith(".md")) {
     throw new MemoryError("Only markdown notes ending in .md are allowed");
   }
@@ -433,7 +655,10 @@ async function listMarkdownFiles(config: MemoryConfig): Promise<NoteFileInfo[]> 
   const rootReal = await realpath(config.rootDir);
   const results: NoteFileInfo[] = [];
 
-  async function walk(currentDir: string): Promise<void> {
+  async function walk(currentDir: string, depth = 0): Promise<void> {
+    if (depth > MAX_FOLDER_DEPTH) {
+      return; // very deep folders are not walked (OWASP LLM06)
+    }
     const currentReal = await realpath(currentDir);
     const relativeCurrent = path.relative(rootReal, currentReal);
     if (relativeCurrent.startsWith("..") || path.isAbsolute(relativeCurrent)) {
@@ -445,6 +670,9 @@ async function listMarkdownFiles(config: MemoryConfig): Promise<NoteFileInfo[]> 
       if (entry.name.startsWith(".")) {
         continue; // same rule as read_note: hidden folders and files are never listed
       }
+      if (depth === 0 && entry.name.toLowerCase() === REVIEW_DIR.toLowerCase()) {
+        continue; // writes held for review are for the owner only
+      }
       const absolute = path.join(currentDir, entry.name);
       const stat = await lstat(absolute);
       if (stat.isSymbolicLink()) {
@@ -452,7 +680,7 @@ async function listMarkdownFiles(config: MemoryConfig): Promise<NoteFileInfo[]> 
       }
 
       if (stat.isDirectory()) {
-        await walk(absolute);
+        await walk(absolute, depth + 1);
         continue;
       }
 

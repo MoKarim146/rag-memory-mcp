@@ -190,6 +190,7 @@ export class MemoryIndex {
       ranked = loose.slice(0, PARTIAL_LIMIT * 3);
       partial = true;
     }
+    ranked = this.cleanFirst(ranked);
 
     const getSection = this.db.prepare(
       "SELECT s.id, s.path, s.ordinal, s.heading, s.text, f.suspicious, f.mtime FROM sections s JOIN files f ON f.path = s.path WHERE s.id = ?",
@@ -226,6 +227,25 @@ export class MemoryIndex {
       }
     }
     return hits;
+  }
+
+  // Source scoring (OWASP LLM05): sections from notes flagged for instruction-like text are only returned
+  // when no clean section matched. Ranking them last was not enough: when only one or two clean sections
+  // passed the score cutoff, a planted note filled the empty places (it reached 18 of 25 test searches).
+  // A flagged note can still be opened directly with read_note, and always carries a warning.
+  private cleanFirst(ids: number[]): number[] {
+    if (ids.length === 0) {
+      return ids;
+    }
+    const flagged = new Set(
+      (this.db
+        .prepare(
+          `SELECT s.id FROM sections s JOIN files f ON f.path = s.path WHERE f.suspicious = 1 AND s.id IN (${ids.join(",")})`,
+        )
+        .all() as { id: number }[]).map((row) => row.id),
+    );
+    const clean = ids.filter((id) => !flagged.has(id));
+    return clean.length > 0 ? clean : ids;
   }
 
   private sectionsCoveringEnoughTerms(rows: { id: number; section: number }[], terms: string[]): Set<number> {
@@ -300,8 +320,9 @@ export class MemoryIndex {
   private replaceFile(path: string, mtime: number, size: number, raw: string): void {
     // Only cleaned text is indexed: hidden comments, invisible characters and secrets never enter the
     // index, so they cannot be searched for, used to push a note up the results, or sent to an embedder.
-    const prepared = prepareNoteText(raw);
-    const sections = chunkMarkdown(prepared.text);
+    const prepared = prepareNoteText(raw, { maskEmails: this.config.maskEmails, maskPhones: this.config.maskPhones });
+    // Notes the owner marked private are kept out of the index entirely (and so out of any embedding).
+    const sections = prepared.private ? [] : chunkMarkdown(prepared.text);
     const title = path.replace(/\.md$/, "").replace(/[/_-]+/g, " ");
     const insertSection = this.db.prepare(
       "INSERT INTO sections (path, ordinal, heading, text, hash) VALUES (?, ?, ?, ?, ?)",
