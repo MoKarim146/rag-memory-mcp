@@ -1,0 +1,43 @@
+services:
+  secure-obsidian-memory-mcp:
+    build:
+      context: .
+    image: secure-obsidian-memory-mcp:dev
+    init: true
+    user: "10001:10001"
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8787
+      AI_MEMORY_DIR: /memory
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      LOG_CONTENT: "false"
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - secure_obsidian_memory:/memory
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    cpus: "0.50"
+    mem_limit: 512m
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8787/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  secure_obsidian_memory:
