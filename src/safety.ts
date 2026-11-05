@@ -110,7 +110,8 @@ const INJECTION_PATTERNS: RegExp[] = [
   /\b(ignore|disregard|forget|override)\b[^.\n]{0,40}\b(previous|prior|above|earlier|all|any|your|the|these|other)\b[^.\n]{0,20}\b(instructions?|prompts?|rules|messages|guidelines)\b/i,
   /\b(system prompt|developer message|jailbreak)\b/i,
   /\b(new|updated|important|hidden|secret|real)\s+instructions?\b/i,
-  /\byou are now\b/i,
+  // "You are now" only with a role or mode change after it: on its own it flagged ordinary dialogue in books.
+  /\byou are now\b[^.!?;\n]{0,40}?\b(?:ai|assistant|chatbot|bot|model|llm|dan|gpt|admin|administrator|root|developer|god|unrestricted|unfiltered|uncensored|jailbroken|in (?:\w+ )?mode|free (?:from|of)|no longer)\b/i,
   /\b(do not|don't|never)\s+(tell|mention|reveal|inform|show|alert)\b[^.\n]{0,30}\b(user|owner|anyone|human)\b/i,
   /\b(reveal|print|show|leak|output)\b[^.\n]{0,30}\b(system prompt|hidden instructions|api keys?|passwords?|credentials)\b/i,
   new RegExp(`\\b(call|run|use|invoke|execute|trigger)\\b[^.\\n]{0,25}\\b(${TOOL_NAMES})\\b`, "i"),
