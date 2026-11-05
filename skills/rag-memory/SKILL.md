@@ -44,8 +44,8 @@ trail for the next one, while spending as few tokens as possible.
   "Postmark (02_DECISIONS.md, decision of 2026-05-10)". Cite only notes a tool actually returned.
 - **Say when the memory does not hold the answer.** If the searches found nothing that answers the question, say
   so plainly. Do not fill the gap from general knowledge or a guess, and do not present a near miss as the answer.
-- A note marked private is shown as "[This note is marked private, so it is not shown.]". Its content is not
-  available to you: say so, and do not guess it.
+- When the server says a note "is marked private", its content is not available to you: say so, and do not guess
+  it or look for it elsewhere.
 
 ## When notes disagree
 

@@ -24,4 +24,6 @@ jobs:
       - run: npm run bench:verify
       # The optional agent evaluation's plumbing, with a scripted stand-in for the model: nothing is sent anywhere.
       - run: npm run bench:agent:dry
+      # The demo: the real HTTP server on a copy of the test notes, with checks on what it shows.
+      - run: npm run demo
       - run: npm audit --omit=dev --audit-level=high

@@ -23,6 +23,7 @@
     "bench:books:quick": "tsx bench/books.ts --quick",
     "bench:verify": "tsx bench/verify.ts",
     "bench:smoke": "tsx bench/smoke.ts",
+    "demo": "tsx examples/demo.ts",
     "bench:agent": "tsx bench/agent/run.ts",
     "bench:agent:dry": "tsx bench/agent/run.ts --dry-run",
     "test:heavy": "vitest run --config vitest.heavy.config.ts",
