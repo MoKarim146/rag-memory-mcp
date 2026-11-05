@@ -301,3 +301,38 @@ describe("provenance and supersession", () => {
     await rm(config.rootDir, { recursive: true, force: true });
   });
 });
+
+describe("concurrent MCP clients", () => {
+  it("six sessions replacing the same handoff version: one wins, five are told it changed, nothing is lost", async () => {
+    const config = await vault();
+    await writeFile(path.join(config.rootDir, "04_MODEL_HANDOFF.md"), "# Handoff\n\nOriginal.\n");
+    const clients = await Promise.all(Array.from({ length: 6 }, () => client(config)));
+    const versions = await Promise.all(clients.map(async (c) => (await call(c, "read_handoff_summary")).text.match(/version="([0-9a-f]+)"/)![1]));
+    expect(new Set(versions).size).toBe(1);
+    const results = await Promise.all(
+      clients.map((c, i) => call(c, "update_handoff_summary", { content: `# Handoff\n\nFrom session ${i}.`, expected_version: versions[0] })),
+    );
+    expect(results.filter((r) => r.ok)).toHaveLength(1);
+    expect(results.filter((r) => !r.ok && r.text.includes("changed since it was read"))).toHaveLength(5);
+    const winner = results.findIndex((r) => r.ok);
+    expect(await readFile(path.join(config.rootDir, "04_MODEL_HANDOFF.md"), "utf8")).toContain(`From session ${winner}.`);
+    expect(await readFile(path.join(config.rootDir, HISTORY), "utf8")).toContain("Original.");
+    await Promise.all(clients.map((c) => c.close()));
+    await rm(config.rootDir, { recursive: true, force: true });
+  });
+
+  it("six sessions adding decisions at once: every entry is saved whole, none interleaved", async () => {
+    const config = await vault();
+    const clients = await Promise.all(Array.from({ length: 6 }, () => client(config)));
+    const results = await Promise.all(
+      clients.map((c, i) => call(c, "add_decision", { decision: `Decision number ${i} ${"x".repeat(400)}`, reason: `Reason number ${i}` })),
+    );
+    expect(results.every((r) => r.ok)).toBe(true);
+    const file = await readFile(path.join(config.rootDir, "02_DECISIONS.md"), "utf8");
+    for (let i = 0; i < 6; i++) {
+      expect(file).toMatch(new RegExp(`- Decision: Decision number ${i} x{400} \\(added by AI via MCP\\)\\n  Reason: Reason number ${i}\\n`));
+    }
+    await Promise.all(clients.map((c) => c.close()));
+    await rm(config.rootDir, { recursive: true, force: true });
+  });
+});
