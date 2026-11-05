@@ -19,8 +19,9 @@ export interface EmbeddingSettings {
   ollamaModel: string;
   minSimilarity?: number;
   timeoutMs: number;
-  queryPrefix: string;
-  documentPrefix: string;
+  // Text put before a query or a passage when it is embedded (empty when not given).
+  queryPrefix?: string;
+  documentPrefix?: string;
 }
 
 // Task prefixes that a model's own card says to put before queries and documents. Without them such models
@@ -152,7 +153,7 @@ export function createOllamaEmbedder(settings: EmbeddingSettings, fetchImpl: typ
     minSimilarity: settings.minSimilarity ?? 0.45,
     async embed(texts, kind = "document") {
       assertLoopbackUrl(endpoint.href);
-      const prefix = kind === "query" ? settings.queryPrefix : settings.documentPrefix;
+      const prefix = (kind === "query" ? settings.queryPrefix : settings.documentPrefix) ?? "";
       const response = await fetchImpl(endpoint, {
         method: "POST",
         headers: { "content-type": "application/json" },

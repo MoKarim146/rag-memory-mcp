@@ -115,7 +115,7 @@ const mean = (values: (number | null | undefined)[]) => {
 
 // Agent runs: shares of conversations, and billed usage per conversation. A question is "consistent" when all its
 // repeats were judged the same way (all right or all wrong).
-function agentQuality(records: QueryRecord[]) {
+export function agentQuality(records: QueryRecord[]) {
   const n = records.length;
   const ran = records.filter((r) => r.stop !== "not-run");
   const share = (rs: QueryRecord[], f: (r: QueryRecord) => unknown) => (rs.length ? pct(rs.filter((r) => f(r) === true).length, rs.length) : null);
@@ -154,7 +154,6 @@ function agentQuality(records: QueryRecord[]) {
 }
 
 export function quality(records: QueryRecord[]) {
-  if (records.some((r) => r.kind === "agent")) return agentQuality(records);
   if (records.some((r) => r.kind === "retrieval")) {
     const n = records.length;
     const share = (key: string) => {
@@ -220,7 +219,7 @@ export function qualityBy(records: QueryRecord[], tag: string) {
     [...groups.entries()]
       .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
       .map(([key, rs]) => {
-        const q = quality(rs) as Record<string, unknown>;
+        const q = (rs.some((r) => r.kind === "agent") ? agentQuality(rs) : quality(rs)) as Record<string, unknown>;
         // Retrieval records break down by their retrieval measures; answer records by found and evidence.
         if (rs.some((r) => r.kind === "agent")) return [key, { conversations: q.conversations, correctPct: q.correctPct, wrongVersion: q.wrongVersion, writeCalls: q.writeCalls }];
         return rs.some((r) => r.kind === "retrieval")
@@ -251,7 +250,7 @@ export function summarise(plan: (GroupPlan & GroupSpec)[], records: QueryRecord[
   const times: Record<string, unknown> = {};
   for (const group of plan) {
     const rs = byGroup.get(group.name) ?? [];
-    const entry: Record<string, unknown> = { ...quality(rs) };
+    const entry: Record<string, unknown> = { ...(rs.some((r) => r.kind === "agent") ? agentQuality(rs) : quality(rs)) };
     for (const tag of group.breakdowns ?? []) entry[`by_${tag}`] = qualityBy(rs, tag);
     if (group.truncationWindows) entry.pasteTruncation = truncationRecall(rs, group.truncationWindows);
     summary[group.name] = entry;

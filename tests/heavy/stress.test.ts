@@ -49,8 +49,8 @@ async function httpClient(url: URL, name: string): Promise<Client> {
   return client;
 }
 
-function textOf(result: { content: unknown }): string {
-  return (result.content as { text?: string }[]).map((p) => p.text ?? "").join("\n");
+function textOf(result: unknown): string {
+  return ((result as { content: { text?: string }[] }).content ?? []).map((p) => p.text ?? "").join("\n");
 }
 
 describe("stress: many clients at once", () => {

@@ -16,12 +16,16 @@ jobs:
           node-version-file: .nvmrc
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
+      # The benchmarks, examples and tests too (vitest and tsx run TypeScript without checking its types).
+      - run: npm run typecheck:all
       - run: npm test
       - run: npm run test:heavy
       # Free benchmark checks: a small deterministic run compared with its committed snapshot, and every committed
       # benchmark run recomputed from its per-query records. Timings are never compared.
       - run: npm run bench:smoke
       - run: npm run bench:verify
+      # Every generated table in the documents must match the run folders and result files it comes from.
+      - run: npx tsx bench/report.ts --check
       # The optional agent evaluation's plumbing, with a scripted stand-in for the model: nothing is sent anywhere.
       - run: npm run bench:agent:dry
       # The demo: the real HTTP server on a copy of the test notes, with checks on what it shows.

@@ -12,6 +12,7 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsx watch src/index.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck:all": "tsc -p tsconfig.bench.json",
     "start": "node dist/index.js",
     "start:local": "./scripts/start.sh",
     "setup": "./scripts/setup.sh",
