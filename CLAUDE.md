@@ -13,7 +13,8 @@ treats every note as untrusted input. No note leaves the computer through this s
 ```bash
 npm ci --ignore-scripts      # install
 npm run build                # compile to dist/
-npm run typecheck
+npm run typecheck            # src only
+npm run typecheck:all        # src, bench, examples and tests (vitest and tsx do not check types)
 npm test                     # build + fast tests (tests/*.test.ts)
 npm run test:heavy           # fuzz and stress tests (tests/heavy/), a few minutes
 npm run bench                # token benchmark on set 1 (npm run bench -- --set holdout, or --set test3)
@@ -21,6 +22,10 @@ npm run charts               # redraw docs/charts/*.svg from bench/results and s
 npm run bench:books          # real books and 10,570 SQuAD questions, one run folder (bench:books:quick: 200)
 npm run bench:verify         # recompute every committed run from its per-query records
 npm run bench:smoke          # free CI check: set 1 through the record-and-verify pipeline
+npx tsx bench/report.ts      # rewrite the generated tables in the docs from the runs (--check: compare only, CI)
+npx tsx bench/eval/run.ts paraphrase|scifact|longmemeval-s --split ... --systems bm25,dense,hybrid,old
+npm run bench:agent:dry      # agent evaluation plumbing with a scripted stand-in model (free, CI)
+npm run demo                 # the HTTP server on a copy of bench/agent/test-vault, with checks (CI)
 npm run audit                # npm audit, production packages, high and above
 ```
 
@@ -41,6 +46,11 @@ Run one test file: `npx vitest run tests/retrieval.test.ts`.
 - `bench/`: benchmark (`run.ts`), scale test (`scale.ts`), long-text benchmark on real books (`books.ts`,
   `books-data.ts`), charts (`charts.ts`), three fake vaults with their task files, and saved results in
   `bench/results/`.
+- `bench/lib/`: run folders (`runs.ts`), judging (`scoring.ts`), bootstrap intervals (`stats.ts`).
+  `bench/verify.ts` recomputes runs; `bench/report.ts` writes the docs' generated tables.
+- `bench/eval/`: outside datasets (SciFact, LongMemEval-S) and their frozen splits. `bench/paraphrase/`: the
+  frozen paraphrase set, its rule checker and splits. `bench/agent/`: the optional agent evaluation, its questions
+  and test vault. `bench/tools/`: the stand-in embedding server for benchmarks.
 - `security/`: test results before and after each round of fixes.
 - `skills/rag-memory/SKILL.md`: an Agent Skill that teaches an assistant how to use the server.
 
@@ -63,6 +73,9 @@ Run one test file: `npx vitest run tests/retrieval.test.ts`.
   benchmark (`bench/books.ts`): it reports, it is not a tuning set.
 - `tests/quality.test.ts` fails if a change loses answers or adds more than 5% tokens on sets 1 and 2. Do not
   loosen it without writing the reason in `RAG_RESULTS.md`.
+- Evaluation splits (SciFact test, LongMemEval-S evaluation, paraphrase evaluation groups, the agent questions)
+  are frozen and never used to choose a setting; only development splits may be used for tuning. Default settings
+  are not chosen from evaluation scores.
 - Never edit result files by hand; regenerate them. Report numbers exactly as measured, including anything that
   got worse. Published numbers come from clean run folders (`bench/runs/`, not `-dirty`) that pass
   `npm run bench:verify`; see docs/benchmarks.md.
@@ -70,7 +83,9 @@ Run one test file: `npx vitest run tests/retrieval.test.ts`.
 ## Writing docs
 
 - Plain English, short sentences, technically correct. Explain a term the first time it appears.
-- Numbers only from files in `bench/results/` or `security/`.
+- Numbers only from files in `bench/results/`, `bench/runs/` or `security/`. Tables between `<!-- generated -->`
+  markers come from `bench/report.ts`; never edit them by hand. Label results that assume the AI picks the right
+  note (the benchmark's ideal follow-up read) as an upper bound.
 - Project content only: no personal notes in the repository.
 - Only fake notes in the repository. Never commit a real vault, `.env`, tokens or tunnel addresses.
 - Credits stay as written in the README: Codex wrote the original project; the owner designed, directed and
