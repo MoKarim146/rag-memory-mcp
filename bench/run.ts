@@ -8,6 +8,7 @@
 //   npx tsx bench/run.ts                 run every variant, print a table, write bench/results/latest.json
 //   npx tsx bench/run.ts baseline        run one variant
 //   npx tsx bench/run.ts --out file.json write somewhere else
+//   npx tsx bench/run.ts --set holdout   use the held-out vault and questions instead
 //
 // Everything is deterministic: the vault is a fresh copy of bench/fixture-vault for every run, the clock is
 // frozen at 2026-11-02T10:00:00Z and the time zone is UTC, so the same code gives the same numbers.
@@ -25,7 +26,14 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { getEncoding } from "js-tiktoken";
 
 const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
-const FIXTURE = path.join(BENCH_DIR, "fixture-vault");
+// Two task sets. "dev" (bench/fixture-vault + tasks.json) is the one the search was tuned on. "holdout"
+// (bench/holdout-vault + holdout-tasks.json) was written later and never used for tuning.
+const SETS = {
+  dev: { vault: path.join(BENCH_DIR, "fixture-vault"), tasks: path.join(BENCH_DIR, "tasks.json") },
+  holdout: { vault: path.join(BENCH_DIR, "holdout-vault"), tasks: path.join(BENCH_DIR, "holdout-tasks.json") },
+} as const;
+type SetName = keyof typeof SETS;
+let FIXTURE: string = SETS.dev.vault;
 const FROZEN_NOW = Date.parse("2026-11-02T10:00:00.000Z");
 
 process.env.TZ = "UTC";
@@ -106,6 +114,7 @@ interface TaskRecord {
 }
 
 export interface RunResult {
+  set: SetName;
   variant: string;
   label: string;
   style: "keyword" | "question";
@@ -138,7 +147,7 @@ export interface RunResult {
   };
 }
 
-async function runVariant(name: string, style: "keyword" | "question", tasks: Tasks): Promise<RunResult> {
+async function runVariant(name: string, style: "keyword" | "question", tasks: Tasks, set: SetName): Promise<RunResult> {
   const variant = VARIANTS[name];
   if (!variant) {
     throw new Error(`Unknown variant ${name}. Known: ${Object.keys(VARIANTS).join(", ")}`);
@@ -276,6 +285,7 @@ async function runVariant(name: string, style: "keyword" | "question", tasks: Ta
     const argTokens = records.reduce((sum, r) => sum + r.argTokens, 0);
 
     return {
+      set,
       variant: name,
       label: variant.label,
       style,
@@ -433,13 +443,19 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const outIndex = args.indexOf("--out");
   const out = outIndex >= 0 ? args.splice(outIndex, 2)[1] : path.join(BENCH_DIR, "results", "latest.json");
+  const setIndex = args.indexOf("--set");
+  const set = (setIndex >= 0 ? args.splice(setIndex, 2)[1] : "dev") as SetName;
+  if (!(set in SETS)) {
+    throw new Error(`--set must be one of: ${Object.keys(SETS).join(", ")}`);
+  }
+  FIXTURE = SETS[set].vault;
   const names = args.length > 0 ? args : DEFAULT_VARIANTS;
-  const tasks = JSON.parse(await readFile(path.join(BENCH_DIR, "tasks.json"), "utf8")) as Tasks;
+  const tasks = JSON.parse(await readFile(SETS[set].tasks, "utf8")) as Tasks;
 
   const results: RunResult[] = [];
   for (const name of names) {
     for (const style of ["keyword", "question"] as const) {
-      results.push(await runVariant(name, style, tasks));
+      results.push(await runVariant(name, style, tasks, set));
     }
   }
 

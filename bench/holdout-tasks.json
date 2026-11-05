@@ -1,0 +1,49 @@
+{
+  "about": "Held-out benchmark. Written on 5 November 2026 before the second round of RAG changes, and not used to tune them: the search was tuned only on bench/tasks.json. Same format as tasks.json. paraphrase=true marks questions worded differently from the note. All notes are fake, see bench/holdout-vault/.",
+  "session_start": {
+    "id": "start",
+    "description": "Start of a session: load the shared context",
+    "answer": "slot swap"
+  },
+  "lookups": [
+    { "id": "login-method", "keyword": "login", "question": "How do members log in to Sprout?", "answer": "one-time code" },
+    { "id": "frontend", "keyword": "Astro", "question": "Why was Astro chosen for the frontend?", "answer": "almost no JavaScript" },
+    { "id": "db-choice", "keyword": "Postgres", "question": "Why did we pick Postgres over SQLite?", "answer": "daily snapshots" },
+    { "id": "loan-length", "keyword": "loan", "question": "How long can a member borrow a tool?", "answer": "seven days" },
+    { "id": "max-tools", "keyword": "three tools", "question": "How many tools can one member borrow at once?", "answer": "three tools" },
+    { "id": "power-tools", "keyword": "induction", "question": "Who is allowed to borrow the hedge trimmer?", "answer": "safety induction" },
+    { "id": "overdue", "keyword": "overdue", "question": "When does a borrower get a reminder for a late tool?", "answer": "day 8" },
+    { "id": "slot-length", "keyword": "slot", "question": "How long is a watering slot?", "answer": "two-hour" },
+    { "id": "holiday-swap", "keyword": "swap", "question": "Can a bank holiday slot be swapped for a normal one?", "answer": "another bank holiday slot" },
+    { "id": "swap-expiry", "keyword": "48 hours", "question": "How long do people have to accept a swap request?", "answer": "48 hours" },
+    { "id": "slot-colour", "keyword": "contrast", "question": "What colour is the free slot in the calendar now?", "answer": "#1E7B34" },
+    { "id": "retention", "keyword": "privacy notice", "question": "How long is waiting-list data kept after someone leaves?", "answer": "two years" },
+    { "id": "waiting-count", "keyword": "waiting list", "question": "How many people are waiting for a plot?", "answer": "120" },
+    { "id": "inactive", "keyword": "inactive", "question": "What happens to people who don't answer the yearly email?", "answer": "inactive list" },
+    { "id": "plot-offer", "keyword": "plot frees up", "question": "Who gets offered a plot when one becomes free?", "answer": "first three people" },
+    { "id": "polytunnel-hours", "keyword": "half-day", "question": "What are the polytunnel booking times?", "answer": "08:00 to 13:00" },
+    { "id": "polytunnel-capacity", "keyword": "fire safety", "question": "How many people can be in the polytunnel at once?", "answer": "12 people" },
+    { "id": "photo-size", "keyword": "1280", "question": "What size are uploaded photos resized to?", "answer": "1280 pixels" },
+    { "id": "photo-location", "keyword": "GPS", "question": "Do we keep the place where a photo was taken?", "answer": "EXIF", "paraphrase": true },
+    { "id": "funding", "keyword": "grant", "question": "Who pays for the server?", "answer": "green spaces fund", "paraphrase": true },
+    { "id": "vm-cost", "keyword": "VM", "question": "What does the hosting cost per month?", "answer": "£14 a month" },
+    { "id": "deposit", "keyword": "deposit", "question": "Do members have to pay anything to borrow power tools?", "answer": "low incomes", "paraphrase": true },
+    { "id": "email-quota", "keyword": "free tier", "question": "How many emails can we send without paying?", "answer": "3,000 emails", "paraphrase": true },
+    { "id": "reminder-time", "keyword": "reminder job", "question": "What time do reminder emails go out?", "answer": "07:30" },
+    { "id": "db-recovery", "keyword": "restore", "question": "How do I bring the database back after a crash?", "answer": "alembic upgrade head", "paraphrase": true },
+    { "id": "service-name", "keyword": "systemd", "question": "What is the app's service called on the server?", "answer": "sprout-web" },
+    { "id": "whatsapp", "keyword": "WhatsApp", "question": "Until when will the WhatsApp group keep running?", "answer": "March 2027" },
+    { "id": "double-accept", "keyword": "accepted twice", "question": "What went wrong when two people confirmed a swap at the same moment, and how was it fixed?", "answer": "unique constraint", "paraphrase": true },
+    { "id": "holiday-source", "keyword": "bank holidays", "question": "Where does the app get the list of public holidays from?", "answer": "small table", "paraphrase": true },
+    { "id": "load-time", "keyword": "3G", "question": "How fast does Sprout load on a slow mobile connection now?", "answer": "2.5 seconds", "paraphrase": true },
+    { "id": "lucia-plot", "keyword": "Lucia", "question": "Which plot does the accessibility lead have?", "answer": "plot 8", "paraphrase": true },
+    { "id": "no-answer-k8s", "keyword": "Kubernetes", "question": "Which Kubernetes namespace does Sprout use?", "answer": null },
+    { "id": "no-answer-fees", "keyword": "Stripe", "question": "How do members pay their plot fee online?", "answer": null }
+  ],
+  "writes": [
+    { "id": "add-decision", "tool": "add_decision", "arguments": { "decision": "Children's groups may book the polytunnel on weekday mornings in term time.", "reason": "The insurer confirmed cover for supervised school groups." }, "expect_file": "02_DECISIONS.md", "expect_text": "weekday mornings" },
+    { "id": "add-task", "tool": "add_open_task", "arguments": { "task": "Add the school's Tuesday booking to the polytunnel calendar", "priority": "medium", "project": "polytunnel" }, "expect_file": "03_OPEN_TASKS.md", "expect_text": "Tuesday booking" },
+    { "id": "session-note", "tool": "append_session_note", "arguments": { "model_name": "Claude", "title": "Bank holiday swaps", "content": "Finished the bank holiday rule for swaps: the API checks both slots against the bank_holidays table inside the same transaction as the swap. Added tests for Easter Monday and Christmas Day." }, "expect_file": "Sessions/2026-11-02_Claude.md", "expect_text": "Easter Monday" },
+    { "id": "handoff", "tool": "update_handoff_summary", "read_first": "read_handoff_summary", "arguments": { "content": "# Model Handoff\n\nUpdated by Claude on 2 November 2026.\n\nSlot swap is finished, including bank holidays. Next: overdue tool reminders on day 8, sent with the 07:30 reminder job, then the polytunnel half-day blocks.\n" }, "expect_file": "04_MODEL_HANDOFF.md", "expect_text": "Slot swap is finished" }
+  ]
+}
