@@ -18,6 +18,7 @@ benchmark compares three setups on three fake vaults:
   <img alt="Bar charts of tokens on three test sets, for all questions in one chat and for a short chat of 3 questions. The numbers are in the table below." src="docs/charts/test-sets-light.svg" width="760">
 </picture>
 
+<!-- generated: tokens-overview dev-after-r3 holdout-after-r3 test3-after -->
 | Keyword searches | Set 1 | Set 2 | Set 3 |
 |---|---:|---:|---:|
 | **A short chat** (start summary and 3 searches) | | | |
@@ -35,6 +36,7 @@ benchmark compares three setups on three fake vaults:
 | **With an ideal follow-up read** (upper bound, see below) | | | |
 | Old server | 23 of 24 | 30 of 31 | 40 of 40 |
 | This server | 24 of 24 | 31 of 31 | 39 of 40 |
+<!-- /generated -->
 
 In plain words:
 
@@ -96,28 +98,33 @@ npm run bench -- --set test3
 
 ## The full numbers (round 3, keyword searches)
 
+<!-- generated: tokens-detail dev-after-r3 holdout-after-r3 test3-after -->
 | What the AI reads | Set 1 old | Set 1 new | Set 2 old | Set 2 new | Set 3 old | Set 3 new |
 |---|---:|---:|---:|---:|---:|---:|
 | Tool descriptions + instructions | 886 | 558 | 886 | 558 | 886 | 558 |
 | Start-of-chat summary | 2,549 | 1,850 | 1,506 | 1,248 | 2,141 | 1,597 |
 | All searches and reads | 8,924 | 5,430 | 7,331 | 5,657 | 10,735 | 8,123 |
 | **Every question in one chat** | **12,359** | **7,838** | **9,723** | **7,463** | **13,762** | **10,278** |
-| Change | | −36.6% | | −23.2% | | −25.3% |
+| Change |  | −36.6% |  | −23.2% |  | −25.3% |
 | Whole session, with 4 writes and the AI's own arguments | 13,286 | 8,649 | 10,392 | 8,037 | 14,531 | 10,965 |
+<!-- /generated -->
 
 Sources: `bench/results/dev-after-r3.json`, `holdout-after-r3.json` and `test3-after.json`, rows `baseline` and
 `current`, style `keyword`.
 
 ### Answer quality
 
+<!-- generated: tokens-quality dev-after-r3 holdout-after-r3 test3-after -->
 | | Set 1 old | Set 1 new | Set 2 old | Set 2 new | Set 3 old | Set 3 new |
 |---|---:|---:|---:|---:|---:|---:|
 | Found by the search alone (realistic) | 19/24 | 21/24 | 27/31 | 30/31 | 39/40 | 39/40 |
 | Found with an ideal follow-up read (upper bound) | 23/24 | 24/24 | 30/31 | 31/31 | 40/40 | 39/40 |
 | Mean reciprocal rank | 0.505 | 0.764 | 0.618 | 0.742 | 0.796 | 0.807 |
 | Answers already in the start summary | 10 | 9 | 8 | 8 | 15 | 13 |
-| Full questions: answers found | 0/24 | 23/24 | 0/31 | 29/31 | 0/40 | 36/40 |
+| Full questions: found by the search alone (realistic) | 0/24 | 21/24 | 0/31 | 26/31 | 0/40 | 33/40 |
+| Full questions: with an ideal follow-up read (upper bound) | 0/24 | 23/24 | 0/31 | 29/31 | 0/40 | 36/40 |
 | Full questions: every question in one chat | 3,981 | 7,635 | 3,122 | 9,206 | 3,950 | 13,308 |
+<!-- /generated -->
 
 *Mean reciprocal rank* scores where the answer appears: 1 if in the first result, 0.5 if second, 0.33 if third,
 0 if missing, averaged. Higher is better. The old server finds nothing for full questions (0 answers); its low
@@ -125,9 +132,11 @@ token count there is the cost of answering nothing.
 
 On set 3:
 
-- **Questions worded differently from the notes:** 10 of 10 found with keywords, 6 of 10 with full questions.
-- **Facts that changed over time:** 5 of 5 found. "Found" means the current value was in the results; older
-  values can be there too, and the AI has to prefer the newer note.
+- **Questions worded differently from the notes:** 10 of 10 found with keywords, 5 of 10 with full questions by
+  the search alone (6 of 10 with an ideal follow-up read, an upper bound).
+- **Facts that changed over time:** 5 of 5 found with keywords, 4 of 5 with full questions. "Found" means the
+  current value was in the results; older values can be there too, and the AI has to tell which one is current
+  from the dates and wording of the notes (for decisions, an explicit `Supersedes` line settles it).
 - **Questions with no answer:** 248 and 4 tokens spent with keywords.
 
 ## What got worse, or is still missing
@@ -214,12 +223,14 @@ answer.
 which helps with typos, not with meaning. With keyword searches they made almost no difference (−45 to +39
 tokens); with full questions they cost 16.9% to 20.2% more:
 
+<!-- generated: tokens-ngram dev-after-r3 holdout-after-r3 test3-after -->
 | Every question in one chat | Set 1 | Set 2 | Set 3 |
 |---|---:|---:|---:|
 | Keywords only | 7,838 | 7,463 | 10,278 |
 | Keywords + ngram, keyword searches | 7,846 | 7,502 | 10,233 |
 | Keywords only, full questions | 7,635 | 9,206 | 13,308 |
 | Keywords + ngram, full questions | 9,176 | 10,764 | 15,588 |
+<!-- /generated -->
 
 They found the same answers in every case. Off by default.
 

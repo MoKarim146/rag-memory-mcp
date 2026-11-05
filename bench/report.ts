@@ -20,6 +20,10 @@
 //                                   system, by how the question was worded
 //   tokens <file> [<file> ...]      the token benchmark's committed results (bench/results/<file>.json, written by
 //                                   bench/run.ts): a short chat per test set, with keyword searches
+//   tokens-overview <file> ...      the same files: short chat, every question in one chat, answers found
+//   tokens-detail <file> ...        the same files: where the tokens go, old server against this server
+//   tokens-quality <file> ...       the same files: answers found (realistic and upper bound), rank, full questions
+//   tokens-ngram <file> ...         the same files: every question in one chat, with and without ngram vectors
 // "Clean" means the folder name does not end in -dirty (the code was exactly the commit it names).
 import { existsSync } from "node:fs";
 import { readFile, readdir, writeFile } from "node:fs/promises";
@@ -249,12 +253,125 @@ async function tokensTable(files: string[]): Promise<string> {
   ].join("\n");
 }
 
+interface TokenResult {
+  variant: string;
+  style: string;
+  definitions: { modelFacingTokens: number; instructionsTokens: number };
+  summary: TokenSummary & { readingTokens: number; startTokens: number; lookupResultTokens: number; sessionTotalTokens: number; meanReciprocalRank: number; startAnswersCovered: number };
+}
+
+async function tokenSets(files: string[]) {
+  return Promise.all(
+    files.map(async (f) => {
+      const results = JSON.parse(await readFile(path.join(BENCH, "results", `${f}.json`), "utf8")) as TokenResult[];
+      return (variant: string, style = "keyword") => {
+        const r = results.find((x) => x.variant === variant && x.style === style);
+        if (!r) throw new Error(`${f}.json has no ${variant} ${style} result`);
+        return r;
+      };
+    }),
+  );
+}
+
+const n0 = (v: number) => v.toLocaleString("en-US");
+const change = (a: number, b: number) => `${a < b ? "\u2212" : "+"}${Math.abs((100 * (a - b)) / b).toFixed(1)}%`;
+
+// The smallest value of each column in bold.
+function block(rows: [string, number[]][]): string[] {
+  const min = rows[0][1].map((_, i) => Math.min(...rows.map(([, v]) => v[i])));
+  return rows.map(([label, v]) => `| ${label} | ${v.map((x, i) => (x === min[i] ? `**${n0(x)}**` : n0(x))).join(" | ")} |`);
+}
+
+async function tokensOverview(files: string[]): Promise<string> {
+  const sets = await tokenSets(files);
+  const cols = files.map((_, i) => `Set ${i + 1}`);
+  const empty = ` ${files.map(() => "|").join(" ")}`;
+  const of = (s: TokenSummary, key: "answeredBySearchAlone" | "answered") => `${s[key]} of ${s.answerableLookups}`;
+  const row = (label: string, cells: string[]) => `| ${label} | ${cells.join(" | ")} |`;
+  return [
+    `| Keyword searches | ${cols.join(" | ")} |`,
+    `|---|${files.map(() => "---:").join("|")}|`,
+    `| **A short chat** (start summary and 3 searches) |${empty}`,
+    ...block([
+      ["Paste every note", sets.map((g) => g("fullcontext").summary.quickChatTokens)],
+      ["Old server", sets.map((g) => g("baseline").summary.quickChatTokens)],
+      ["This server", sets.map((g) => g("current").summary.quickChatTokens)],
+    ]),
+    `| **Every question in one chat** |${empty}`,
+    ...block([
+      ["Paste every note", sets.map((g) => g("fullcontext").summary.readingTokens)],
+      ["Old server", sets.map((g) => g("baseline").summary.readingTokens)],
+      ["This server", sets.map((g) => g("current").summary.readingTokens)],
+    ]),
+    `| **Answer in what the AI reads** (realistic: the search result alone) |${empty}`,
+    row("Paste every note", sets.map((g) => of(g("fullcontext").summary, "answered"))),
+    row("Old server", sets.map((g) => of(g("baseline").summary, "answeredBySearchAlone"))),
+    row("This server", sets.map((g) => of(g("current").summary, "answeredBySearchAlone"))),
+    `| **With an ideal follow-up read** (upper bound, see below) |${empty}`,
+    row("Old server", sets.map((g) => of(g("baseline").summary, "answered"))),
+    row("This server", sets.map((g) => of(g("current").summary, "answered"))),
+  ].join("\n");
+}
+
+async function tokensDetail(files: string[]): Promise<string> {
+  const sets = await tokenSets(files);
+  const pairs = sets.map((g) => [g("baseline"), g("current")] as const);
+  const cells = (f: (r: TokenResult) => number, bold = false) => pairs.flatMap(([o, c]) => [o, c].map((r) => (bold ? `**${n0(f(r))}**` : n0(f(r)))));
+  const row = (label: string, v: string[]) => `| ${label} | ${v.join(" | ")} |`;
+  return [
+    `| What the AI reads | ${files.map((_, i) => `Set ${i + 1} old | Set ${i + 1} new`).join(" | ")} |`,
+    `|---|${files.map(() => "---:|---:").join("|")}|`,
+    row("Tool descriptions + instructions", cells((r) => r.definitions.modelFacingTokens + r.definitions.instructionsTokens)),
+    row("Start-of-chat summary", cells((r) => r.summary.startTokens)),
+    row("All searches and reads", cells((r) => r.summary.lookupResultTokens)),
+    row("**Every question in one chat**", cells((r) => r.summary.readingTokens, true)),
+    row("Change", pairs.flatMap(([o, c]) => ["", change(c.summary.readingTokens, o.summary.readingTokens)])),
+    row("Whole session, with 4 writes and the AI's own arguments", cells((r) => r.summary.sessionTotalTokens)),
+  ].join("\n");
+}
+
+async function tokensQuality(files: string[]): Promise<string> {
+  const sets = await tokenSets(files);
+  const cells = (f: (o: TokenResult, c: TokenResult) => [string, string]) => sets.flatMap((g) => f(g("baseline"), g("current")));
+  const of = (r: TokenResult, key: "answeredBySearchAlone" | "answered") => `${r.summary[key]}/${r.summary.answerableLookups}`;
+  const row = (label: string, v: string[]) => `| ${label} | ${v.join(" | ")} |`;
+  const q = (variant: string, g: (typeof sets)[number]) => g(variant, "question");
+  return [
+    `| | ${files.map((_, i) => `Set ${i + 1} old | Set ${i + 1} new`).join(" | ")} |`,
+    `|---|${files.map(() => "---:|---:").join("|")}|`,
+    row("Found by the search alone (realistic)", cells((o, c) => [of(o, "answeredBySearchAlone"), of(c, "answeredBySearchAlone")])),
+    row("Found with an ideal follow-up read (upper bound)", cells((o, c) => [of(o, "answered"), of(c, "answered")])),
+    row("Mean reciprocal rank", cells((o, c) => [o.summary.meanReciprocalRank.toFixed(3), c.summary.meanReciprocalRank.toFixed(3)])),
+    row("Answers already in the start summary", cells((o, c) => [String(o.summary.startAnswersCovered), String(c.summary.startAnswersCovered)])),
+    row("Full questions: found by the search alone (realistic)", sets.flatMap((g) => [of(q("baseline", g), "answeredBySearchAlone"), of(q("current", g), "answeredBySearchAlone")])),
+    row("Full questions: with an ideal follow-up read (upper bound)", sets.flatMap((g) => [of(q("baseline", g), "answered"), of(q("current", g), "answered")])),
+    row("Full questions: every question in one chat", sets.flatMap((g) => [n0(q("baseline", g).summary.readingTokens), n0(q("current", g).summary.readingTokens)])),
+  ].join("\n");
+}
+
+async function tokensNgram(files: string[]): Promise<string> {
+  const sets = await tokenSets(files);
+  const row = (label: string, variant: string, style: string) => `| ${label} | ${sets.map((g) => n0(g(variant, style).summary.readingTokens)).join(" | ")} |`;
+  return [
+    `| Every question in one chat | ${files.map((_, i) => `Set ${i + 1}`).join(" | ")} |`,
+    `|---|${files.map(() => "---:").join("|")}|`,
+    row("Keywords only", "current", "keyword"),
+    row("Keywords + ngram, keyword searches", "current-ngram", "keyword"),
+    row("Keywords only, full questions", "current", "question"),
+    row("Keywords + ngram, full questions", "current-ngram", "question"),
+  ].join("\n");
+}
+
 async function generate(spec: string): Promise<string> {
   const [kind, ...args] = spec.trim().split(/\s+/);
   if (kind === "retrieval") return retrievalTable(args[0], args[1]);
   if (kind === "retrieval-by") return breakdownTable(args[0], args[1], args[2]);
   if (kind === "books") return booksTable(args);
   if (kind === "tokens") return tokensTable(args);
+  if (kind === "tokens-overview") return tokensOverview(args);
+  if (kind === "tokens-detail") return tokensDetail(args);
+  if (kind === "tokens-quality") return tokensQuality(args);
+  if (kind === "tokens-ngram") return tokensNgram(args);
   if (kind === "needles") return needlesTable(args[0]);
   throw new Error(`unknown generated block: ${spec}`);
 }
