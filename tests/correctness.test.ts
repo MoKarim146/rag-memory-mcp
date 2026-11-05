@@ -202,3 +202,19 @@ describe("index isolation and lifecycle", () => {
     await c.close();
   });
 });
+
+describe("retrieval modes", () => {
+  it("keyword uses only words, dense only vectors, hybrid both", async () => {
+    const config = await vault();
+    await writeFile(path.join(config.rootDir, "Office.md"), "# Office\n\nThe guest network code is written on the back of the green kettle.\n");
+    await writeFile(path.join(config.rootDir, "Visitors.md"), "# Visitors\n\nVisitors sign in at reception and wear a badge.\n");
+    const index = new MemoryIndex(config, fakeEmbedder());
+    const paths = async (mode: "hybrid" | "keyword" | "dense") => (await index.search("visitors online", 5, mode)).map((h) => h.path).sort();
+    expect(await paths("keyword")).toEqual(["Visitors.md"]); // "visitors" matches a word; nothing matches "online"
+    expect(await paths("dense")).toEqual(["Office.md"]); // only the kettle note is near "online" for the fake model
+    expect(await paths("hybrid")).toEqual(["Office.md", "Visitors.md"]);
+    expect(() => getMemoryConfig({ AI_MEMORY_DIR: config.rootDir, RAG_RETRIEVAL: "dense" })).toThrow(/needs RAG_EMBEDDINGS/);
+    index.close();
+    await rm(config.rootDir, { recursive: true, force: true });
+  });
+});

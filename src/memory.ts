@@ -30,6 +30,9 @@ export interface MemoryConfig {
   rootDir: string;
   // Optional vector add-on for search. Undefined means keyword search only.
   embeddings?: EmbeddingSettings;
+  // Which rankings search uses. "hybrid" (default): keywords, plus vectors when embeddings are on. "keyword": keywords
+  // only. "dense": vectors only (needs embeddings). The last two exist to compare the parts on equal terms.
+  retrieval?: "hybrid" | "keyword" | "dense";
   // false: read-only mode, the write tools are not offered and every write is refused. Default true.
   writeEnabled?: boolean;
   // true: search results show each undated note's last-change date. Default false (costs tokens).
@@ -123,6 +126,7 @@ export function getMemoryConfig(env: NodeJS.ProcessEnv = process.env): MemoryCon
   return {
     rootDir: path.resolve(expandHome(env.AI_MEMORY_DIR || DEFAULT_MEMORY_DIR)),
     embeddings: embeddings.provider === "none" ? undefined : embeddings,
+    retrieval: parseRetrieval(env, embeddings.provider !== "none"),
     writeEnabled: parseBoolean(env, "AI_MEMORY_WRITE_ENABLED", true),
     showDates: parseBoolean(env, "RAG_SHOW_DATES", false),
     writeReview: review,
@@ -152,6 +156,17 @@ function parsePositiveInt(env: NodeJS.ProcessEnv, name: string, fallback: number
     throw new Error(`${name} must be a whole number above 0`);
   }
   return parsed;
+}
+
+function parseRetrieval(env: NodeJS.ProcessEnv, hasEmbeddings: boolean): "hybrid" | "keyword" | "dense" {
+  const value = (env.RAG_RETRIEVAL || "hybrid").trim().toLowerCase();
+  if (value !== "hybrid" && value !== "keyword" && value !== "dense") {
+    throw new Error("RAG_RETRIEVAL must be hybrid, keyword or dense");
+  }
+  if (value === "dense" && !hasEmbeddings) {
+    throw new Error("RAG_RETRIEVAL=dense needs RAG_EMBEDDINGS (ngram or ollama)");
+  }
+  return value;
 }
 
 export async function ensureMemoryLayout(config: MemoryConfig): Promise<void> {

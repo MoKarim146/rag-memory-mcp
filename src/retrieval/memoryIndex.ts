@@ -180,7 +180,9 @@ export class MemoryIndex {
     return this.pending;
   }
 
-  async search(query: string, limit = DEFAULT_RESULT_LIMIT): Promise<SearchHit[]> {
+  // mode: "hybrid" uses keywords and, with an embedder, vectors; "keyword" and "dense" use one ranking only.
+  // The mode is per search, not per index, because sessions with different modes share one index.
+  async search(query: string, limit = DEFAULT_RESULT_LIMIT, mode: "hybrid" | "keyword" | "dense" = "hybrid"): Promise<SearchHit[]> {
     await this.refresh();
 
     const terms = queryTerms(query);
@@ -190,7 +192,7 @@ export class MemoryIndex {
     let strict: number[] = [];
     let loose: number[] = [];
 
-    if (terms.length > 0) {
+    if (terms.length > 0 && mode !== "dense") {
       const rows = this.db
         .prepare(
           `SELECT f.rowid AS id, p.section_id AS section, bm25(passages_fts, 2.0, 1.0) AS score,
@@ -220,7 +222,7 @@ export class MemoryIndex {
       strict = coveredList.filter((id) => sectionScore.get(id)! <= best * RELATIVE_CUTOFF);
     }
 
-    const vector = this.embedder
+    const vector = this.embedder && mode !== "keyword"
       ? await this.vectorSearch(query)
       : { sections: [], best: new Map<number, number>(), scores: new Map<number, number>() };
     let ranked = vector.sections.length > 0 ? fuse([strict, vector.sections]) : strict;

@@ -138,7 +138,7 @@ export function createObsidianMemoryMcpServer(baseConfig: MemoryConfig): McpServ
         annotations: READ_ONLY,
       },
       safe("search_memory", async ({ query, limit }: { query: string; limit?: number }) => {
-        const hits = await index.search(query, limit ?? DEFAULT_RESULT_LIMIT);
+        const hits = await index.search(query, limit ?? DEFAULT_RESULT_LIMIT, config.retrieval);
         if (hits.length === 0) {
           return text(`No matching notes.${await oversizedNotice(config)}`);
         }
