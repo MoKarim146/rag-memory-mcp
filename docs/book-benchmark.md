@@ -20,7 +20,8 @@ How to run it and what the records contain: [docs/benchmarks.md](benchmarks.md).
   200,000 tokens covers 54.7%.
 - **One made-up fact hidden in a whole book** (Moby Dick, 291,728 tokens), 20 times at 20 depths. Searched with
   words from the fact: **20 of 20** found, at 75 tokens per search. Asked in other words that keep a name: 8 of
-  10. Asked in words the fact does not contain at all: **0 of 10**. Keyword search cannot match meaning.
+  10. Asked in words the fact does not contain at all: **0 of 10**. Keyword search cannot match meaning; with an
+  embedding model added, 3 of those 10 were found (section 2).
 - **A library of 18 books and the 48 articles** (3,157,635 tokens, far beyond any chat window). Still 20 of 20
   planted facts with keywords; SQuAD accuracy dropped by 1.4 points. On one CPU core the first search took 3.4
   seconds to build the index, later searches 47 ms on average.
@@ -128,8 +129,26 @@ same test on Emma (202,905 tokens, 56 chapters) gave the same result: 20/20, 8/1
 The two reworded questions with a name that were missed asked "When is the meeting in Larch about money now
 held?" (the fact says "budget review") and "When does Halyard's test machine get shut down?" (the fact says
 "staging server … switched off"). Questions with no word in common need a search that understands meaning:
-embeddings from a real model (`RAG_EMBEDDINGS=ollama`, not measured yet) or an AI that searches again with other
-words.
+embeddings from a real model, or an AI that searches again with other words.
+
+**With a real embedding model.** The same 40 questions, run again with `all-MiniLM-L6-v2` vectors merged with
+keyword search (`npm run bench:books -- --needles-embeddings`, an Ollama-compatible stand-in serving the model; see
+[benchmarks.md](benchmarks.md)):
+
+<!-- generated: needles books-needles-embeddings -->
+Run `bench/runs/books-needles-embeddings/20261105T063652Z-fb1b1fb` (commit `fb1b1fb`). Found: the fact reached the AI in the results of one search (5 results). First search: building the index, and for vectors embedding the whole book.
+
+| Book | Search | Words from the fact | Reworded, keeps a name | No word in common | Tokens per search (reworded) | First search s |
+|---|---|---:|---:|---:|---:|---:|
+| moby | keyword search | 20/20 | 8/10 | 0/10 | 75 (189) | 0.4 |
+| moby | keywords and vectors (hybrid) | 20/20 | 9/10 | 3/10 | 75 (193) | 74.3 |
+| emma | keyword search | 20/20 | 8/10 | 0/10 | 69 (139) | 0.3 |
+| emma | keywords and vectors (hybrid) | 20/20 | 9/10 | 4/10 | 69 (139) | 50.7 |
+<!-- /generated -->
+
+Vectors found some of the facts asked with no word in common, but most still came back missing, and embedding a
+whole book on two CPU cores took about a minute before the first search could answer. Ten questions per kind are
+too few for a precise rate: read these as "some, not most".
 
 ## 3. A whole book in one note
 
@@ -197,8 +216,9 @@ All 587 notes in the library are harmless, so anything the filters flag is a fal
 - **For finding facts, search is much cheaper than pasting, and close to it in quality** when the question
   shares words with the text: 94.6% of answers found when two thirds of the words match, at about 186 tokens
   instead of a whole book.
-- **It misses what is worded differently.** 55.5% when few words match, and 0 of 10 when none do. An AI that
-  searches again with other words, or real embeddings, are the next steps.
+- **It misses what is worded differently.** 55.5% when few words match, and 0 of 10 when none do. Adding a small
+  embedding model found 3 of 10 (Moby Dick) and 4 of 10 (Emma) of those, so most are still missed; an AI that
+  searches again with other words is the other way.
 - **It cannot replace reading for questions about a whole story.**
 - **Pasting stops being an option at about one book.** A single novel (Emma: 201,979 tokens) already fills a
   200,000-token window; the library is 3.2 million tokens.

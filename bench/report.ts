@@ -16,6 +16,8 @@
 //                                   the same run, broken down by question type: Recall@5 per system, with its 95%
 //                                   interval, for the groups with that number of results
 //   books <group> [<group> ...]     the latest clean run of bench/runs/books/: one row per named group
+//   needles <benchmark>             planted facts from the latest clean run of bench/runs/<benchmark>/: one row per book and
+//                                   system, by how the question was worded
 //   tokens <file> [<file> ...]      the token benchmark's committed results (bench/results/<file>.json, written by
 //                                   bench/run.ts): a short chat per test set, with keyword searches
 // "Clean" means the folder name does not end in -dirty (the code was exactly the commit it names).
@@ -182,6 +184,34 @@ async function booksTable(groups: string[]): Promise<string> {
   return lines.join("\n");
 }
 
+async function needlesTable(benchmark: string): Promise<string> {
+  const run = (await runs(benchmark)).at(-1);
+  if (!run) return `_No clean run of ${benchmark} yet._`;
+  type Group = { found: number; questions: number; tokensMean: number; by_overlap: Record<string, { found: number; questions: number }> };
+  const group = (scope: string, system: string, style: string) => run.summary[`${scope}/${system}/needles/${style}/limit-5`] as unknown as Group | undefined;
+  const names: Record<string, string> = { current: "keyword search", "current-ollama": "keywords and vectors (hybrid)", "current-ngram": "keywords and ngram vectors" };
+  const lines = [
+    `Run \`${path.relative(ROOT, run.dir)}\` (commit \`${run.meta.git.commit.slice(0, 7)}\`). Found: the fact reached the AI in the results of one search (5 results). First search: building the index, and for vectors embedding the whole book.`,
+    "",
+    "| Book | Search | Words from the fact | Reworded, keeps a name | No word in common | Tokens per search (reworded) | First search s |",
+    "|---|---|---:|---:|---:|---:|---:|",
+  ];
+  const scopes = [...new Set(run.meta.plan.map((g) => String(g.about.scope)))];
+  for (const scope of scopes) {
+    for (const system of [...new Set(run.meta.plan.filter((g) => g.about.scope === scope).map((g) => String(g.about.system)))]) {
+      const kw = group(scope, system, "keyword");
+      const q = group(scope, system, "question");
+      if (!kw || !q) continue;
+      const cell = (key: string) => (q.by_overlap[key] ? `${q.by_overlap[key].found}/${q.by_overlap[key].questions}` : "");
+      const first = run.timings.other[`${scope}/${system}/firstSearchMs`] as number | undefined;
+      lines.push(
+        `| ${scope.replace(/-chapters$/, "")} | ${names[system] ?? system} | ${kw.found}/${kw.questions} | ${cell("name")} | ${cell("none")} | ${fmt(kw.tokensMean)} (${fmt(q.tokensMean)}) | ${first === undefined ? "" : (first / 1000).toFixed(1)} |`,
+      );
+    }
+  }
+  return lines.join("\n");
+}
+
 interface TokenSummary {
   quickChatTokens: number;
   answerableLookups: number;
@@ -225,6 +255,7 @@ async function generate(spec: string): Promise<string> {
   if (kind === "retrieval-by") return breakdownTable(args[0], args[1], args[2]);
   if (kind === "books") return booksTable(args);
   if (kind === "tokens") return tokensTable(args);
+  if (kind === "needles") return needlesTable(args[0]);
   throw new Error(`unknown generated block: ${spec}`);
 }
 

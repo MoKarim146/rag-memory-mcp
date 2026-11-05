@@ -1,0 +1,43 @@
+{
+  "groups": {
+    "moby-chapters/current/needles/keyword/limit-5": {
+      "msMean": 7.1,
+      "msP95": 16.2
+    },
+    "moby-chapters/current/needles/question/limit-5": {
+      "msMean": 14.1,
+      "msP95": 25
+    },
+    "moby-chapters/current-ollama/needles/keyword/limit-5": {
+      "msMean": 65.4,
+      "msP95": 146.9
+    },
+    "moby-chapters/current-ollama/needles/question/limit-5": {
+      "msMean": 80.5,
+      "msP95": 226.9
+    },
+    "emma-chapters/current/needles/keyword/limit-5": {
+      "msMean": 4.7,
+      "msP95": 11
+    },
+    "emma-chapters/current/needles/question/limit-5": {
+      "msMean": 17.8,
+      "msP95": 40.7
+    },
+    "emma-chapters/current-ollama/needles/keyword/limit-5": {
+      "msMean": 53.4,
+      "msP95": 176.8
+    },
+    "emma-chapters/current-ollama/needles/question/limit-5": {
+      "msMean": 53.4,
+      "msP95": 135.4
+    }
+  },
+  "other": {
+    "moby-chapters/current/firstSearchMs": 434.1,
+    "moby-chapters/current-ollama/firstSearchMs": 74279.6,
+    "emma-chapters/current/firstSearchMs": 323.9,
+    "emma-chapters/current-ollama/firstSearchMs": 50661.1,
+    "minutes": 2.3
+  }
+}
