@@ -164,32 +164,42 @@ export function looksLikeInjection(text: string): boolean {
 // Secrets and personal data
 
 type Replacer = string | ((...groups: string[]) => string);
+// Words that introduce a secret value: "password: ...", "API_KEY=...". The value stops at a space, a quote
+// or the next such word, so "password: apassword: b" masks both values.
+const SECRET_KEYS =
+  "password|passwd|pwd|passphrase|secret|api[_-]?key|access[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|private[_-]?key|token";
 const SECRET_PATTERNS: [RegExp, Replacer][] = [
+  // "password: value" style first, matching the key word anywhere (DB_PASSWORD=..., mypassword: ...), so a
+  // token pattern below cannot swallow the key word and leave the value behind. Already-masked values are
+  // skipped, so cleaning twice gives the same result.
+  [
+    new RegExp(
+      `(${SECRET_KEYS})(\\s*[:=]\\s*)(["']?)(?!\\[secret removed\\])(?:(?!(?:${SECRET_KEYS})\\s*[:=])[^\\s"'\`]){6,}\\3`,
+      "gi",
+    ),
+    (_m, key, sep) => `${key}${sep}${SECRET_MASK}`,
+  ],
   [/-----BEGIN [A-Z0-9 ]*PRIVATE KEY(?: BLOCK)?-----[\s\S]*?(?:-----END [A-Z0-9 ]*PRIVATE KEY(?: BLOCK)?-----|$)/g, SECRET_MASK],
-  [/\bsk-(?:ant-|proj-)?[A-Za-z0-9_-]{20,}/g, SECRET_MASK], // OpenAI and Anthropic style keys
-  [/\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{30,}/g, SECRET_MASK], // GitHub tokens
-  [/\bgithub_pat_[A-Za-z0-9_]{20,}/g, SECRET_MASK],
-  [/\bglpat-[A-Za-z0-9_-]{20,}/g, SECRET_MASK], // GitLab
-  [/\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/g, SECRET_MASK], // AWS access key ids
-  [/\bxox[abposr]-[A-Za-z0-9-]{10,}/g, SECRET_MASK], // Slack tokens
+  [/(?<![A-Za-z])sk-(?:ant-|proj-)?[A-Za-z0-9_-]{20,}/g, SECRET_MASK], // OpenAI and Anthropic style keys
+  [/(?<![A-Za-z])(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{30,}/g, SECRET_MASK], // GitHub tokens
+  [/(?<![A-Za-z])github_pat_[A-Za-z0-9_]{20,}/g, SECRET_MASK],
+  [/(?<![A-Za-z])glpat-[A-Za-z0-9_-]{20,}/g, SECRET_MASK], // GitLab
+  [/(?<![A-Za-z])(?:AKIA|ASIA)[A-Z0-9]{16}(?![A-Za-z0-9])/g, SECRET_MASK], // AWS access key ids
+  [/(?<![A-Za-z])xox[abposr]-[A-Za-z0-9-]{10,}/g, SECRET_MASK], // Slack tokens
   [/https:\/\/hooks\.slack\.com\/services\/[A-Za-z0-9/_-]{20,}/g, SECRET_MASK], // Slack webhooks
   [/https:\/\/(?:discord|discordapp)\.com\/api\/webhooks\/\d+\/[A-Za-z0-9_-]{20,}/g, SECRET_MASK], // Discord webhooks
-  [/\b[rs]k_(?:live|test)_[A-Za-z0-9]{16,}/g, SECRET_MASK], // Stripe keys
-  [/\bAIza[0-9A-Za-z_-]{35}/g, SECRET_MASK], // Google API keys
-  [/\bya29\.[A-Za-z0-9_-]{20,}/g, SECRET_MASK], // Google OAuth access tokens
-  [/\bnpm_[A-Za-z0-9]{36}\b/g, SECRET_MASK], // npm tokens
-  [/\bpypi-[A-Za-z0-9_-]{50,}/g, SECRET_MASK], // PyPI tokens
-  [/\bhf_[A-Za-z0-9]{30,}\b/g, SECRET_MASK], // Hugging Face tokens
-  [/\bSG\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}/g, SECRET_MASK], // SendGrid keys
+  [/(?<![A-Za-z])[rs]k_(?:live|test)_[A-Za-z0-9]{16,}/g, SECRET_MASK], // Stripe keys
+  [/(?<![A-Za-z])AIza[0-9A-Za-z_-]{35}/g, SECRET_MASK], // Google API keys
+  [/(?<![A-Za-z])ya29\.[A-Za-z0-9_-]{20,}/g, SECRET_MASK], // Google OAuth access tokens
+  [/(?<![A-Za-z])npm_[A-Za-z0-9]{36}(?![A-Za-z0-9])/g, SECRET_MASK], // npm tokens
+  [/(?<![A-Za-z])pypi-[A-Za-z0-9_-]{50,}/g, SECRET_MASK], // PyPI tokens
+  [/(?<![A-Za-z])hf_[A-Za-z0-9]{30,}/g, SECRET_MASK], // Hugging Face tokens
+  [/(?<![A-Za-z])SG\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}/g, SECRET_MASK], // SendGrid keys
   [/\bSK[0-9a-fA-F]{32}\b/g, SECRET_MASK], // Twilio API keys
-  [/\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g, SECRET_MASK], // JSON web tokens
+  [/(?<![A-Za-z])eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g, SECRET_MASK], // JSON web tokens
   [/\b(AccountKey|SharedAccessKey|sig)=[A-Za-z0-9+/%]{20,}={0,2}/g, (_m, key) => `${key}=${SECRET_MASK}`], // Azure
   [/\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{16,}/g, (_m, kind) => `${kind} ${SECRET_MASK}`],
   [/\b([a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:)[^\s@/]+@/gi, (_m, prefix) => `${prefix}${SECRET_MASK}@`], // user:password@host
-  [
-    /\b(password|passwd|pwd|passphrase|secret|api[_-]?key|access[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|private[_-]?key|token)(\s*[:=]\s*)(["']?)[^\s"'`]{6,}\3/gi,
-    (_m, key, sep) => `${key}${sep}${SECRET_MASK}`,
-  ],
 ];
 
 const EMAIL = /\b[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(?:\.[A-Za-z0-9-]{1,63}){0,8}\.[A-Za-z]{2,24}\b/g;
@@ -308,7 +318,8 @@ export function findWriteProblem(text: string): WriteProblem | undefined {
     return { kind: "hidden", message: "contains invisible characters" };
   }
   INVISIBLE.lastIndex = 0;
-  if (/<!--/.test(text) || /%%[\s\S]*%%/.test(text) || MARKDOWN_COMMENT.test(text)) {
+  // A single %% is enough: Obsidian hides everything after an unclosed %%, including later notes.
+  if (/<!--/.test(text) || text.includes("%%") || MARKDOWN_COMMENT.test(text)) {
     MARKDOWN_COMMENT.lastIndex = 0;
     return { kind: "hidden", message: "contains a hidden comment" };
   }

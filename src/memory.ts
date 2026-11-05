@@ -659,13 +659,23 @@ async function listMarkdownFiles(config: MemoryConfig): Promise<NoteFileInfo[]> 
     if (depth > MAX_FOLDER_DEPTH) {
       return; // very deep folders are not walked (OWASP LLM06)
     }
-    const currentReal = await realpath(currentDir);
+    // Notes can be created, renamed or deleted while the vault is being walked (the owner is editing in
+    // Obsidian). Anything that disappears halfway is skipped instead of failing the whole search.
+    let currentReal: string;
+    let dir: Awaited<ReturnType<typeof opendir>>;
+    try {
+      currentReal = await realpath(currentDir);
+      dir = await opendir(currentDir);
+    } catch (error) {
+      if (isNotFoundError(error) || isNotDirectoryError(error)) return;
+      throw error;
+    }
     const relativeCurrent = path.relative(rootReal, currentReal);
     if (relativeCurrent.startsWith("..") || path.isAbsolute(relativeCurrent)) {
+      await dir.close().catch(() => undefined);
       return;
     }
 
-    const dir = await opendir(currentDir);
     for await (const entry of dir) {
       if (entry.name.startsWith(".")) {
         continue; // same rule as read_note: hidden folders and files are never listed
@@ -674,7 +684,13 @@ async function listMarkdownFiles(config: MemoryConfig): Promise<NoteFileInfo[]> 
         continue; // writes held for review are for the owner only
       }
       const absolute = path.join(currentDir, entry.name);
-      const stat = await lstat(absolute);
+      let stat: Awaited<ReturnType<typeof lstat>>;
+      try {
+        stat = await lstat(absolute);
+      } catch (error) {
+        if (isNotFoundError(error)) continue;
+        throw error;
+      }
       if (stat.isSymbolicLink()) {
         continue;
       }
@@ -753,4 +769,8 @@ function slugify(input: string): string {
 
 function isNotFoundError(error: unknown): boolean {
   return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+function isNotDirectoryError(error: unknown): boolean {
+  return error instanceof Error && "code" in error && error.code === "ENOTDIR";
 }
