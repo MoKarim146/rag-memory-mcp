@@ -1,0 +1,41 @@
+{
+  "about": "Realistic memory tasks for the token benchmark. Each lookup task has a keyword (what an agent types into a search tool), a natural question, and an answer: a short string that must appear in what the server returns for the task to count as answered. answer=null means the vault holds no answer. All notes are fake, see bench/fixture-vault/.",
+  "session_start": {
+    "id": "start",
+    "description": "Start of a session: load the shared context",
+    "answer": "partial refunds"
+  },
+  "lookups": [
+    { "id": "postgres", "keyword": "Postgres", "question": "Why did we choose SQLite instead of Postgres?", "answer": "Litestream" },
+    { "id": "rate-limit", "keyword": "rate limit", "question": "What is the PayLoop API rate limit?", "answer": "60 requests per minute" },
+    { "id": "timezone", "keyword": "timezone", "question": "What caused the pickup date bug around midnight and how was it fixed?", "answer": "Europe/London" },
+    { "id": "delivery-fee", "keyword": "delivery", "question": "How much does delivery cost when an order is under the free delivery threshold?", "answer": "£3.50" },
+    { "id": "contrast", "keyword": "contrast", "question": "What is the contrast ratio of the Add to basket button?", "answer": "3.1:1" },
+    { "id": "restart", "keyword": "restart", "question": "Which systemd service do we restart after a deploy?", "answer": "fernhill-api" },
+    { "id": "welsh-file", "keyword": "Welsh", "question": "Which file holds the Welsh translation strings?", "answer": "locales/cy.json" },
+    { "id": "csv-columns", "keyword": "CSV", "question": "What columns does the menu CSV file have?", "answer": "price_pence" },
+    { "id": "pause", "keyword": "subscription", "question": "How long can customers pause the sourdough subscription?", "answer": "four weeks" },
+    { "id": "secret-rotation", "keyword": "webhook secret", "question": "When must the PayLoop webhook secret be rotated next?", "answer": "1 December" },
+    { "id": "collect-window", "keyword": "click and collect", "question": "How long is the click and collect window?", "answer": "30 minutes" },
+    { "id": "queue", "keyword": "queue", "question": "What should I run when the job queue stalls?", "answer": "queue:drain" },
+    { "id": "brand-green", "keyword": "green", "question": "What is the hex code of the brand green colour?", "answer": "#2F5D3A" },
+    { "id": "load-test", "keyword": "load test", "question": "What was the p95 latency in the last load test?", "answer": "340 ms" },
+    { "id": "accounts", "keyword": "accounts", "question": "Do customers need an account to place an order?", "answer": "guest checkout" },
+    { "id": "smtp", "keyword": "SMTP", "question": "Which mail server sends order confirmation emails?", "answer": "smtp.fernhill.example" },
+    { "id": "regression", "keyword": "regression", "question": "How many blocking bugs did the first regression pass find?", "answer": "2 blocking" },
+    { "id": "restore", "keyword": "restore", "question": "How long did the backup restore drill take?", "answer": "4 minutes" },
+    { "id": "rollback", "keyword": "roll back", "question": "How do we undo a bad release?", "answer": "symlink" },
+    { "id": "launch-date", "keyword": "launch date", "question": "When is the Welsh launch?", "answer": "13 November" },
+    { "id": "missing-products", "keyword": "missing", "question": "What happens to products that are missing from the CSV import?", "answer": "never deleted" },
+    { "id": "cut-off", "keyword": "cut-off", "question": "What time do orders close?", "answer": "14:00" },
+    { "id": "translator", "keyword": "translator", "question": "Who translates our copy into Welsh?", "answer": "Gwen Morgan" },
+    { "id": "paraphrase-dropoff", "keyword": "checkout", "question": "What share of shoppers abandon the purchase?", "answer": "41 percent", "note": "Deliberately worded with different words than the note, to show where keyword search fails." },
+    { "id": "no-answer", "keyword": "kubernetes", "question": "What is the name of our Kubernetes cluster?", "answer": null }
+  ],
+  "writes": [
+    { "id": "add-decision", "tool": "add_decision", "arguments": { "decision": "Take a Litestream snapshot every 6 hours instead of every 24.", "reason": "The restore drill showed that replaying a full day of WAL is slower than we want." }, "expect_file": "02_DECISIONS.md", "expect_text": "every 6 hours" },
+    { "id": "add-task", "tool": "add_open_task", "arguments": { "task": "Add seasonal start and end dates to the menu CSV import", "priority": "medium", "project": "menu" }, "expect_file": "03_OPEN_TASKS.md", "expect_text": "seasonal start and end dates" },
+    { "id": "session-note", "tool": "append_session_note", "arguments": { "model_name": "Claude", "title": "Partial refunds API", "content": "Started the partial refunds endpoint. The admin screen sends a list of order_item ids; the API sums their prices in pence, checks the total against the remaining capture and calls POST /v2/payments/{id}/partial-refunds. Sandbox refunds only work on payments from yesterday, so the tests use a fixture payment dated the day before. Next: the item picker in the admin screen." }, "expect_file": "Sessions/2026-11-02_Claude.md", "expect_text": "item picker" },
+    { "id": "handoff", "tool": "update_handoff_summary", "read_first": "read_handoff_summary", "arguments": { "content": "# Model Handoff\n\nLast updated by Claude on 2 November 2026.\n\n## Where we are\n\n- Partial refunds API is in progress: the endpoint sums order_item prices and calls PayLoop. The admin item picker is not started.\n- The Welsh launch is still waiting on the translator (allergen labels and email templates, due 6 November). Launch date: 13 November.\n- The basket button contrast fix is merged.\n\n## Watch out for\n\n- PayLoop sandbox partial refunds only work on payments from a previous day.\n- Staging and production share the VPS. Restart only fernhill-api-staging when testing.\n\n## Suggested next steps\n\n1. Build the item picker for partial refunds.\n2. Rerun the load test after refunds land.\n3. Ask Leo about Saturday deliveries to CF5.\n" }, "expect_file": "04_MODEL_HANDOFF.md", "expect_text": "item picker" }
+  ]
+}

@@ -1,0 +1,25 @@
+# Open Tasks
+
+- [x] 2026-08-03 [high] (setup) Create the monorepo with apps/web and apps/api
+- [x] 2026-08-05 [high] (database) Set up Litestream replication to object storage
+- [x] 2026-08-07 [high] (payments) Get PayLoop sandbox credentials from Leo
+- [x] 2026-08-12 [medium] (orders) Store pickup dates as local date strings
+- [x] 2026-08-19 [high] (deploy) Write scripts/deploy.sh and the systemd unit
+- [x] 2026-08-26 [medium] (orders) Enforce the 14:00 order cut-off
+- [x] 2026-09-02 [medium] (delivery) Add postcode zone lookup
+- [x] 2026-09-09 [low] (content) Send checkout copy to the Welsh translator
+- [x] 2026-09-16 [low] (analytics) Install self-hosted analytics on the VPS
+- [x] 2026-09-23 [high] (accessibility) Run the accessibility audit on staging
+- [ ] 2026-09-23 [high] (accessibility) Fix basket button contrast (currently 3.1:1)
+- [ ] 2026-09-23 [medium] (accessibility) Add visible focus outlines to the date picker
+- [x] 2026-09-30 [high] (payments) Full refunds from the admin screen
+- [ ] 2026-09-30 [high] (payments) Partial refunds from the admin screen
+- [ ] 2026-10-01 [high] (payments) Rotate the PayLoop webhook secret before 1 December
+- [ ] 2026-10-07 [medium] (content) Get allergen labels translated into Welsh
+- [ ] 2026-10-07 [medium] (content) Get email templates translated into Welsh
+- [ ] 2026-10-14 [medium] (subscriptions) Write the data model for the sourdough subscription
+- [ ] 2026-10-14 [low] (delivery) Ask Leo about Saturday delivery to CF5
+- [ ] 2026-10-21 [medium] (ops) Rerun the load test after the refund work lands
+- [ ] 2026-10-21 [low] (ops) Document the queue drain command in the runbook
+- [x] 2026-10-21 [low] (ops) Add a disk space alert at 80 percent
+- [ ] 2026-10-28 [low] (menu) Support seasonal products with start and end dates in the CSV import

@@ -14,7 +14,8 @@
     "start": "node dist/index.js",
     "start:local": "./scripts/start.sh",
     "test": "./scripts/test.sh",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "bench": "tsx bench/run.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^24.10.1",
+    "js-tiktoken": "^1.0.21",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
