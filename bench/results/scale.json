@@ -12,152 +12,176 @@
       "vault": "fixture (32 notes)",
       "notes": 32,
       "megabytes": 0.03,
+      "pasteEverythingTokens": 6674,
       "baselineStartTokens": 2549,
       "baselineSearch": [
         {
-          "ms": 14.3,
+          "ms": 14.7,
           "tokens": 1228
         },
         {
-          "ms": 5.7,
+          "ms": 8.4,
           "tokens": 18
         },
         {
-          "ms": 5.4,
+          "ms": 6.7,
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1868,
-      "firstSearchMs": 47.6,
+      "baselineDefinitionTokens": 886,
+      "currentStartTokens": 1850,
+      "firstSearchMs": 32.1,
       "currentSearch": [
         {
+          "ms": 12.1,
+          "tokens": 285
+        },
+        {
+          "ms": 5.8,
+          "tokens": 284
+        },
+        {
           "ms": 4.6,
-          "tokens": 318
-        },
-        {
-          "ms": 4.1,
-          "tokens": 312
-        },
-        {
-          "ms": 3.1,
-          "tokens": 346
+          "tokens": 309
         }
       ],
-      "searchAfterOneEditMs": 2.8,
-      "rssGrowthMB": 8
+      "currentDefinitionTokens": 558,
+      "quickChatPasteEverything": 6674,
+      "quickChatOldServer": 4705,
+      "quickChatThisServer": 3286,
+      "searchAfterOneEditMs": 3.5,
+      "rssGrowthMB": 7
     },
     {
       "vault": "~500 notes, logs x5",
       "notes": 491,
       "megabytes": 0.33,
+      "pasteEverythingTokens": 90086,
       "baselineStartTokens": 7513,
       "baselineSearch": [
         {
-          "ms": 25.3,
+          "ms": 32.1,
           "tokens": 2751
         },
         {
-          "ms": 96.4,
+          "ms": 98.2,
           "tokens": 18
         },
         {
-          "ms": 120.9,
+          "ms": 115.7,
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1868,
-      "firstSearchMs": 441.6,
+      "baselineDefinitionTokens": 886,
+      "currentStartTokens": 1850,
+      "firstSearchMs": 351.2,
       "currentSearch": [
         {
-          "ms": 35.7,
-          "tokens": 394
+          "ms": 21.7,
+          "tokens": 239
         },
         {
-          "ms": 50.4,
-          "tokens": 347
+          "ms": 40.6,
+          "tokens": 341
         },
         {
-          "ms": 39.7,
-          "tokens": 511
+          "ms": 39,
+          "tokens": 357
         }
       ],
-      "searchAfterOneEditMs": 24.9,
-      "rssGrowthMB": 2
+      "currentDefinitionTokens": 558,
+      "quickChatPasteEverything": 90086,
+      "quickChatOldServer": 11192,
+      "quickChatThisServer": 3345,
+      "searchAfterOneEditMs": 27.7,
+      "rssGrowthMB": 3
     },
     {
       "vault": "~2,000 notes, logs x10",
       "notes": 1895,
       "megabytes": 1.24,
+      "pasteEverythingTokens": 336785,
       "baselineStartTokens": 13718,
       "baselineSearch": [
         {
-          "ms": 72.7,
+          "ms": 68.6,
           "tokens": 2575
         },
         {
-          "ms": 317.3,
+          "ms": 315.9,
           "tokens": 18
         },
         {
-          "ms": 299.2,
+          "ms": 322.7,
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1868,
-      "firstSearchMs": 1270.1,
+      "baselineDefinitionTokens": 886,
+      "currentStartTokens": 1850,
+      "firstSearchMs": 1257.9,
       "currentSearch": [
         {
-          "ms": 74,
-          "tokens": 394
+          "ms": 70.2,
+          "tokens": 122
         },
         {
-          "ms": 90.5,
-          "tokens": 293
+          "ms": 83,
+          "tokens": 197
         },
         {
-          "ms": 99.2,
-          "tokens": 511
+          "ms": 96.8,
+          "tokens": 257
         }
       ],
-      "searchAfterOneEditMs": 67.6,
-      "rssGrowthMB": 7
+      "currentDefinitionTokens": 558,
+      "quickChatPasteEverything": 336785,
+      "quickChatOldServer": 17221,
+      "quickChatThisServer": 2984,
+      "searchAfterOneEditMs": 67.7,
+      "rssGrowthMB": 8
     },
     {
       "vault": "~5,000 notes, logs x20",
       "notes": 4730,
       "megabytes": 3.06,
+      "pasteEverythingTokens": 834815,
       "baselineStartTokens": 26128,
       "baselineSearch": [
         {
-          "ms": 153.2,
+          "ms": 146.6,
           "tokens": 2335
         },
         {
-          "ms": 842.5,
+          "ms": 682.3,
           "tokens": 18
         },
         {
-          "ms": 734.2,
+          "ms": 697.9,
           "tokens": 24
         }
       ],
-      "currentStartTokens": 1868,
-      "firstSearchMs": 2984.1,
+      "baselineDefinitionTokens": 886,
+      "currentStartTokens": 1850,
+      "firstSearchMs": 3059.3,
       "currentSearch": [
         {
-          "ms": 158,
-          "tokens": 394
+          "ms": 231.3,
+          "tokens": 177
         },
         {
-          "ms": 195.2,
-          "tokens": 293
+          "ms": 180.4,
+          "tokens": 197
         },
         {
-          "ms": 201.6,
-          "tokens": 511
+          "ms": 173.4,
+          "tokens": 222
         }
       ],
-      "searchAfterOneEditMs": 172.8,
+      "currentDefinitionTokens": 558,
+      "quickChatPasteEverything": 834815,
+      "quickChatOldServer": 29391,
+      "quickChatThisServer": 3004,
+      "searchAfterOneEditMs": 161.2,
       "rssGrowthMB": 29
     }
   ]
