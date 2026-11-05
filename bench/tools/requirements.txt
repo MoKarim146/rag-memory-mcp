@@ -1,0 +1,4 @@
+# For bench/tools/ollama_compatible.py only (benchmarks without Ollama). The server itself needs no Python.
+onnxruntime==1.31.1
+tokenizers==0.23.3
+numpy==2.5.4

@@ -697,15 +697,21 @@ const indexes = new Map<string, MemoryIndex>();
 // One shared index per vault and indexing policy, reused by every MCP session with that policy. Everything that
 // changes what goes into the index is part of the key: a session that masks email addresses must never be served
 // text indexed by a session that does not. Indexes live as long as the process; there is one per distinct policy.
-export function getMemoryIndex(config: MemoryConfig): MemoryIndex {
+function indexKey(config: MemoryConfig): string {
   const embedding = config.embeddings ?? { provider: "none" as const };
-  const key = JSON.stringify([
-    config.rootDir,
-    embedding,
-    config.maskEmails !== false,
-    config.maskPhones !== false,
-    config.maxNotes ?? 20_000,
-  ]);
+  return JSON.stringify([config.rootDir, embedding, config.maskEmails !== false, config.maskPhones !== false, config.maxNotes ?? 20_000]);
+}
+
+// Closes and forgets the shared index for this vault and policy (used by benchmarks that build many vaults).
+// A session that still holds it must not search again; the next getMemoryIndex call builds a new one.
+export function closeMemoryIndex(config: MemoryConfig): void {
+  const key = indexKey(config);
+  indexes.get(key)?.close();
+  indexes.delete(key);
+}
+
+export function getMemoryIndex(config: MemoryConfig): MemoryIndex {
+  const key = indexKey(config);
   let index = indexes.get(key);
   if (!index) {
     index = new MemoryIndex(config, config.embeddings ? createEmbedder(config.embeddings) : undefined);

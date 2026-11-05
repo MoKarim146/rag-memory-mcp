@@ -23,6 +23,7 @@ import { constants, createBrotliCompress, createBrotliDecompress, type BrotliCom
 
 export interface Retrieved {
   rank: number; // 1-based place in what the tool returned
+  doc?: string; // retrieval datasets: the dataset's own document id
   chunk: string; // stable id: "path#section" for this server, "path:line" for the old server
   path: string;
   heading?: string;
@@ -36,11 +37,15 @@ export interface Retrieved {
 }
 
 export interface QueryRecord {
+  kind?: "answer" | "retrieval"; // "answer" (default): a short answer must appear; "retrieval": relevant documents
+  k?: number; // retrieval: the number of results asked for
   group: string;
   id: string;
   query: string;
   gold: {
-    answers: string[];
+    answers?: string[];
+    relevant?: Record<string, number>; // retrieval datasets: document id -> relevance grade
+    evidenceTurns?: string[]; // LongMemEval has_answer turns
     evidence?: string[]; // answer with its neighbouring words in the source
     chunk?: string; // the note that holds the answer
     book?: string; // for book-level questions
@@ -49,17 +54,11 @@ export interface QueryRecord {
   tags: Record<string, string>;
   output: string; // the whole tool answer the AI received
   retrieved: Retrieved[];
-  correct: {
-    found: boolean;
-    evidence: boolean | null;
-    goldListed: boolean | null;
-    rank: number; // first result containing an answer, 0 if none
-    topRightBook: boolean | null;
-    rightBookShare: number | null;
-  };
+  correct: Record<string, number | boolean | null>; // bench/lib/scoring.ts judge() or judgeRetrieval()
   tokens: number; // tokens of the whole tool answer (o200k_base)
   ms: number; // time of the tool call
   error: string | null;
+  indexMs?: number; // time to build this query's own index, for datasets with one corpus per query
 }
 
 // Each result's text, exactly as the AI was shown it.
@@ -84,9 +83,34 @@ function percentile(values: number[], p: number): number {
 
 // Quality numbers for a list of records. Used both when a run is written and when it is verified, so the two
 // can only differ if the records changed.
+const mean = (values: (number | null | undefined)[]) => {
+  const xs = values.filter((v): v is number => typeof v === "number");
+  return xs.length ? Math.round((1000 * xs.reduce((s, x) => s + x, 0)) / xs.length) / 1000 : null;
+};
+
 export function quality(records: QueryRecord[]) {
+  if (records.some((r) => r.kind === "retrieval")) {
+    const n = records.length;
+    const share = (key: string) => {
+      const xs = records.map((r) => r.correct[key]).filter((v) => typeof v === "boolean");
+      return xs.length ? pct(xs.filter(Boolean).length, xs.length) : null;
+    };
+    return {
+      questions: n,
+      errors: records.filter((r) => r.error !== null).length,
+      recallAt5: mean(records.map((r) => r.correct.recallAt5 as number | null)),
+      recallAt10: mean(records.map((r) => r.correct.recallAt10 as number | null)),
+      ndcgAt10: mean(records.map((r) => r.correct.ndcgAt10 as number | null)),
+      mrr: mean(records.map((r) => r.correct.reciprocalRank as number | null)),
+      answerPresentPct: share("answerPresent"),
+      evidenceShownPct: share("evidenceShown"),
+      tokensMean: Math.round(records.reduce((s, r) => s + r.tokens, 0) / Math.max(1, n)),
+      tokensMedian: percentile(records.map((r) => r.tokens), 50),
+      tokensP90: percentile(records.map((r) => r.tokens), 90),
+    };
+  }
   const n = records.length;
-  const count = (f: (r: QueryRecord) => boolean | null) => records.filter((r) => f(r) === true).length;
+  const count = (f: (r: QueryRecord) => unknown) => records.filter((r) => f(r) === true).length;
   const has = (f: (r: QueryRecord) => unknown) => records.some((r) => f(r) !== null);
   return {
     questions: n,
@@ -97,9 +121,9 @@ export function quality(records: QueryRecord[]) {
     goldListedPct: has((r) => r.correct.goldListed) ? pct(count((r) => r.correct.goldListed), n) : null,
     topRightBookPct: has((r) => r.correct.topRightBook) ? pct(count((r) => r.correct.topRightBook), n) : null,
     rightBookSharePct: has((r) => r.correct.rightBookShare)
-      ? round1((100 * records.reduce((s, r) => s + (r.correct.rightBookShare ?? 0), 0)) / n)
+      ? round1((100 * records.reduce((s, r) => s + ((r.correct.rightBookShare as number | null) ?? 0), 0)) / n)
       : null,
-    mrr: Math.round((1000 * records.reduce((s, r) => s + (r.correct.rank ? 1 / r.correct.rank : 0), 0)) / Math.max(1, n)) / 1000,
+    mrr: Math.round((1000 * records.reduce((s, r) => s + (r.correct.rank ? 1 / (r.correct.rank as number) : 0), 0)) / Math.max(1, n)) / 1000,
     tokensMean: Math.round(records.reduce((s, r) => s + r.tokens, 0) / Math.max(1, n)),
     tokensMedian: percentile(records.map((r) => r.tokens), 50),
     tokensP90: percentile(records.map((r) => r.tokens), 90),
@@ -108,7 +132,12 @@ export function quality(records: QueryRecord[]) {
 
 export function timings(records: QueryRecord[]) {
   const ms = records.map((r) => r.ms);
-  return { msMean: round1(ms.reduce((s, x) => s + x, 0) / Math.max(1, ms.length)), msP95: round1(percentile(ms, 95)) };
+  const index = records.map((r) => r.indexMs).filter((x): x is number => typeof x === "number");
+  return {
+    msMean: round1(ms.reduce((s, x) => s + x, 0) / Math.max(1, ms.length)),
+    msP95: round1(percentile(ms, 95)),
+    ...(index.length ? { indexMsMean: round1(index.reduce((s, x) => s + x, 0) / index.length), indexMsP95: round1(percentile(index, 95)) } : {}),
+  };
 }
 
 export function qualityBy(records: QueryRecord[], tag: string) {

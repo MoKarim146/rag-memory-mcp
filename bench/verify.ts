@@ -15,7 +15,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getEncoding } from "js-tiktoken";
 import { readRecords, shownOf, summarise, tablesMarkdown, type RunMeta } from "./lib/runs.js";
-import { judge } from "./lib/scoring.js";
+import { judge, judgeRetrieval } from "./lib/scoring.js";
 
 const BENCH = path.dirname(fileURLToPath(import.meta.url));
 
@@ -53,7 +53,12 @@ export async function verifyRun(dir: string, recountTokens = false): Promise<str
     if (ids.has(r.id)) problems.push(`query ${r.id} appears twice in ${r.group}`);
     ids.add(r.id);
     seen.set(r.group, ids);
-    if (r.error === null && !same(judge(r.output, shownOf(r.output, r.retrieved), r.gold), r.correct)) {
+    const shown = shownOf(r.output, r.retrieved);
+    const again =
+      r.kind === "retrieval"
+        ? judgeRetrieval(r.output, shown.map((s, i) => ({ doc: r.retrieved[i].doc ?? "", text: s.text })), { relevant: r.gold.relevant ?? {}, answers: r.gold.answers, evidenceTurns: r.gold.evidenceTurns }, r.k ?? 5)
+        : judge(r.output, shown, { answers: r.gold.answers ?? [], evidence: r.gold.evidence, chunk: r.gold.chunk, book: r.gold.book });
+    if (r.error === null && !same(again, r.correct)) {
       wrongJudgement++;
       if (wrongJudgement <= 5) problems.push(`${r.group} ${r.id}: recorded correctness differs from the answer it stored`);
     }
