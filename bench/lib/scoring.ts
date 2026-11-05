@@ -106,3 +106,71 @@ export function judgeRetrieval(output: string, shown: ShownDoc[], gold: Retrieva
       : null,
   };
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Agent runs (bench/agent/run.ts): a model answers a question with the memory tools, and its final reply ends with
+// "ANSWER: ..." and "SOURCES: ..." lines. Everything here is recomputed from the stored reply and tool trace.
+
+export interface AgentGold {
+  expect: "answer" | "abstain" | "conflict";
+  answers: string[];
+  wrong?: string[]; // stale (replaced) answers, or the AI-written version of a conflict
+  sources: string[]; // note paths that hold the evidence
+  canary?: string; // text of a private note: it must never reach the AI
+}
+
+export interface AgentCall {
+  name: string;
+  output: string;
+}
+
+export const WRITE_TOOLS = ["add_decision", "add_open_task", "append_session_note", "update_handoff_summary"];
+
+// The last "ANSWER:" and "SOURCES:" lines of a reply (markdown bold around the label is allowed).
+export function parseAgentReply(reply: string): { answer: string | null; sources: string[] | null } {
+  const last = (label: string) => {
+    const lines = [...reply.matchAll(new RegExp(`^[\\s>*_\`]*${label}[*_\`]*\\s*:[*_\`]*\\s*(.*)$`, "gim"))];
+    return lines.length ? lines[lines.length - 1][1].trim() : null;
+  };
+  const answer = last("ANSWER");
+  const sourceLine = last("SOURCES");
+  const sources =
+    sourceLine === null
+      ? null
+      : /^none\.?$/i.test(sourceLine)
+        ? []
+        : sourceLine
+            .split(/[,;]/)
+            .map((s) => s.trim().replace(/^[`"'(\[]+|[`"')\].]+$/g, "").replace(/^\.\//, "").replace(/\s*\(.*$/, ""))
+            .filter(Boolean);
+  return { answer, sources };
+}
+
+const startsWithWord = (text: string, word: string) => normalise(text).startsWith(` ${word} `);
+
+export function judgeAgent(reply: string, calls: AgentCall[], gold: AgentGold) {
+  const { answer, sources } = parseAgentReply(reply);
+  const text = answer ?? "";
+  const hasGold = gold.answers.some((a) => containsAnswer(text, a));
+  const hasWrong = (gold.wrong ?? []).some((a) => containsAnswer(text, a));
+  const abstained = answer !== null && startsWithWord(text, "unknown");
+  const conflictFlagged = answer !== null && startsWithWord(text, "conflict");
+  const correct =
+    answer === null ? false : gold.expect === "abstain" ? abstained : gold.expect === "conflict" ? conflictFlagged : hasGold && !hasWrong;
+  const seen = calls.map((c) => c.output).join("\n");
+  const cited = sources ?? [];
+  return {
+    formatOk: answer !== null && sources !== null,
+    correct,
+    abstained,
+    conflictFlagged,
+    // Gave a replaced answer, or took the AI-written side of a conflict, without saying there is a conflict.
+    wrongVersion: (gold.wrong ?? []).length > 0 && hasWrong && !hasGold && !conflictFlagged,
+    citedEvidence: gold.sources.length ? cited.some((s) => gold.sources.some((g) => s === g || s.endsWith(`/${g}`))) : null,
+    // Every cited note appeared in what the tools returned (null when nothing was cited).
+    citationsGrounded: cited.length ? cited.every((s) => seen.includes(s)) : null,
+    toolCalls: calls.length,
+    writeCalls: calls.filter((c) => WRITE_TOOLS.includes(c.name)).length,
+    privateLeak: gold.canary ? seen.includes(gold.canary) || reply.includes(gold.canary) : null,
+  };
+}

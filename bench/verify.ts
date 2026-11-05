@@ -14,8 +14,8 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getEncoding } from "js-tiktoken";
-import { readRecords, shownOf, summarise, tablesMarkdown, type RunMeta } from "./lib/runs.js";
-import { judge, judgeRetrieval } from "./lib/scoring.js";
+import { agentCalls, readRecords, shownOf, summarise, tablesMarkdown, type RunMeta } from "./lib/runs.js";
+import { judge, judgeAgent, judgeRetrieval } from "./lib/scoring.js";
 
 const BENCH = path.dirname(fileURLToPath(import.meta.url));
 
@@ -55,14 +55,20 @@ export async function verifyRun(dir: string, recountTokens = false): Promise<str
     seen.set(r.group, ids);
     const shown = shownOf(r.output, r.retrieved);
     const again =
-      r.kind === "retrieval"
+      r.kind === "agent"
+        ? judgeAgent(r.output, agentCalls(r), { expect: r.gold.expect ?? "answer", answers: r.gold.answers ?? [], wrong: r.gold.wrong, sources: r.gold.sources ?? [], canary: r.gold.canary })
+        : r.kind === "retrieval"
         ? judgeRetrieval(r.output, shown.map((s, i) => ({ doc: r.retrieved[i].doc ?? "", text: s.text })), { relevant: r.gold.relevant ?? {}, answers: r.gold.answers, evidenceTurns: r.gold.evidenceTurns, distractors: r.gold.distractors }, r.k ?? 5)
         : judge(r.output, shown, { answers: r.gold.answers ?? [], evidence: r.gold.evidence, chunk: r.gold.chunk, book: r.gold.book });
     if (r.error === null && !same(again, r.correct)) {
       wrongJudgement++;
       if (wrongJudgement <= 5) problems.push(`${r.group} ${r.id}: recorded correctness differs from the answer it stored`);
     }
-    if (encoder && encoder.encode(r.output).length !== r.tokens) wrongTokens++;
+    // Agent records count what the memory tools returned; the others count the whole tool answer.
+    if (encoder) {
+      const counted = r.kind === "agent" ? agentCalls(r).reduce((sum, c) => sum + encoder.encode(c.output).length, 0) : encoder.encode(r.output).length;
+      if (counted !== r.tokens) wrongTokens++;
+    }
   }
   if (wrongJudgement > 5) problems.push(`... ${wrongJudgement} records in total with differing correctness`);
   if (wrongTokens) problems.push(`${wrongTokens} records whose token count differs from a recount`);

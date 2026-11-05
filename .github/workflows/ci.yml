@@ -22,4 +22,6 @@ jobs:
       # benchmark run recomputed from its per-query records. Timings are never compared.
       - run: npm run bench:smoke
       - run: npm run bench:verify
+      # The optional agent evaluation's plumbing, with a scripted stand-in for the model: nothing is sent anywhere.
+      - run: npm run bench:agent:dry
       - run: npm audit --omit=dev --audit-level=high

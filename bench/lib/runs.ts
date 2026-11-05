@@ -36,8 +36,19 @@ export interface Retrieved {
   vectorPassage?: number | null;
 }
 
+// Agent runs (bench/agent/run.ts): one model request and the tool calls it asked for.
+export interface AgentTurn {
+  model: string; // the model that answered, as the API reported it
+  stopReason: string | null;
+  // Billed usage, as the API reported it for this request.
+  usage: { input: number; output: number; cacheWrite: number; cacheRead: number; thinking: number | null };
+  blocks: { type: string; text?: string; chars?: number }[]; // text in full; thinking only by its length
+  toolCalls: { id: string; name: string; input: unknown; output: string; isError: boolean; ms: number; refused?: string }[];
+  ms: number;
+}
+
 export interface QueryRecord {
-  kind?: "answer" | "retrieval"; // "answer" (default): a short answer must appear; "retrieval": relevant documents
+  kind?: "answer" | "retrieval" | "agent"; // "answer" (default): a short answer must appear; "retrieval": relevant documents; "agent": a model's reply
   k?: number; // retrieval: the number of results asked for
   group: string;
   id: string;
@@ -51,6 +62,10 @@ export interface QueryRecord {
     chunk?: string; // the note that holds the answer
     book?: string; // for book-level questions
     pasteTokenEnd?: number; // token count, in paste order, at the end of the paragraph that holds the answer
+    expect?: "answer" | "abstain" | "conflict"; // agent runs: what a right reply does
+    wrong?: string[]; // agent runs: stale answers, or the AI-written side of a conflict
+    sources?: string[]; // agent runs: notes that hold the evidence
+    canary?: string; // agent runs: private text that must never reach the AI
   };
   tags: Record<string, string>;
   output: string; // the whole tool answer the AI received
@@ -61,7 +76,15 @@ export interface QueryRecord {
   error: string | null;
   vectorStatus?: "off" | "ok" | "not-ready" | "failed"; // this server: whether vectors were used; "failed" = keywords only
   indexMs?: number; // time to build this query's own index, for datasets with one corpus per query
+  // Agent runs. `output` is the model's final reply, `tokens` the o200k_base tokens of everything the memory tools
+  // returned (an estimate of the context they used, not billed usage), `ms` the whole conversation.
+  repeat?: number;
+  trace?: AgentTurn[];
+  stop?: "answered" | "tool-budget" | "request-limit" | "refusal" | "max-tokens" | "error" | "not-run";
 }
+
+// The tool calls of an agent record, in order.
+export const agentCalls = (r: QueryRecord) => (r.trace ?? []).flatMap((t) => t.toolCalls);
 
 // Each result's text, exactly as the AI was shown it.
 export function shownOf(output: string, retrieved: Retrieved[]): { path: string; text: string }[] {
@@ -90,7 +113,48 @@ const mean = (values: (number | null | undefined)[]) => {
   return xs.length ? Math.round((1000 * xs.reduce((s, x) => s + x, 0)) / xs.length) / 1000 : null;
 };
 
+// Agent runs: shares of conversations, and billed usage per conversation. A question is "consistent" when all its
+// repeats were judged the same way (all right or all wrong).
+function agentQuality(records: QueryRecord[]) {
+  const n = records.length;
+  const ran = records.filter((r) => r.stop !== "not-run");
+  const share = (rs: QueryRecord[], f: (r: QueryRecord) => unknown) => (rs.length ? pct(rs.filter((r) => f(r) === true).length, rs.length) : null);
+  const sum = (f: (r: QueryRecord) => number) => records.reduce((s, r) => s + f(r), 0);
+  const usage = (key: "input" | "output" | "cacheWrite" | "cacheRead") => Math.round(sum((r) => (r.trace ?? []).reduce((s, t) => s + t.usage[key], 0)) / Math.max(1, ran.length));
+  const byQuestion = new Map<string, boolean[]>();
+  for (const r of ran) byQuestion.set(r.id.replace(/#r\d+$/, ""), [...(byQuestion.get(r.id.replace(/#r\d+$/, "")) ?? []), r.correct.correct === true]);
+  const multi = [...byQuestion.values()].filter((v) => v.length > 1);
+  const stops: Record<string, number> = {};
+  for (const r of records) stops[r.stop ?? "answered"] = (stops[r.stop ?? "answered"] ?? 0) + 1;
+  const of = (expect: string) => ran.filter((r) => r.gold.expect === expect);
+  return {
+    conversations: n,
+    errors: records.filter((r) => r.error !== null).length,
+    stops: Object.fromEntries(Object.entries(stops).sort(([a], [b]) => (a < b ? -1 : 1))),
+    correctPct: share(ran, (r) => r.correct.correct),
+    formatOkPct: share(ran, (r) => r.correct.formatOk),
+    answeredCorrectPct: share(of("answer"), (r) => r.correct.correct),
+    falseAbstentionPct: share(of("answer"), (r) => r.correct.abstained),
+    abstainedCorrectPct: share(of("abstain"), (r) => r.correct.correct),
+    conflictFlaggedPct: share(of("conflict"), (r) => r.correct.correct),
+    wrongVersion: ran.filter((r) => r.correct.wrongVersion === true).length,
+    citedEvidencePct: share(ran.filter((r) => r.correct.citedEvidence !== null), (r) => r.correct.citedEvidence),
+    citationsGroundedPct: share(ran.filter((r) => r.correct.citationsGrounded !== null), (r) => r.correct.citationsGrounded),
+    writeCalls: sum((r) => (r.correct.writeCalls as number | undefined) ?? 0),
+    privateLeaks: ran.filter((r) => r.correct.privateLeak === true).length,
+    consistentPct: multi.length ? pct(multi.filter((v) => v.every((x) => x === v[0])).length, multi.length) : null,
+    toolCallsMean: round1(sum((r) => (r.correct.toolCalls as number | undefined) ?? 0) / Math.max(1, ran.length)),
+    requestsMean: round1(sum((r) => (r.trace ?? []).length) / Math.max(1, ran.length)),
+    billedInputMean: usage("input"),
+    billedCacheWriteMean: usage("cacheWrite"),
+    billedCacheReadMean: usage("cacheRead"),
+    billedOutputMean: usage("output"),
+    toolResultTokensMean: Math.round(sum((r) => r.tokens) / Math.max(1, ran.length)),
+  };
+}
+
 export function quality(records: QueryRecord[]) {
+  if (records.some((r) => r.kind === "agent")) return agentQuality(records);
   if (records.some((r) => r.kind === "retrieval")) {
     const n = records.length;
     const share = (key: string) => {
@@ -158,6 +222,7 @@ export function qualityBy(records: QueryRecord[], tag: string) {
       .map(([key, rs]) => {
         const q = quality(rs) as Record<string, unknown>;
         // Retrieval records break down by their retrieval measures; answer records by found and evidence.
+        if (rs.some((r) => r.kind === "agent")) return [key, { conversations: q.conversations, correctPct: q.correctPct, wrongVersion: q.wrongVersion, writeCalls: q.writeCalls }];
         return rs.some((r) => r.kind === "retrieval")
           ? [key, { questions: q.questions, recallAt5: q.recallAt5, mrr: q.mrr, evidenceShownPct: q.evidenceShownPct, distractorFirstPct: q.distractorFirstPct }]
           : [key, { questions: q.questions, found: q.found, foundPct: q.foundPct, evidencePct: q.evidencePct }];
@@ -196,6 +261,27 @@ export function summarise(plan: (GroupPlan & GroupSpec)[], records: QueryRecord[
 }
 
 export function tablesMarkdown(meta: RunMeta, summary: Record<string, Record<string, unknown>>, times: Record<string, Record<string, unknown>>): string {
+  const show = (v: unknown) => (v === null || v === undefined ? "" : String(v));
+  const pc = (v: unknown) => (v === null || v === undefined ? "" : `${v}%`);
+  if (meta.benchmark.startsWith("agent")) {
+    const lines = [
+      `# ${meta.benchmark} run ${meta.runId}`,
+      "",
+      `Generated from queries.jsonl.br by bench/lib/runs.ts. Commit ${meta.git.commit}${meta.git.dirty ? " with uncommitted changes" : ""}.`,
+      "Billed tokens are the API's usage per conversation; tool-result tokens are an o200k_base estimate of what the memory tools returned.",
+      "",
+      "| Group | Conversations | Errors | Correct | Answered right | Abstained right | Conflict flagged | Wrong version | Cited evidence | Citations grounded | Writes | Private leaks | Consistent | Tool calls | Billed input | Billed cache read | Billed output | Tool-result tokens | ms mean |",
+      "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ];
+    for (const group of meta.plan) {
+      const s = summary[group.name] ?? {};
+      const t = times[group.name] ?? {};
+      lines.push(
+        `| ${group.name} | ${show(s.conversations)} | ${show(s.errors)} | ${pc(s.correctPct)} | ${pc(s.answeredCorrectPct)} | ${pc(s.abstainedCorrectPct)} | ${pc(s.conflictFlaggedPct)} | ${show(s.wrongVersion)} | ${pc(s.citedEvidencePct)} | ${pc(s.citationsGroundedPct)} | ${show(s.writeCalls)} | ${show(s.privateLeaks)} | ${pc(s.consistentPct)} | ${show(s.toolCallsMean)} | ${show(s.billedInputMean)} | ${show(s.billedCacheReadMean)} | ${show(s.billedOutputMean)} | ${show(s.toolResultTokensMean)} | ${show(t.msMean)} |`,
+      );
+    }
+    return `${lines.join("\n")}\n`;
+  }
   const lines = [
     `# ${meta.benchmark} run ${meta.runId}`,
     "",
@@ -204,7 +290,6 @@ export function tablesMarkdown(meta: RunMeta, summary: Record<string, Record<str
     "| Group | Questions | Errors | Answer found | With context | Note listed | MRR | Tokens mean | Tokens p90 | ms mean | ms p95 |",
     "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
   ];
-  const show = (v: unknown) => (v === null || v === undefined ? "" : String(v));
   for (const group of meta.plan) {
     const s = summary[group.name] ?? {};
     const t = times[group.name] ?? {};
