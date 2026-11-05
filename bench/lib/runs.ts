@@ -238,18 +238,13 @@ export function environment(root: string): Record<string, unknown> {
 export class RunWriter {
   readonly dir: string;
   readonly meta: RunMeta;
+  // Records are kept in memory and compressed only when the run finishes: compressing while searches are timed
+  // would compete with them for the CPU (reference runs are pinned to one core) and inflate the timings.
   private readonly records: QueryRecord[] = [];
-  // Brotli at its highest level with a 16 MB window: answers repeat across groups, and the records are committed
-  // to the repository (about 3 times smaller than gzip on this data).
-  private readonly gzip: BrotliCompress;
-  private readonly file: WriteStream;
 
   private constructor(dir: string, meta: RunMeta) {
     this.dir = dir;
     this.meta = meta;
-    this.gzip = createBrotliCompress({ params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_LGWIN]: 24 } });
-    this.file = createWriteStream(path.join(dir, "queries.jsonl.br"));
-    this.gzip.pipe(this.file);
   }
 
   static async start(root: string, base: string, benchmark: string, fields: Omit<RunMeta, "benchmark" | "runId" | "startedAt" | "git" | "environment">) {
@@ -265,7 +260,6 @@ export class RunWriter {
 
   record(r: QueryRecord): void {
     this.records.push(r);
-    this.gzip.write(`${JSON.stringify(r)}\n`);
   }
 
   // facts: deterministic numbers about the inputs. timingFacts: measured times that are not per query (cold
@@ -274,9 +268,15 @@ export class RunWriter {
     facts: Record<string, unknown> = {},
     timingFacts: Record<string, unknown> = {},
   ): Promise<{ summary: Record<string, unknown>; times: Record<string, unknown> }> {
+    // Brotli at its highest level with a 16 MB window: answers repeat across groups, and the records are committed
+    // to the repository (about 3 times smaller than gzip on this data).
+    const brotli: BrotliCompress = createBrotliCompress({ params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_LGWIN]: 24 } });
+    const file: WriteStream = createWriteStream(path.join(this.dir, "queries.jsonl.br"));
+    brotli.pipe(file);
     await new Promise<void>((resolve, reject) => {
-      this.file.on("finish", resolve).on("error", reject);
-      this.gzip.end();
+      file.on("finish", resolve).on("error", reject);
+      for (const r of this.records) brotli.write(`${JSON.stringify(r)}\n`);
+      brotli.end();
     });
     this.meta.finishedAt = new Date().toISOString();
     this.meta.facts = facts;
