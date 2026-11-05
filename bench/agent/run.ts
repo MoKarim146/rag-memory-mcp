@@ -1,5 +1,5 @@
 // Optional end-to-end evaluation: a Claude model answers fixed questions about the made-up notes in
-// bench/agent/vault through this server's MCP tools, and every request, tool call, reply and billed usage is saved
+// bench/agent/test-vault through this server's MCP tools, and every request, tool call, reply and billed usage is saved
 // as a run folder (bench/lib/runs.ts) that `npm run bench:verify` can recheck without calling the model again.
 //
 //   npm run bench:agent:dry                          free: a scripted stand-in for the model, nothing is sent
@@ -19,7 +19,7 @@
 // the questions not run are saved as "not-run" errors, so the run is visibly incomplete. Without credentials or
 // without --budget-usd it sends nothing, prints UNRUN and exits with status 0.
 //
-// Only the test notes in bench/agent/vault are sent to the API: there is no option to point it at another folder.
+// Only the test notes in bench/agent/test-vault are sent to the API: there is no option to point it at another folder.
 // Every conversation gets a fresh copy of them, so a write by one conversation cannot affect the next.
 import { createHash } from "node:crypto";
 import { cp, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
@@ -39,7 +39,7 @@ import { verifyRun } from "../verify.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..", "..");
-const VAULT = path.join(HERE, "vault");
+const VAULT = path.join(HERE, "test-vault");
 
 // List prices in US dollars per million tokens (Anthropic API, as given in the claude-api reference cached on
 // 2026-10-06), used only to stop a paid run at its budget. Where a rate was not given, a higher one is used, so the
@@ -338,7 +338,7 @@ async function main(): Promise<void> {
     },
     data: {
       questions: { file: "bench/agent/questions.json", version: set.version, sha256: sha256(await readFile(path.join(HERE, "questions.json"))), ids: questions.map((q) => q.id) },
-      notes: { folder: "bench/agent/vault", treeSha256: await treeHash(VAULT), license: "made up for this repository (MIT)" },
+      notes: { folder: "bench/agent/test-vault", treeSha256: await treeHash(VAULT), license: "made up for this repository (MIT)" },
     },
     plan: [{ name: group, queries: conversations, about: { model: settings.model, repeats: settings.repeats }, breakdowns: ["case"] }],
   });

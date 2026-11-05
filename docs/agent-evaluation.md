@@ -29,7 +29,7 @@ Without either, the command sends nothing, prints `UNRUN` and exits with status 
 3 times on `claude-opus-5-5`, saves the run under `bench/runs/agent/`, and verifies it. Other options (model, repeats,
 effort, limits): the comment at the top of `bench/agent/run.ts`.
 
-**What is sent:** only the made-up notes in `bench/agent/vault/` (copied fresh for each conversation), the questions,
+**What is sent:** only the made-up notes in `bench/agent/test-vault/` (copied fresh for each conversation), the questions,
 the skill text and the tool definitions. There is no option to point the harness at another folder.
 
 ## What is fixed

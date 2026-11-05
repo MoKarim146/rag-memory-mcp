@@ -16,6 +16,7 @@
 // RAG_EVAL_MODEL_NOTE to describe what served the model; it is saved in meta.json.
 //
 // Queries are the dataset's own text, unchanged: no rewriting, and nothing from the gold answers.
+import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -157,7 +158,15 @@ async function main(): Promise<void> {
           query: { id: q.id, text: q.text, relevant: { [g.target.path]: 1 }, answers: [q.answer ?? g.answer], distractors: [g.distractor.path], type: q.kind },
         })),
       );
-    dataFacts = { documents: docs.length, setFile: "bench/paraphrase/set.json", splitFile: "bench/paraphrase/splits.json" };
+    const sha = async (file: string) => createHash("sha256").update(await readFile(path.join(BENCH, "paraphrase", file))).digest("hex");
+    dataFacts = {
+      documents: docs.length,
+      setFile: "bench/paraphrase/set.json",
+      setSha256: await sha("set.json"),
+      splitFile: "bench/paraphrase/splits.json",
+      splitSha256: await sha("splits.json"),
+      license: "written for this repository (MIT); filler notes are the repository's fake test vaults",
+    };
   } else {
     split = argValue("--split") ?? "evaluation";
     const splits = JSON.parse(await readFile(path.join(HERE, "splits", "longmemeval-s.json"), "utf8")) as Record<string, string[]>;
