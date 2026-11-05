@@ -16,7 +16,7 @@
 // OpenAI tokenizer used as a stand-in: Claude and Gemini tokenize differently, so absolute numbers will differ
 // by model, but before/after ratios on the same tokenizer are comparable. Characters are reported too.
 
-import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
+import { cp, mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -31,6 +31,7 @@ const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SETS = {
   dev: { vault: path.join(BENCH_DIR, "fixture-vault"), tasks: path.join(BENCH_DIR, "tasks.json") },
   holdout: { vault: path.join(BENCH_DIR, "holdout-vault"), tasks: path.join(BENCH_DIR, "holdout-tasks.json") },
+  test3: { vault: path.join(BENCH_DIR, "test3-vault"), tasks: path.join(BENCH_DIR, "test3-tasks.json") },
 } as const;
 type SetName = keyof typeof SETS;
 let FIXTURE: string = SETS.dev.vault;
@@ -49,6 +50,9 @@ interface Variant {
 }
 
 export const VARIANTS: Record<string, Variant> = {
+  // Not a server: every note pasted into the chat, the way people paste a handoff document. The quality
+  // reference: the answer is always somewhere in what the AI reads.
+  fullcontext: { label: "no server: all notes pasted into the chat", dir: "", env: {} },
   baseline: { label: "the original project before this work (frozen copy)", dir: path.join(BENCH_DIR, "baseline"), env: {} },
   current: { label: "this project, default settings (FTS5 keyword search only)", dir: path.join(BENCH_DIR, "..", "src"), env: {} },
   "current-ngram": {
@@ -64,7 +68,7 @@ export const VARIANTS: Record<string, Variant> = {
     env: { RAG_EMBEDDINGS: "ollama", RAG_OLLAMA_MODEL: process.env.RAG_OLLAMA_MODEL || "nomic-embed-text" },
   },
 };
-const DEFAULT_VARIANTS = ["baseline", "current", "current-ngram"];
+const DEFAULT_VARIANTS = ["fullcontext", "baseline", "current", "current-ngram"];
 
 interface Lookup {
   id: string;
@@ -144,6 +148,10 @@ export interface RunResult {
     argTokens: number;
     sessionTotalTokens: number;
     meanReciprocalRank: number;
+    // Tokens the AI reads to answer: tool descriptions, instructions, start summary and all lookups.
+    readingTokens: number;
+    // A short chat: tool descriptions, instructions, start summary and 3 lookups of average cost.
+    quickChatTokens: number;
   };
 }
 
@@ -151,6 +159,9 @@ async function runVariant(name: string, style: "keyword" | "question", tasks: Ta
   const variant = VARIANTS[name];
   if (!variant) {
     throw new Error(`Unknown variant ${name}. Known: ${Object.keys(VARIANTS).join(", ")}`);
+  }
+  if (name === "fullcontext") {
+    return runFullContext(style, tasks, set);
   }
 
   const base = await mkdtemp(path.join(os.tmpdir(), `bench-${name}-`));
@@ -314,6 +325,16 @@ async function runVariant(name: string, style: "keyword" | "question", tasks: Ta
         writesLanded: writes.filter((r) => r.writeLanded).length,
         argTokens,
         sessionTotalTokens: definitionsTokens + instructionsTokens + allResultTokens + argTokens,
+        readingTokens:
+          definitionsTokens +
+          instructionsTokens +
+          records.filter((r) => r.kind !== "write").reduce((sum, r) => sum + r.resultTokens, 0),
+        quickChatTokens: Math.round(
+          definitionsTokens +
+            instructionsTokens +
+            records.filter((r) => r.kind === "start").reduce((sum, r) => sum + r.resultTokens, 0) +
+            (3 * lookups.reduce((sum, r) => sum + r.resultTokens, 0)) / Math.max(1, lookups.length),
+        ),
         meanReciprocalRank: round3(
           answerable.reduce((sum, r) => sum + (r.answerRank ? 1 / r.answerRank : 0), 0) / Math.max(1, answerable.length),
         ),
@@ -323,6 +344,71 @@ async function runVariant(name: string, style: "keyword" | "question", tasks: Ta
     await client.close();
     await rm(base, { recursive: true, force: true });
   }
+}
+
+// The "paste everything" approach: no tools, every note in the chat once. Lookups then cost nothing extra,
+// and the answer is always present if it is anywhere in the vault.
+async function runFullContext(style: "keyword" | "question", tasks: Tasks, set: SetName): Promise<RunResult> {
+  const files = (await listMarkdown(FIXTURE)).sort();
+  const parts: string[] = [];
+  for (const file of files) {
+    parts.push(`## ${path.relative(FIXTURE, file).split(path.sep).join("/")}\n\n${(await readFile(file, "utf8")).trim()}`);
+  }
+  const all = parts.join("\n\n");
+  const tokens = countTokens(all);
+  const answerable = tasks.lookups.filter((l) => l.answer);
+  const records: TaskRecord[] = [
+    { id: tasks.session_start.id, kind: "start", calls: [], resultTokens: tokens, argTokens: 0, answered: contains(all, tasks.session_start.answer), answeredBySearchAlone: null, answerRank: null },
+    ...tasks.lookups.map((l) => ({
+      id: l.id,
+      kind: "lookup" as const,
+      query: style === "keyword" ? l.keyword : l.question,
+      calls: [],
+      resultTokens: 0,
+      argTokens: 0,
+      answered: l.answer ? contains(all, l.answer) : null,
+      answeredBySearchAlone: l.answer ? contains(all, l.answer) : null,
+      answerRank: null,
+    })),
+  ];
+  return {
+    set,
+    variant: "fullcontext",
+    label: VARIANTS.fullcontext.label,
+    style,
+    tokenizer: "o200k_base (js-tiktoken)",
+    frozenClock: new Date(FROZEN_NOW).toISOString(),
+    node: process.version,
+    definitions: { tools: 0, toolNames: [], modelFacingTokens: 0, fullListTokens: 0, instructionsTokens: 0, perTool: [] },
+    tasks: records,
+    summary: {
+      lookupTasks: tasks.lookups.length,
+      answerableLookups: answerable.length,
+      answered: answerable.filter((l) => contains(all, l.answer!)).length,
+      answeredBySearchAlone: answerable.filter((l) => contains(all, l.answer!)).length,
+      lookupResultTokens: 0,
+      lookupCalls: 0,
+      startTokens: tokens,
+      startAnswersCovered: answerable.filter((l) => contains(all, l.answer!)).length,
+      writeResultTokens: 0,
+      writesLanded: 0,
+      argTokens: 0,
+      sessionTotalTokens: tokens,
+      meanReciprocalRank: 1,
+      readingTokens: tokens,
+      quickChatTokens: tokens,
+    },
+  };
+}
+
+async function listMarkdown(dir: string): Promise<string[]> {
+  const out: string[] = [];
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await listMarkdown(full)));
+    else if (entry.name.endsWith(".md")) out.push(full);
+  }
+  return out;
 }
 
 function finishTask(
@@ -414,11 +500,13 @@ function printSummary(results: RunResult[]): void {
     r.summary.lookupResultTokens,
     r.summary.writeResultTokens,
     r.summary.sessionTotalTokens,
+    r.summary.readingTokens,
+    r.summary.quickChatTokens,
     `${r.summary.answered}/${r.summary.answerableLookups}`,
     `${r.summary.answeredBySearchAlone}/${r.summary.answerableLookups}`,
     r.summary.meanReciprocalRank,
   ]);
-  const header = ["run", "tools", "defs+instr", "start", "start covers", "lookups", "writes", "session total", "answered", "by search alone", "MRR"];
+  const header = ["run", "tools", "defs+instr", "start", "start covers", "lookups", "writes", "session total", "reading", "quick chat", "answered", "by search alone", "MRR"];
   console.log(`| ${header.join(" | ")} |`);
   console.log(`|${header.map(() => "---").join("|")}|`);
   for (const row of rows) {

@@ -1,0 +1,21 @@
+# Open Tasks
+
+- [x] 2026-03-10 [high] (setup) Expo project with TypeScript and EAS builds
+- [x] 2026-03-24 [high] (maps) Offline region download prototype
+- [x] 2026-04-14 [medium] (infra) Self-hosted Sentry on the backend server
+- [x] 2026-05-12 [high] (recording) Background route recording on iOS
+- [x] 2026-05-26 [high] (recording) Background route recording on Android
+- [x] 2026-06-02 [high] (backend) Migrate users and routes from Firebase to Supabase
+- [x] 2026-06-16 [high] (maps) Switch tile downloads to Mapbox offline packs
+- [x] 2026-07-14 [high] (payments) RevenueCat paywall and restore purchases
+- [x] 2026-08-11 [medium] (privacy) Routes private by default, share links expire after 30 days
+- [x] 2026-09-08 [medium] (payments) Change trial length to 7 days in App Store Connect and Play Console
+- [ ] 2026-09-08 [medium] (payments) Update yearly price to £29.99 for new subscribers only
+- [ ] 2026-09-22 [high] (safety) Emergency share: pick up to three contacts
+- [ ] 2026-09-22 [high] (safety) Emergency share: foreground notification on Android 15
+- [ ] 2026-10-06 [high] (safety) Twilio sending with retry when the phone has no signal
+- [ ] 2026-10-06 [medium] (weather) Cache the weather feed per region on the backend
+- [ ] 2026-10-20 [medium] (release) Record the background location video for Apple review
+- [ ] 2026-10-20 [low] (website) Fix the Brightside contact form spam
+- [ ] 2026-10-27 [low] (maps) Show download size before an offline region is downloaded
+- [x] 2026-10-27 [low] (infra) Rotate the Supabase service key
