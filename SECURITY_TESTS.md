@@ -1,3 +1,7 @@
+> **Status note (rag-memory-mcp).** This file is the original project's security test record, kept as it was
+> written. Since then, gaps G1, G5 and G6 were fixed, G2 and G4 were reduced, G3 is still open, and optional
+> token login was added. The current results are in [SECURITY_REPORT.md](SECURITY_REPORT.md).
+
 # Security tests
 
 This file records how the server was attacked, what it blocked, and what got through. It has two parts:

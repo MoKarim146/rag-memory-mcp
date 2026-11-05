@@ -1,7 +1,7 @@
 {
-  "name": "secure-obsidian-memory-mcp",
+  "name": "rag-memory-mcp",
   "version": "0.2.0",
-  "description": "Secure local MCP gateway for persistent Obsidian-based AI memory.",
+  "description": "Token-saving, security-hardened MCP memory server: one shared markdown memory for several AI assistants, with local RAG search.",
   "type": "module",
   "private": true,
   "engines": {

@@ -47,15 +47,24 @@
 - Zod validation is used for tool inputs.
 - Error logs avoid note content.
 
-## Planned Mitigations
+## Mitigations Added In rag-memory-mcp
 
-- Read/write token authentication.
-- Optional write-disable mode.
+- Optional read/write token login (`MCP_AUTH_REQUIRED`), off by default.
+- Read-only mode (`AI_MEMORY_WRITE_ENABLED=false`).
+- Hidden comments, invisible characters and secret-looking strings removed from everything the AI reads, the
+  search index and anything sent to an embedding server.
+- Instruction-like text flagged with a warning; AI-written entries labelled.
+- Input size limits, one-line fields without line breaks, a 2 MB cap per appended file, handoff history.
+- Hidden folders (such as `.trash`) off limits; error messages without file system paths.
+- Search index kept in memory only; embedding server must be on the same computer.
+
+Details and test results: SECURITY_REPORT.md.
+
+## Still Planned
+
 - Audit logging without note-body disclosure.
-- Configurable content logging safeguards.
-- Email and phone-number masking for logs/snippets.
-- Snippet length control through configuration.
-- Stronger public tunnel deployment guidance.
+- Rate limits on write tools.
+- Email and phone-number masking.
 - CI checks for sample-vault-only demo data.
 
 ## Residual Risks
@@ -63,5 +72,6 @@
 - Connected assistants can still reveal content they are allowed to read.
 - Authentication at a tunnel or proxy can be misconfigured.
 - A user may point `AI_MEMORY_DIR` at overly broad private data.
-- Stored prompt injection can influence assistant behavior.
+- Stored prompt injection can influence assistant behavior. Warnings and labels help, but do not prevent it.
+- A note crafted to match many searches can still reach search results (capped at 2 per search).
 - Local compromise of the host machine can bypass application-level controls.

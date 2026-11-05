@@ -41,14 +41,22 @@ interface Variant {
 }
 
 export const VARIANTS: Record<string, Variant> = {
-  baseline: { label: "main before this work (frozen copy)", dir: path.join(BENCH_DIR, "baseline"), env: {} },
-  current: { label: "this branch, default settings (FTS5 only)", dir: path.join(BENCH_DIR, "..", "src"), env: {} },
+  baseline: { label: "the original project before this work (frozen copy)", dir: path.join(BENCH_DIR, "baseline"), env: {} },
+  current: { label: "this project, default settings (FTS5 keyword search only)", dir: path.join(BENCH_DIR, "..", "src"), env: {} },
   "current-ngram": {
-    label: "this branch, FTS5 + built-in character n-gram vectors",
+    label: "this project, FTS5 + built-in character n-gram vectors",
     dir: path.join(BENCH_DIR, "..", "src"),
     env: { RAG_EMBEDDINGS: "ngram" },
   },
+  // Opt-in: needs Ollama running on this computer with an embedding model pulled, for example
+  //   ollama pull nomic-embed-text && npx tsx bench/run.ts baseline current current-ollama
+  "current-ollama": {
+    label: "this project, FTS5 + Ollama embeddings (local model)",
+    dir: path.join(BENCH_DIR, "..", "src"),
+    env: { RAG_EMBEDDINGS: "ollama", RAG_OLLAMA_MODEL: process.env.RAG_OLLAMA_MODEL || "nomic-embed-text" },
+  },
 };
+const DEFAULT_VARIANTS = ["baseline", "current", "current-ngram"];
 
 interface Lookup {
   id: string;
@@ -425,7 +433,7 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const outIndex = args.indexOf("--out");
   const out = outIndex >= 0 ? args.splice(outIndex, 2)[1] : path.join(BENCH_DIR, "results", "latest.json");
-  const names = args.length > 0 ? args : Object.keys(VARIANTS);
+  const names = args.length > 0 ? args : DEFAULT_VARIANTS;
   const tasks = JSON.parse(await readFile(path.join(BENCH_DIR, "tasks.json"), "utf8")) as Tasks;
 
   const results: RunResult[] = [];

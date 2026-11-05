@@ -8,8 +8,10 @@ The production image is designed to run compiled JavaScript from `dist/`, not `t
 - Non-root runtime user `10001:10001`.
 - Memory directory mounted at `/memory`.
 - Healthcheck calls `/health` every 30 seconds.
-- No file watchers, polling loops, background indexing, or startup full-vault scan are added.
-- Search runs only when an MCP client calls `search_memory`.
+- No file watchers, polling loops, background jobs, or startup full-vault scan are added.
+- Search runs only when an MCP client calls `search_memory`. The first search builds an in-memory index; each later
+  search re-reads only notes whose size or change time changed. The index is never written to disk, so the
+  read-only root file system is fine.
 
 ## Compose Hardening
 
@@ -32,4 +34,4 @@ For public demos, use fake data only. For production, use a dedicated memory dir
 
 ## Large Vaults
 
-Search is bounded in application code and runs on demand, but large vaults can still cost CPU when users search broad terms. Keep `AI_MEMORY_DIR` narrow and use bounded search limits before adding background indexing.
+Search is bounded (at most 10 results, 500-character queries) and runs on demand. On a synthetic vault of 4,730 notes, building the index took about 2 seconds on one CPU core and used roughly 22 MB of extra memory (RAG_RESULTS.md). Keep `AI_MEMORY_DIR` narrow.

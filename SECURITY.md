@@ -2,7 +2,7 @@
 
 ## Supported Security Model
 
-`secure-obsidian-memory-mcp` is intended to run as a local-first MCP gateway on a trusted user machine. The supported default deployment is:
+`rag-memory-mcp` is intended to run as a local-first MCP gateway on a trusted user machine. The supported default deployment is:
 
 - Bind to `127.0.0.1`.
 - Use a dedicated `AI_MEMORY_DIR`.
@@ -10,7 +10,7 @@
 - Connect only trusted MCP clients.
 - Use fake data from `examples/sample-vault/` for public demos and tests.
 
-This project does not currently implement built-in authentication. Public exposure is only supported when a separate authenticated reverse proxy or tunnel access-control layer is in front of the server.
+Built-in token login exists but is off by default (`MCP_AUTH_REQUIRED=false`), so on a default setup any program on the computer can call every tool. Public exposure is only supported with token login on (`MCP_AUTH_REQUIRED=true` and a long random `MCP_WRITE_TOKEN` and/or `MCP_READ_TOKEN`) or behind a separate authenticated reverse proxy or tunnel access-control layer.
 
 ## Reporting Security Issues
 
@@ -27,11 +27,12 @@ Do not include real vault contents, secrets, tokens, private tunnel URLs, emails
 
 ## Known Risks
 
-- Built-in MCP authentication is not implemented yet.
+- Token login is off by default. Turn it on before using a tunnel.
 - Public tunnels can expose the MCP endpoint to anyone who can reach the URL unless the tunnel is protected.
 - Connected AI assistants may send note content to their provider.
 - Search/read tools can expose any markdown file under `AI_MEMORY_DIR`.
-- Write tools can persist unwanted content if an untrusted client is connected.
+- Write tools can persist unwanted content if an untrusted client is connected. Use `AI_MEMORY_WRITE_ENABLED=false` or a read token where writes are not needed.
+- Notes are cleaned (hidden comments, invisible characters and secret-looking strings removed) before an AI reads them, but this is pattern-based and cannot stop every prompt injection. See SECURITY_REPORT.md for what is still open.
 - Host-header checks are helpful but are not authentication.
 
 ## Safe Configuration Checklist
@@ -44,7 +45,7 @@ Do not include real vault contents, secrets, tokens, private tunnel URLs, emails
 - Do not commit real Obsidian notes or private memory.
 - Do not commit tokens, tunnel URLs, logs, or local config files.
 - Keep public tunnels disabled unless protected by authentication.
-- If tunneling is required, enforce authentication before traffic reaches `/mcp`.
+- If tunneling is required, turn on token login (`MCP_AUTH_REQUIRED=true`) or enforce authentication before traffic reaches `/mcp`.
 - Stop tunnels immediately after use.
 
 ## Public Tunnel Warning

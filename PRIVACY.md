@@ -6,7 +6,7 @@ The server can access markdown files under the configured `AI_MEMORY_DIR`. Curre
 
 - Read the five main memory files.
 - Read a specific relative `.md` file.
-- Search markdown files and return matching snippets.
+- Search markdown files and return the best-matching sections.
 - Replace `04_MODEL_HANDOFF.md`.
 - Append session notes under `Sessions/`.
 - Append decisions and open tasks to controlled memory files.
@@ -17,7 +17,12 @@ The server should not be pointed at an entire private Obsidian vault unless you 
 
 Current server error logs include operational error messages such as failed request handling. They should not include note bodies or secrets.
 
-Planned privacy controls include content logging switches, email masking, phone-number masking, and snippet length limits. Until those controls are implemented, avoid adding verbose request logging.
+The server does not log note text or search queries. Unexpected errors are logged by error code only.
+
+Secret-looking strings (API keys, tokens, passwords, private keys) are replaced with `[secret removed]` in
+everything the AI reads. This is pattern-based and does not catch every secret. Email and phone-number masking
+are not implemented. The search index is kept in memory and never written to disk. With `RAG_EMBEDDINGS=ollama`,
+cleaned note text is sent to the Ollama server on the same computer, and only to a loopback address.
 
 ## Data That Must Never Be Committed
 

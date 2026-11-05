@@ -1,114 +1,208 @@
-# secure-obsidian-memory-mcp
+# rag-memory-mcp
 
-Secure local MCP gateway for connecting AI assistants to persistent Obsidian-based memory through one stable local endpoint.
+One shared notebook for all your AI assistants, which hands each AI only the few paragraphs it needs and keeps
+hidden tricks and passwords out of what it reads.
 
-Connect all your AI assistants to your personal knowledge through one secure local gateway.
+## Why this exists
 
-## What It Does
+Many people cannot pay for one top AI plan, so they mix cheaper ones. For example:
 
-This project runs a local TypeScript MCP server that exposes selected markdown memory files to MCP-capable assistants such as Claude, ChatGPT, Gemini, Codex, and local Ollama agents. It is designed for local-first personal memory: your notes stay on your machine, and the server only reads or writes files under `AI_MEMORY_DIR`.
+- **plan** in ChatGPT,
+- **build** in Claude Code,
+- **double-check** in Gemini.
 
-Default MCP endpoint:
+Every time you switch, the next AI knows nothing. So people keep a "handoff" document and paste it in, or
+connect the AIs to a memory server. Both cost **tokens**. A token is a small piece of text, roughly three
+quarters of an English word. AI plans limit how many tokens you can use, and every token the AI reads comes out
+of that budget.
 
-```text
-http://127.0.0.1:8787/mcp
-```
+A simple memory server makes this worse in three ways:
 
-The server uses Express 5 and MCP Streamable HTTP.
+1. **Tool descriptions are loaded into every chat.** Before you type anything, the AI is given the name,
+   description and inputs of every tool the server offers.
+2. **It hands over whole files.** Ask "what did we decide about the database?" and you get every line that
+   matches, or the whole file, not just the answer.
+3. **The start-of-chat summary keeps growing.** Decisions and tasks pile up over months, and all of it is
+   loaded again at the start of every chat.
 
-## Local-First Design
+This project is the same idea done more carefully. It is built from
+[secure-obsidian-memory-mcp](https://github.com/MoKarim146/secure-obsidian-memory-mcp) and changes it in two
+ways:
 
-- The server binds to `127.0.0.1` by default.
-- Memory is stored as markdown files under `AI_MEMORY_DIR`.
-- No OpenAI, Anthropic, Google, or other model API key is required by this server.
-- The repository must only contain fake demo memory under `examples/sample-vault/`.
-- Real Obsidian vaults and private memory directories must stay outside Git.
+- **It spends fewer tokens.** It looks things up first and hands over only the best few sections. This is
+  called RAG, retrieval-augmented generation: the server *retrieves* the relevant parts, then the AI
+  *generates* its answer from them.
+- **It treats notes as untrusted.** A note can contain hidden text that tries to give the AI orders (this is
+  called *prompt injection*), or a password someone pasted in. The server cleans that out before the AI sees it.
 
-## Available Tools
+Everything runs on your own computer. No note is sent over the network by this server.
 
-- `read_main_context`: read the five main memory files.
-- `read_handoff_summary`: read `04_MODEL_HANDOFF.md`.
-- `search_memory`: search markdown files under `AI_MEMORY_DIR`.
-- `read_note`: read one relative `.md` note under `AI_MEMORY_DIR`.
-- `update_handoff_summary`: replace `04_MODEL_HANDOFF.md`.
-- `append_session_note`: append a timestamped session note under `Sessions/`.
-- `add_decision`: append a dated decision to `02_DECISIONS.md`.
-- `add_open_task`: append a dated task to `03_OPEN_TASKS.md`.
+## Measured results
 
-There is intentionally no delete tool.
+Measured with a repeatable benchmark: a script plays the AI on a fake bakery project of 32 notes, with
+25 lookups that have known answers. Full numbers, and what got worse, are in [RAG_RESULTS.md](RAG_RESULTS.md).
 
-## Security Model
+| What the AI reads | Before | After | Change |
+|---|---:|---:|---:|
+| Tool descriptions + server instructions, every chat | 886 tokens | 558 tokens | −37.0% |
+| Start-of-chat summary | 2,549 | 1,590 | −37.6% |
+| 25 lookups | 8,924 | 6,711 | −24.8% |
+| **A whole scripted session** | **13,286** | **9,663** | **−27.3%** |
+| Lookups answered | 23 of 24 | 24 of 24 | +1 |
 
-Current protections include:
+On a bigger, synthetic vault (4,730 notes, with a much longer decision log) the old start-of-chat summary
+grew to 26,128 tokens; the new one stayed at 1,590.
 
-- Markdown-only note access.
-- Relative paths only; absolute paths and `../` traversal are rejected.
-- Realpath checks keep resolved files inside `AI_MEMORY_DIR`.
-- Symlinked directories and notes are rejected or skipped.
-- Writes are limited to controlled memory files and generated session notes.
-- Host-header guard for local and explicitly allowed hosts.
-- Origin guard: requests from web pages are refused unless their origin is in `ALLOWED_ORIGINS` (empty by default).
-- Zod validation on tool inputs.
-- Request error logs avoid note content.
+Tokens were counted with an OpenAI tokenizer (`o200k_base`) because it runs offline. Claude and Gemini count a
+little differently, so treat the percentages as the result, not the exact token numbers.
 
-These protections are attacked by 27 adversarial tests, including a prompt injection test with a real agent. Results, including the known gaps, are in [SECURITY_TESTS.md](SECURITY_TESTS.md).
+What got worse: the shorter start-of-chat summary leaves out old decisions and finished tasks, so it holds the
+answer to 5 of the 24 lookups instead of 10. The AI has to search for the rest.
 
-Authentication and audit logging are planned, but not implemented yet. Do not expose this server to untrusted networks without an authenticated reverse proxy or tunnel access control.
+## How it saves tokens
 
-## Privacy Warning
+- **Search returns sections, not files.** Notes are cut into small sections (one heading's worth of text,
+  at most 800 characters). Search returns the 5 best sections, at most 2 from the same note. The best one is
+  shown whole, the others only show their matching lines.
+- **Ranking, not alphabetical order.** Search uses SQLite FTS5, the full-text search built into the SQLite
+  database that ships with Node.js. It works like the index at the back of a book. Results are ranked with
+  BM25, a standard scoring formula: rare words count more than common ones, and a short section that matches
+  beats a long one that mentions the word once. It also matches word forms ("rolling back" finds "roll back").
+- **No noise.** For a question of 3 or more words, a section must match at least 2 of them. "What is the name
+  of our Kubernetes cluster?" now returns nothing instead of every note containing "name".
+- **Short start-of-chat summary.** Only the newest decisions and the open tasks are included.
+- **Short tool descriptions** and one-line answers from the write tools.
 
-Anything reachable under `AI_MEMORY_DIR` can potentially be read by connected MCP clients through search/read tools. Anything sent to an AI assistant may also be processed by that assistant provider according to its own product settings and policies.
+Optional extra: **embeddings** (`RAG_EMBEDDINGS`). An embedding turns text into a list of numbers so that
+texts with similar meaning get similar numbers, which can find "undo a release" when the note says "roll
+back". It is off by default. You can use a real model through [Ollama](https://ollama.com) on your own
+computer, or a small built-in option (`ngram`) that only helps with typos. See RAG_RESULTS.md for what was and
+was not measured.
 
-Never commit real notes, private memory, secrets, tokens, tunnel URLs, emails, phone numbers, or private filesystem paths. GitHub demo data must live only under `examples/sample-vault/`.
+## How it keeps your notes safe
+
+- Only reads and writes markdown files inside your memory folder. Blocks `../` tricks, absolute paths,
+  symlinks that point outside, and hidden folders such as Obsidian's `.trash`.
+- Removes text you cannot see but the AI can: `<!-- HTML comments -->`, `%% Obsidian comments %%`,
+  zero-width characters and other invisible characters.
+- Replaces secret-looking text (API keys, tokens, passwords, private keys) with `[secret removed]`.
+- Puts all note text inside `<note>` labels and tells the AI that note text is data, not orders. Notes that
+  look like orders aimed at an AI get a visible warning.
+- Marks what an AI wrote: session notes are labelled `written_by="ai"`, and decisions or tasks saved through
+  the tools end with `(added by AI via MCP)`.
+- Write limits: one-line fields cannot contain line breaks, inputs have size limits, files stop growing at
+  2 MB, and the old handoff is kept every time it is replaced.
+- Optional read-only mode and optional token login (a read token and a write token).
+- Refuses web pages in your browser, unless you allow their address.
+
+38 attack tests, what they found and what is still open: [SECURITY_REPORT.md](SECURITY_REPORT.md).
+
+**Not solved:** a note written on purpose to match many searches still shows up in results (it is capped at
+2 results and flagged, but it is not blocked), and the server cannot stop an AI from obeying a cleverly worded
+note. Keep the memory folder for memory only, and read what your AIs write into it.
+
+## Example workflow
+
+1. In ChatGPT, plan the next feature. Ask it to save the plan with `update_handoff_summary` and the key choices
+   with `add_decision`.
+2. Open Claude Code. It calls `read_main_context` (about 1,600 tokens on the test vault, instead of pasting a
+   long handoff) and starts building. When it needs a detail it calls `search_memory` instead of reading every
+   note.
+3. At the end, Claude Code saves what it did with `append_session_note` and updates the handoff.
+4. Gemini or another assistant can review the work from the same memory.
+
+This is one example. Any assistant that supports MCP (Model Context Protocol, the standard way AI apps
+connect to tools) can use the server.
 
 ## Quickstart
 
-Install dependencies:
+Needs Node.js 22.13 or newer.
 
 ```bash
 npm install
 ```
 
-Run against the fake sample vault:
+```bash
+npm run build
+```
+
+Run it on the fake sample vault first:
 
 ```bash
-cp .env.example .env
-export AI_MEMORY_DIR="$PWD/examples/sample-vault"
-npm run build
-npm start
+AI_MEMORY_DIR="$PWD/examples/sample-vault" npm start
 ```
 
-Connect an MCP client to:
+It listens on `http://127.0.0.1:8787/mcp`, on your computer only. Node prints an `ExperimentalWarning` about
+SQLite at start: that is Node.js labelling its built-in SQLite as experimental, and it is expected.
 
-```text
-http://127.0.0.1:8787/mcp
+Connect Claude Code:
+
+```bash
+claude mcp add --transport http memory http://127.0.0.1:8787/mcp
 ```
 
-Run tests:
+Run the tests and the benchmark:
 
 ```bash
 npm test
 ```
 
-## Configuration
+```bash
+npm run bench
+```
 
-Copy `.env.example` to `.env` and adjust local values. Keep `.env` out of Git.
+**ChatGPT and other web apps** connect from their company's servers, so they need a public address (a tunnel
+such as Cloudflare Tunnel or ngrok). Only do that with token login on (`MCP_AUTH_REQUIRED=true`) or with access
+control on the tunnel itself, and stop the tunnel when you are done.
 
-Key variables:
+## Tools
 
-- `PORT`: local server port.
-- `HOST`: bind address; keep `127.0.0.1` unless you know why you need more.
-- `AI_MEMORY_DIR`: markdown memory directory.
-- `ALLOWED_HOSTS`: comma-separated additional Host header values.
-- `ALLOWED_ORIGINS`: comma-separated browser origins allowed to call the server. Leave empty unless a browser-based client needs access.
-- `AI_MEMORY_WRITE_ENABLED`: planned write gate.
-- `LOG_CONTENT`, `MASK_EMAILS`, `MASK_PHONE_NUMBERS`, `MAX_SNIPPET_CHARS`: planned logging/privacy controls.
-- `MCP_AUTH_REQUIRED`, `MCP_READ_TOKEN`, `MCP_WRITE_TOKEN`: planned authentication controls.
+| Tool | What it does |
+|---|---|
+| `read_main_context` | Start here: main notes, current work, handoff, newest decisions, open tasks |
+| `read_handoff_summary` | Read `04_MODEL_HANDOFF.md` |
+| `search_memory` | Search all notes; returns the best sections, best first (`limit` 1 to 10, default 5) |
+| `read_note` | Read one note by its path; long notes come in pages |
+| `update_handoff_summary` | Replace the handoff note (the old version is kept in `.history/`) |
+| `append_session_note` | Add a dated note under `Sessions/` |
+| `add_decision` | Add a dated decision to `02_DECISIONS.md` |
+| `add_open_task` | Add a task to `03_OPEN_TASKS.md` |
 
-Some variables are documented ahead of implementation so safe deployment expectations are visible early.
+There is no delete tool.
 
-## Safe Public Tunnel Warning
+## Settings
 
-Public tunnels such as ngrok, Cloudflare Tunnel, Tailscale Funnel, or similar tools can make this local MCP server reachable from the internet. A tunnel URL is effectively a remote access path to your memory server.
+Copy `.env.example` to `.env`. The main ones:
 
-Until server-side authentication is implemented, public tunneling requires authentication at the tunnel or reverse-proxy layer. Use provider access controls, short-lived tunnels, and least-privilege test data. Stop the tunnel when finished.
+| Setting | Default | Meaning |
+|---|---|---|
+| `AI_MEMORY_DIR` | `~/ObsidianVault/AI-Memory` | The memory folder. Point it at a folder used only for AI memory, not your whole vault. |
+| `HOST`, `PORT` | `127.0.0.1`, `8787` | Where the server listens. Keep `127.0.0.1`. |
+| `AI_MEMORY_WRITE_ENABLED` | `true` | `false` makes the memory read-only. |
+| `MCP_AUTH_REQUIRED` | `false` | `true` turns on token login. Then set `MCP_WRITE_TOKEN` and/or `MCP_READ_TOKEN` (32+ characters, for example from `openssl rand -hex 32`). |
+| `RAG_EMBEDDINGS` | `none` | `ngram` or `ollama` for the optional vector search. |
+| `RAG_OLLAMA_URL`, `RAG_OLLAMA_MODEL` | `http://127.0.0.1:11434`, `nomic-embed-text` | Must point at your own computer; anything else is refused. |
+| `ALLOWED_HOSTS`, `ALLOWED_ORIGINS` | local only | Extra host names, and browser pages allowed to call the server. |
+
+## Project layout
+
+- `src/` the server. `src/retrieval/` is the search (chunker, index, embeddings), `src/safety.ts` cleans note
+  text, `src/context.ts` builds the short start-of-chat summary.
+- `tests/` 87 automated tests, including the attack tests.
+- `bench/` the token benchmark, the fake test vault, and saved results.
+- `security/` raw test results before and after the security fixes.
+
+## Who made what
+
+- The original project, [secure-obsidian-memory-mcp](https://github.com/MoKarim146/secure-obsidian-memory-mcp),
+  was written with **Codex**. **Mohamed Karim** designed it, directed the work and tested it.
+- **Claude Code** (Anthropic's coding agent) wrote this version's additions at his direction: the token
+  benchmark, the RAG search, the security audit and fixes, and these documents.
+- The first commit in this repository is the original project, unchanged, so every later change can be seen
+  on its own.
+
+## Privacy
+
+Only use fake notes in this repository (`examples/` and `bench/fixture-vault/` are fictional). Never commit a
+real vault, `.env`, tokens or tunnel addresses. Anything an AI reads can be sent to that AI's company under
+its own terms; this server only controls what it hands over.
