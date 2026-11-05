@@ -39,6 +39,10 @@ process.env.TZ = "UTC"; // dates in outputs do not depend on where the benchmark
 const BENCH = path.dirname(fileURLToPath(import.meta.url));
 const CACHE = path.join(BENCH, ".cache", "books");
 const QUICK = process.argv.includes("--quick");
+// --needles-embeddings: only the planted facts in Moby Dick and Emma by chapter, keyword search against keywords
+// and vectors merged (an embedding model through the Ollama API on 127.0.0.1, RAG_OLLAMA_MODEL, default all-minilm).
+// Written as its own run (bench/runs/books-needles-embeddings/), so the main run is unchanged.
+const NEEDLES_EMBEDDINGS = process.argv.includes("--needles-embeddings");
 const SAMPLE = QUICK ? 200 : 1000;
 const WINDOWS = [8_000, 32_000, 128_000, 200_000, 1_000_000];
 
@@ -454,7 +458,7 @@ async function main(): Promise<void> {
     id === "melville-moby_dick" ? mobyChapters : bookToChapterNotes(id, raw),
   );
 
-  const scopes: { name: string; about: string; notes: Note[] }[] = [
+  const allScopes: { name: string; about: string; notes: Note[] }[] = [
     { name: "squad", about: "48 Wikipedia articles, one note each (SQuAD 1.1 development set)", notes: squad.notes },
     { name: "moby-chapters", about: "Moby Dick, one note per chapter, 20 facts planted", notes: mobyChapters },
     { name: "moby-one-note", about: "Moby Dick as a single note, 20 facts planted", notes: [bookToOneNote("melville-moby_dick", mobyRaw)] },
@@ -462,6 +466,7 @@ async function main(): Promise<void> {
     { name: "emma-one-note", about: "Emma as a single note, 20 facts planted", notes: [bookToOneNote("austen-emma", emmaRaw)] },
     { name: "library", about: "Everything together: 18 books by chapter (facts in Moby Dick) and the 48 articles", notes: [...allBookChapters, ...squad.notes] },
   ];
+  const scopes = NEEDLES_EMBEDDINGS ? allScopes.filter((sc) => sc.name === "moby-chapters" || sc.name === "emma-chapters") : allScopes;
 
   const sample = seededShuffle(squad.questions).slice(0, SAMPLE);
   const squadSet = QUICK ? sample : squad.questions;
@@ -492,7 +497,11 @@ async function main(): Promise<void> {
     const needleSpec: GroupSpec = { breakdowns: ["overlap", "depth"], truncationWindows: WINDOWS };
     const needleSet = (style: "keyword" | "question" | "oneword") => needleQueries(scope.notes, style, df);
     const setName = QUICK ? "squad-sample" : "squad-all";
-    if (scope.name === "squad") {
+    if (NEEDLES_EMBEDDINGS) {
+      for (const system of ["current", "current-ollama"] as const) {
+        for (const style of ["keyword", "question"] as const) add(system, "needles", style, needleSet(style), needleSpec);
+      }
+    } else if (scope.name === "squad") {
       for (const style of ["keywords", "question", "oneword"] as const) add("current", setName, style, squadQueries(squadSet, style, df), squadSpec);
       // The same 1,000-question sample as the library run, so the effect of the extra books can be compared.
       // (In a quick run the main set already is the sample.)
@@ -546,7 +555,7 @@ async function main(): Promise<void> {
     };
   }
 
-  const writer = await RunWriter.start(path.join(BENCH, ".."), path.join(BENCH, "runs"), QUICK ? "books-quick" : "books", {
+  const writer = await RunWriter.start(path.join(BENCH, ".."), path.join(BENCH, "runs"), NEEDLES_EMBEDDINGS ? "books-needles-embeddings" : QUICK ? "books-quick" : "books", {
     config: {
       about: "Long-text benchmark (bench/books.ts). Run once per change; nothing here is used to tune the search.",
       quick: QUICK,
@@ -556,7 +565,10 @@ async function main(): Promise<void> {
       defaultLimit: 5,
       tokenizer: "o200k_base",
       timeZone: process.env.TZ,
-      systems: Object.fromEntries((["current", "current-ngram", "baseline"] as System[]).map((s) => [s, systemEnv(s, "<vault>")])),
+      systems: Object.fromEntries(
+        ((NEEDLES_EMBEDDINGS ? ["current", "current-ollama"] : ["current", "current-ngram", "baseline"]) as System[]).map((s) => [s, systemEnv(s, "<vault>")]),
+      ),
+      ...(NEEDLES_EMBEDDINGS ? { embeddingModelNote: process.env.RAG_EVAL_MODEL_NOTE ?? null } : {}),
     },
     data: {
       sources: Object.fromEntries(
@@ -604,7 +616,7 @@ async function main(): Promise<void> {
   }
 
   // 3. What the safety filters do to real, harmless text: everything they flag here is a false alarm.
-  const library = scopes.find((sc) => sc.name === "library")!.notes;
+  const library = allScopes.find((sc) => sc.name === "library")!.notes;
   const safety = { notes: library.length, flaggedAsInstructions: 0, withSecretsMasked: 0, withPersonalDataMasked: 0, withHiddenTextRemoved: 0, examples: [] as { kind: string; note: string; text: string }[] };
   for (const note of library) {
     const prepared = prepareNoteText(note.text);
