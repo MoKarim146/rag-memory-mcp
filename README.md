@@ -1,167 +1,204 @@
 # rag-memory-mcp
 
-One shared notebook for all your AI assistants. It hands each AI only the few paragraphs it needs, and keeps
-hidden tricks, passwords and private notes out of what it reads.
+[![CI](https://github.com/MoKarim146/rag-memory-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/MoKarim146/rag-memory-mcp/actions/workflows/ci.yml)
 
-## Why this exists
+One shared memory for all your AI assistants. It spends fewer tokens, and it treats your notes as untrusted.
 
-Many people cannot pay for one top AI plan, so they mix cheaper ones. For example:
+It is an MCP server. MCP (Model Context Protocol) is the standard way AI apps connect to tools. The memory is a
+folder of plain markdown notes, for example inside Obsidian. When an AI needs something, the server searches the
+notes on your computer and hands over only the few passages that answer it.
 
-- **plan** in ChatGPT,
-- **build** in Claude Code,
-- **double-check** in Gemini.
+## Why
 
-Every time you switch, the next AI knows nothing. So people keep a "handoff" document and paste it in, or
-connect the AIs to a memory server. Both cost **tokens**. A token is a small piece of text, roughly three
-quarters of an English word. AI plans limit how many tokens you can use, and every token the AI reads comes out
-of that budget.
+Many people mix cheaper AI plans instead of paying for one top plan: plan in ChatGPT, build in Claude Code,
+review in Gemini. Every time you switch, the next AI knows nothing. So you paste a long handoff document, or you
+connect a memory server. Both cost **tokens**: small pieces of text, about three quarters of a word each, that
+every AI plan limits.
 
-A simple memory server makes this worse in three ways:
+A simple memory server wastes tokens in three ways:
 
-1. **Tool descriptions are loaded into every chat.** Before you type anything, the AI is given the name,
-   description and inputs of every tool the server offers.
-2. **It hands over whole files.** Ask "what did we decide about the database?" and you get every line that
-   matches, or the whole file, not just the answer.
-3. **The start-of-chat summary keeps growing.** Decisions and tasks pile up over months, and all of it is
-   loaded again at the start of every chat.
+1. Its tool descriptions are loaded into every chat, before you type anything.
+2. It hands over whole files, or every matching line, instead of just the answer.
+3. Its start-of-chat summary keeps growing as decisions and tasks pile up.
 
-This project is the same idea done more carefully. It is built from
-[secure-obsidian-memory-mcp](https://github.com/MoKarim146/secure-obsidian-memory-mcp) and changes it in two
-ways:
+This server fixes all three:
 
-- **It spends fewer tokens.** It looks things up first and hands over only the best few passages. This is
-  called RAG, retrieval-augmented generation: the server *retrieves* the relevant parts, then the AI
-  *generates* its answer from them.
-- **It treats notes as untrusted.** A note can contain hidden text that tries to give the AI orders (this is
-  called *prompt injection*), or a password someone pasted in. The server cleans that out before the AI sees
-  it, and checks what an AI tries to save. It follows the
-  [OWASP Top 10 for LLM Applications 2026](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10).
+- **It searches first (RAG).** RAG means *retrieval-augmented generation*: the server retrieves the relevant
+  passages, then the AI generates its answer from them. Search runs on your computer, with no cloud service and
+  no API key.
+- **It keeps everything short.** Short tool descriptions, a start-of-chat summary that stays the same size, and
+  search results that show only the matching sentences.
+- **It cleans notes before an AI reads them.** Hidden text that tries to give the AI orders (*prompt
+  injection*), pasted passwords and private notes are removed. It also checks what an AI tries to save.
 
-Everything runs on your own computer. No note is sent over the network by this server.
+It is built from [secure-obsidian-memory-mcp](https://github.com/MoKarim146/secure-obsidian-memory-mcp).
 
-## Measured results
+## Results
 
-A repeatable benchmark plays the AI against the server with fake notes and questions with known answers. It
-was run on two sets of notes: one the search was tuned on, and one written later and **never used for tuning**,
-which is the honest number. Details, and everything that got worse, are in [RAG_RESULTS.md](RAG_RESULTS.md).
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/charts/growth-dark.svg">
+  <img alt="Line chart, log scale. Tokens for one short chat as the vault grows from 32 to 4,730 notes. Pasting every note grows from 6,674 to 834,815 tokens. The old server grows from 4,705 to 29,391. This server stays between 2,984 and 3,345." src="docs/charts/growth-light.svg" width="760">
+</picture>
 
-| A whole scripted session | Set 1 (tuned on) | Set 2 (never tuned on) |
-|---|---:|---:|
-| Old server | 13,286 tokens | 10,392 tokens |
-| This server | 9,329 tokens | 9,252 tokens |
-| **Change** | **−29.8%** | **−11.0%** |
-| Lookups answered, old → new | 23/24 → 24/24 | 30/31 → 31/31 |
+A short chat means: tool descriptions, the start-of-chat summary and 3 searches. Measured on three fake vaults
+of 24 to 34 notes, with questions whose answers are known:
 
-- Tool descriptions and instructions sent at the start of every chat: 886 → 558 tokens (−37.0%).
-- On a synthetic vault of 4,730 notes the old start-of-chat summary grew to 26,128 tokens; this one stays at
-  1,868.
-- Tokens were counted with an OpenAI tokenizer (`o200k_base`) because it runs offline. Claude and Gemini count a
-  little differently, so treat the percentages as the result.
+| A short chat | Set 1 | Set 2 | Set 3 |
+|---|---:|---:|---:|
+| Paste every note | 6,673 tokens | 3,648 tokens | 6,585 tokens |
+| Old server | 4,506 | 3,058 | 3,794 |
+| **This server** | **3,060** | **2,320** | **2,735** |
+| Saving against pasting every note | −54.1% | −36.4% | −58.5% |
+| Saving against the old server | −32.1% | −24.1% | −27.9% |
+| Answers found by this server | 24 of 24 | 31 of 31 | 39 of 40 |
 
-What got worse: on notes it was not tuned on the saving is 11%, not 30%; with full-question searches a session
-on set 2 costs 9.5% more than the old server's keyword session (but answers 29 of 31 questions, where the old
-server answers none); and the start-of-chat summary holds a few fewer answers.
+Sets 1 and 2 were used to tune the search. Set 3 was written before the last round of changes and never used
+for tuning, so it is the honest number.
 
-## How it saves tokens
+**What is not better:**
 
-- **Small-to-big search.** Notes are cut into sections (one heading's text), and sections into passages (one
-  list item, paragraph, table row or code block). Search ranks the small passages, so the bullet that answers
-  your question wins, and shows it under its section's heading.
-- **Only good matches.** Ranking uses SQLite FTS5, the full-text search built into the SQLite that ships with
-  Node.js, with BM25 scoring and word stemming ("rolling back" finds "roll back"). A result must score at least
-  half as well as the best one, and a 3+ word question must match 2 of its words. Precise searches return 1 or 2
-  results instead of 5. If nothing matches well, up to 2 partial matches come back, labelled as partial.
-- **Short output.** The best result shows up to 600 characters around its best passage; the others only their
-  matching passages, up to 200 characters. At most 2 results per note, at most 10 per search.
-- **Short start-of-chat summary.** Newest decisions in full, older ones as one line each, open tasks only.
-- **Short tool descriptions** and one-line answers from the write tools.
+- On these small vaults, if one chat asks *every* question (24 to 40 of them), pasting every note once is
+  cheaper: this server then uses 17.5% to 104.6% more tokens. The server wins on short chats and on bigger
+  vaults: at 491 notes, a short chat costs 3,345 tokens instead of 90,086.
+- On set 3 it missed 1 of 40 answers with keyword searches. With full questions it missed 4 of 40, all of them
+  questions worded differently from the notes.
 
-Optional extra: **embeddings** (`RAG_EMBEDDINGS`). An embedding turns text into numbers so that texts with
-similar meaning are close together, which can find "undo a release" when the note says "roll back". Off by
-default. Use a real model through [Ollama](https://ollama.com) on your own computer, or a small built-in option
-(`ngram`) that only helps with typos. The real-model option was not measured yet; see RAG_RESULTS.md.
+Every number, how it was measured, and everything that got worse: [RAG_RESULTS.md](RAG_RESULTS.md).
 
-## How it keeps your notes safe
+## How a search works
 
-What the AI reads:
+```mermaid
+flowchart LR
+  subgraph index["Step 1: index the notes"]
+    direction TB
+    N["Markdown notes"] --> C["Clean: remove hidden text,<br/>mask secrets, skip private notes"]
+    C --> P["Cut into sections<br/>and passages"]
+    P --> F[("SQLite FTS5 index,<br/>in memory")]
+  end
+  subgraph search["Step 2: answer a search"]
+    direction TB
+    Q["AI calls search_memory"] --> R["Rank passages with BM25"]
+    R --> K["Keep strong matches,<br/>at most 2 per note"]
+    K --> S["Pick the matching sentences"]
+    S --> A["Short reply, each hit<br/>inside a note tag"]
+  end
+  index --> search
+```
 
-- Only markdown files inside your memory folder. `../` tricks, absolute paths, symlinks pointing outside and
-  hidden folders such as Obsidian's `.trash` are refused.
-- Text you cannot see but an AI can is removed: `<!-- -->` and `%% %%` comments, `[//]: # ()` comment links,
-  HTML hidden with `hidden`, `display:none`, zero font size or white text, zero-width and other invisible
-  characters, and terminal control codes.
-- Secret-looking text (API keys, tokens, passwords, private keys) is replaced with `[secret removed]`; email
-  addresses, phone numbers and card numbers are masked too.
-- Remote images and embedded pages are replaced by a label, so a note cannot steer an AI into repeating an
-  image link that leaks data when shown.
-- Notes with `ai_private: true` in their front matter, or the tag `#ai-private`, are never read, searched or
-  sent anywhere.
-- All note text comes inside `<note>` labels with the instruction that it is data, not orders. Notes that look
-  like orders to an AI get a visible warning, and search only shows them when nothing clean matches.
+The server indexes your notes the first time an AI searches, then re-reads only notes that changed. Each search
+returns only strong matches, and only their matching sentences. Details, including every safety rule:
+[docs/how-it-works.md](docs/how-it-works.md).
 
-What an AI can write:
+## Setup
 
-- No delete tool. Writes only append to fixed notes or replace the handoff, whose old versions are kept.
-- **A write that looks like an order to an AI is not saved.** It waits in `AI Review/pending.md`, which you see
-  in Obsidian and no AI can read; you decide. With `AI_MEMORY_WRITE_REVIEW=all`, every write waits for you.
-- Hidden text, remote images, scripts and `javascript:` links are refused; secrets are masked before saving.
-- Everything an AI writes is marked `(added by AI via MCP)`, and session notes are labelled `written_by="ai"`.
-- Limits: field sizes, 2 MB per file, 20 writes per 10 minutes per session, repeated identical writes refused,
-  120 calls per minute per session, 32 open sessions.
-- Every write is recorded in `.history/audit.jsonl` (time, tool, file, outcome, size and hash, never the text).
+You need [Node.js](https://nodejs.org) 22.13 or newer. Use a folder only for AI memory, not your whole vault.
 
-Who can connect: only this computer by default, web pages in your browser are refused, and there is optional
-token login with a read token and a write token.
-
-Tested by 124 attack, fuzz and stress tests. What they found and what is still open:
-[SECURITY_REPORT.md](SECURITY_REPORT.md).
-
-**Not solved:** a note stuffed with likely search words but no obvious order still shows up in searches;
-politely worded orders are not flagged; the server cannot tell a true note from a false one. Keep the memory
-folder for memory only, and read what your AIs write into it.
-
-## Example workflow
-
-1. In ChatGPT, plan the next feature. Ask it to save the plan with `update_handoff_summary` and the key choices
-   with `add_decision`.
-2. Open Claude Code. It calls `read_main_context` (about 1,900 tokens on the test vault, instead of pasting a
-   long handoff) and starts building. When it needs a detail it calls `search_memory` instead of reading every
-   note.
-3. At the end, Claude Code saves what it did with `append_session_note` and updates the handoff.
-4. Gemini or another assistant can review the work from the same memory.
-5. Now and then, open `AI Review/pending.md` in Obsidian to approve or delete anything that was held.
-
-This is one example. Any assistant that supports MCP (Model Context Protocol, the standard way AI apps connect
-to tools) can use the server.
-
-## Quickstart
-
-Needs Node.js 22.13 or newer.
+**1. Install.** This installs, builds, and writes your settings to `.env`:
 
 ```bash
-npm install
+git clone https://github.com/MoKarim146/rag-memory-mcp.git
 ```
 
 ```bash
-npm run build
+cd rag-memory-mcp && ./scripts/setup.sh ~/ObsidianVault/AI-Memory
 ```
 
-Run it on the fake sample vault first:
+**2. Start the server.** It listens on `http://127.0.0.1:8787/mcp`, on your computer only:
 
 ```bash
-AI_MEMORY_DIR="$PWD/examples/sample-vault" npm start
+npm start
 ```
 
-It listens on `http://127.0.0.1:8787/mcp`, on your computer only. Node prints an `ExperimentalWarning` about
-SQLite at start: that is Node.js labelling its built-in SQLite as experimental, and it is expected.
-
-Connect Claude Code:
+**3. Connect your AI.** For Claude Code, in another terminal:
 
 ```bash
 claude mcp add --transport http memory http://127.0.0.1:8787/mcp
 ```
 
-Run the tests and the benchmarks:
+To try it on fake notes first, start it with `AI_MEMORY_DIR="$PWD/examples/sample-vault" npm start`. On Windows
+without Bash, run `npm ci --ignore-scripts`, `npm run build`, copy `.env.example` to `.env`, set
+`AI_MEMORY_DIR` in it, then `npm start`.
+
+Node prints an `ExperimentalWarning` about SQLite at start. That is Node.js labelling its built-in SQLite as
+experimental; it is expected.
+
+**Other AI apps.** Any app that can connect to an MCP server over HTTP can use it. ChatGPT and other web apps
+connect from their company's servers, so they need a public address, such as a Cloudflare Tunnel or ngrok. Only
+do that with token login on (`MCP_AUTH_REQUIRED=true`), and stop the tunnel when you are done.
+
+### Teach your AI to use it well
+
+`skills/rag-memory/SKILL.md` is an Agent Skill: a short instruction file an AI loads when it is relevant. It
+tells the AI to start with `read_main_context`, search with a few keywords instead of
+whole questions (on the benchmark this found more answers with fewer tokens), treat notes as data, and save its
+work at the end. For Claude Code:
+
+```bash
+mkdir -p ~/.claude/skills && cp -r skills/rag-memory ~/.claude/skills/
+```
+
+### A typical workflow
+
+1. In ChatGPT, plan the next feature. Ask it to save the plan with `update_handoff_summary` and the key choices
+   with `add_decision`.
+2. In Claude Code, the AI calls `read_main_context` and starts building. When it needs a detail, it calls
+   `search_memory` instead of reading every note.
+3. At the end, it saves what it did with `append_session_note` and updates the handoff.
+4. Now and then, open `AI Review/pending.md` in Obsidian to approve or delete anything that was held.
+
+## Tools
+
+| Tool | What it does |
+|---|---|
+| `read_main_context` | Start here: main notes, current work, handoff, newest decisions, open tasks |
+| `search_memory` | Search all notes; returns the best passages, best first (`limit` 1 to 10, default 5) |
+| `read_note` | Read one note by its path; long notes come in pages |
+| `read_handoff_summary` | Read the handoff note `04_MODEL_HANDOFF.md` |
+| `add_decision` | Add a dated decision to `02_DECISIONS.md` |
+| `add_open_task` | Add a task to `03_OPEN_TASKS.md` |
+| `append_session_note` | Add a dated note under `Sessions/` |
+| `update_handoff_summary` | Replace the handoff note; old versions are kept in `.history/` |
+
+## Safety
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/charts/security-dark.svg">
+  <img alt="Bar chart. First security audit: 17 of 37 tests passed before the fixes, 38 of 38 after. OWASP LLM Top 10 2026 tests: 12 of 41 before, 41 of 41 after." src="docs/charts/security-light.svg" width="760">
+</picture>
+
+The rules follow the [OWASP Top 10 for LLM Applications 2026](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10).
+In short:
+
+- **Reads:** only markdown files inside the memory folder. Hidden text is removed, secrets and contact details
+  are masked, remote images are replaced by a label, and notes marked `ai_private: true` or `#ai-private` are
+  never sent.
+- **Note text is labelled as data.** It comes inside `<note>` tags, and notes that look like orders to an AI
+  get a visible warning.
+- **Writes:** no delete tool. A write that looks like orders to an AI waits in `AI Review/pending.md` for you.
+  Secrets are masked before saving, every AI write is marked, and every write is logged without its text.
+- **Access:** this computer only by default, web pages in your browser are refused, optional read and write
+  tokens, and rate limits per session.
+
+**Not solved:** a note stuffed with likely search words still shows up in searches; politely worded orders are
+not flagged; the server cannot tell a true note from a false one. Read what your AIs write into the memory.
+
+More: [how it works](docs/how-it-works.md) and the full [security report](SECURITY_REPORT.md).
+
+## Settings
+
+`./scripts/setup.sh` writes them to `.env`, where each one is explained. A value set in the shell wins over
+`.env`. The main ones:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `AI_MEMORY_DIR` | `~/ObsidianVault/AI-Memory` | The memory folder |
+| `AI_MEMORY_WRITE_ENABLED` | `true` | `false` makes the memory read-only |
+| `AI_MEMORY_WRITE_REVIEW` | `suspicious` | Which writes wait for you: `suspicious`, `all` or `off` |
+| `MCP_AUTH_REQUIRED` | `false` | `true` turns on token login (`MCP_WRITE_TOKEN`, `MCP_READ_TOKEN`) |
+| `RAG_EMBEDDINGS` | `none` | Optional vector search: `ollama` (a local model) or `ngram` |
+| `HOST`, `PORT` | `127.0.0.1`, `8787` | Where the server listens. Keep `127.0.0.1` |
+
+## Development
 
 ```bash
 npm test
@@ -175,60 +212,16 @@ npm run test:heavy
 npm run bench
 ```
 
-**ChatGPT and other web apps** connect from their company's servers, so they need a public address (a tunnel
-such as Cloudflare Tunnel or ngrok). Only do that with token login on (`MCP_AUTH_REQUIRED=true`) or with access
-control on the tunnel itself, and stop the tunnel when you are done.
-
-## Tools
-
-| Tool | What it does |
-|---|---|
-| `read_main_context` | Start here: main notes, current work, handoff, newest decisions, open tasks |
-| `read_handoff_summary` | Read `04_MODEL_HANDOFF.md` |
-| `search_memory` | Search all notes; returns the best passages, best first (`limit` 1 to 10, default 5) |
-| `read_note` | Read one note by its path; long notes come in pages |
-| `update_handoff_summary` | Replace the handoff note (old versions kept in `.history/`; marked destructive) |
-| `append_session_note` | Add a dated note under `Sessions/` |
-| `add_decision` | Add a dated decision to `02_DECISIONS.md` |
-| `add_open_task` | Add a task to `03_OPEN_TASKS.md` |
-
-## Settings
-
-Copy `.env.example` to `.env`; every setting is explained there. The main ones:
-
-| Setting | Default | Meaning |
-|---|---|---|
-| `AI_MEMORY_DIR` | `~/ObsidianVault/AI-Memory` | The memory folder. Use a folder only for AI memory, not your whole vault. |
-| `HOST`, `PORT` | `127.0.0.1`, `8787` | Where the server listens. Keep `127.0.0.1`. |
-| `AI_MEMORY_WRITE_ENABLED` | `true` | `false` makes the memory read-only. |
-| `AI_MEMORY_WRITE_REVIEW` | `suspicious` | Which writes wait for you in `AI Review/pending.md`: `suspicious`, `all` or `off`. |
-| `AI_MEMORY_TOOLS` | all | Offer only these tools, comma separated. |
-| `MCP_AUTH_REQUIRED` | `false` | `true` turns on token login; set `MCP_WRITE_TOKEN` and/or `MCP_READ_TOKEN` (32+ characters). |
-| `MASK_EMAILS`, `MASK_PHONE_NUMBERS` | `true` | Mask contact details in everything the AI reads. |
-| `RAG_EMBEDDINGS` | `none` | `ngram` or `ollama` for the optional vector search. |
-| `RAG_SHOW_DATES` | `false` | Show each undated note's last-change date in results (about 8% more tokens). |
-| `MCP_MAX_CALLS_PER_MINUTE`, `MCP_MAX_WRITES_PER_10_MIN` | `120`, `20` | Per-session limits. |
-
-## Project layout
-
-- `src/`: the server. `src/retrieval/` is the search (chunker, index, embeddings); `src/safety.ts` cleans note
-  text and checks writes; `src/context.ts` builds the short start-of-chat summary.
-- `tests/`: 129 fast tests (`npm test`). `tests/heavy/`: 15 fuzz and stress tests (`npm run test:heavy`).
-- `bench/`: the token benchmark, two fake test vaults and saved results.
-- `security/`: raw test results before and after each round of fixes, and `npm audit` before and after.
-- `sbom.cdx.json`: the list of every package the server contains (CycloneDX).
+- `npm test`: the fast tests. `npm run test:heavy`: fuzz and stress tests, including a 10,000-note vault.
+- `npm run bench`: the token benchmark. `npm run charts` redraws the charts from the saved results.
+- Code layout and the rules every change must keep: [CLAUDE.md](CLAUDE.md).
+- Only use fake notes in this repository. Never commit a real vault, `.env`, tokens or tunnel addresses.
 
 ## Who made what
 
 - The original project, [secure-obsidian-memory-mcp](https://github.com/MoKarim146/secure-obsidian-memory-mcp),
   was written with **Codex**. **Mohamed Karim** designed it, directed the work and tested it.
 - **Claude Code** (Anthropic's coding agent) wrote this version's additions at his direction: the token
-  benchmark, the RAG search, the security audit, the OWASP controls, the heavy tests and these documents.
+  benchmark, the RAG search, the security audit and OWASP controls, the heavy tests and the documents.
 - The first commit in this repository is the original project, unchanged, so every later change can be seen on
   its own.
-
-## Privacy
-
-Only use fake notes in this repository (`examples/` and `bench/` vaults are fictional). Never commit a real
-vault, `.env`, tokens or tunnel addresses. Anything an AI reads can be sent to that AI's company under its own
-terms; this server only controls what it hands over.
