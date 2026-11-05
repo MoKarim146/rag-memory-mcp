@@ -1,0 +1,246 @@
+{
+  "benchmark": "eval-paraphrase",
+  "runId": "20261105T055359Z-1bd2c4b",
+  "startedAt": "2026-11-05T05:53:59.827Z",
+  "git": {
+    "commit": "1bd2c4b6bb7c47f3be4d0cfee322755fca15106e",
+    "dirty": false,
+    "dirtyFiles": []
+  },
+  "environment": {
+    "node": "v22.23.4",
+    "platform": "linux 6.18.44-fc-v236",
+    "arch": "x64",
+    "cpuModel": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "logicalCpus": 4,
+    "cpuAffinity": "0-1",
+    "memoryGB": 16.9,
+    "timeZone": "UTC",
+    "TZ": "UTC",
+    "packageLockSha256": "f124fefbec3ac18e0ba2d6cda1887b5950d28ecd10d71549a67716feb92aa549"
+  },
+  "config": {
+    "about": "Retrieval evaluation (bench/eval/run.ts) through the MCP server's search_memory tool. Queries are the dataset's text, unchanged.",
+    "dataset": "paraphrase",
+    "split": "evaluation",
+    "quick": null,
+    "quickSeed": null,
+    "limits": [
+      5,
+      10
+    ],
+    "systems": {
+      "bm25": {
+        "about": "this server, keyword search only (FTS5 BM25)",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+          "RAG_RETRIEVAL": "keyword"
+        }
+      },
+      "dense": {
+        "about": "this server, vectors only",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+          "RAG_EMBEDDINGS": "ollama",
+          "RAG_OLLAMA_MODEL": "all-minilm",
+          "RAG_RETRIEVAL": "dense"
+        }
+      },
+      "hybrid": {
+        "about": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+          "RAG_EMBEDDINGS": "ollama",
+          "RAG_OLLAMA_MODEL": "all-minilm",
+          "RAG_RETRIEVAL": "hybrid"
+        }
+      },
+      "old": {
+        "about": "the original project, searched with the query's rarest word",
+        "env": {
+          "AI_MEMORY_DIR": "<vault>",
+          "MCP_MAX_CALLS_PER_MINUTE": "1000000000"
+        }
+      }
+    },
+    "embeddingModel": {
+      "ollamaModel": "all-minilm",
+      "note": "all-MiniLM-L6-v2 ONNX (Chroma package, SHA-256 913d7300...) served by bench/tools/ollama_compatible.py on 127.0.0.1:11434 with 2 threads on cores 2-3; not Ollama itself",
+      "formatting": "none (all-minilm takes no query or document prefix)"
+    },
+    "tokenizer": "o200k_base",
+    "timeZone": "UTC"
+  },
+  "data": {
+    "dataset": "paraphrase",
+    "split": "evaluation",
+    "sources": {
+      "scifactRelease": {
+        "url": "https://scifact.s3-us-west-2.amazonaws.com/release/latest/data.tar.gz",
+        "sha256": "11c621288d41ac144d29b13b0f8503b3820b7d6e8b1f6ff24dff335c196d76be",
+        "about": "SciFact original release: corpus.jsonl (5,183 abstracts) and claims_train/dev.jsonl (Wadden et al., 2020)",
+        "license": "Claims and annotations: CC BY 4.0; abstracts (from S2ORC): ODC-By 1.0 (allenai/scifact LICENSE.md)"
+      },
+      "scifactQrelsTest": {
+        "url": "https://huggingface.co/datasets/BeIR/scifact-qrels/resolve/2938d17dc3b09882fdb8c12bbbe2e2dc0e75a029/test.tsv",
+        "sha256": "0864bb985e0ca2367ba217977e72004d549054b2b06666ed9d4825ac7c21284c",
+        "about": "BEIR SciFact test relevance labels (300 claims, 339 pairs), dataset revision 2938d17",
+        "license": "CC BY-SA 4.0 (BEIR dataset card)"
+      },
+      "scifactQrelsTrain": {
+        "url": "https://huggingface.co/datasets/BeIR/scifact-qrels/resolve/2938d17dc3b09882fdb8c12bbbe2e2dc0e75a029/train.tsv",
+        "sha256": "a53f2114831916c096b6c37d9e54da68cef4efdcdbd5ed46533601af972acf1d",
+        "about": "BEIR SciFact train relevance labels (809 claims), dataset revision 2938d17. Development only",
+        "license": "CC BY-SA 4.0 (BEIR dataset card)"
+      },
+      "longmemevalS": {
+        "url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/98d7416c24c778c2fee6e6f3006e7a073259d48f/longmemeval_s_cleaned.json",
+        "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+        "about": "LongMemEval-S, cleaned September 2025 release (Wu et al., 2025): 500 questions, each with about 50 dated chat sessions. Dataset revision 98d7416",
+        "license": "MIT"
+      }
+    },
+    "documents": 138,
+    "setFile": "bench/paraphrase/set.json",
+    "splitFile": "bench/paraphrase/splits.json"
+  },
+  "plan": [
+    {
+      "name": "paraphrase/evaluation/bm25/limit-5",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "paraphrase/evaluation/bm25/limit-10",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "bm25",
+        "systemAbout": "this server, keyword search only (FTS5 BM25)",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "paraphrase/evaluation/dense/limit-5",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "dense",
+        "systemAbout": "this server, vectors only",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "paraphrase/evaluation/dense/limit-10",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "dense",
+        "systemAbout": "this server, vectors only",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "paraphrase/evaluation/hybrid/limit-5",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "hybrid",
+        "systemAbout": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "paraphrase/evaluation/hybrid/limit-10",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "hybrid",
+        "systemAbout": "this server, keywords and vectors merged (reciprocal rank fusion)",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "paraphrase/evaluation/old/limit-5",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "old",
+        "systemAbout": "the original project, searched with the query's rarest word",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type"
+      ]
+    },
+    {
+      "name": "paraphrase/evaluation/old/limit-10",
+      "queries": 64,
+      "about": {
+        "dataset": "paraphrase",
+        "split": "evaluation",
+        "system": "old",
+        "systemAbout": "the original project, searched with the query's rarest word",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type"
+      ]
+    }
+  ],
+  "finishedAt": "2026-11-05T05:54:20.497Z",
+  "facts": {
+    "bm25/index": {
+      "files": 143,
+      "sections": 260,
+      "passages": 652,
+      "vectors": 0
+    },
+    "dense/index": {
+      "files": 143,
+      "sections": 260,
+      "passages": 652,
+      "vectors": 652
+    },
+    "hybrid/index": {
+      "files": 143,
+      "sections": 260,
+      "passages": 652,
+      "vectors": 652
+    },
+    "embeddingIncomplete": 0
+  }
+}

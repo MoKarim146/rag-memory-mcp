@@ -1,0 +1,416 @@
+{
+  "paraphrase/evaluation/bm25/limit-5": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.422,
+    "recallAt10": null,
+    "ndcgAt10": null,
+    "mrr": 0.404,
+    "answerPresentPct": 42.2,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 4.7,
+    "embeddingFailed": 0,
+    "tokensMean": 133,
+    "tokensMedian": 102,
+    "tokensP90": 291,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.375,
+        "mrr": 0.292,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 1,
+        "mrr": 0.969,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0,
+        "mrr": 0,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 0.75,
+        "mrr": 0.75,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.125,
+        "mrr": 0.125,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      }
+    }
+  },
+  "paraphrase/evaluation/bm25/limit-10": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.422,
+    "recallAt10": 0.422,
+    "ndcgAt10": 0.408,
+    "mrr": 0.404,
+    "answerPresentPct": 42.2,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 4.7,
+    "embeddingFailed": 0,
+    "tokensMean": 155,
+    "tokensMedian": 102,
+    "tokensP90": 372,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.375,
+        "mrr": 0.292,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 1,
+        "mrr": 0.969,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0,
+        "mrr": 0,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 0.75,
+        "mrr": 0.75,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.125,
+        "mrr": 0.125,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      }
+    }
+  },
+  "paraphrase/evaluation/dense/limit-5": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.656,
+    "recallAt10": null,
+    "ndcgAt10": null,
+    "mrr": 0.633,
+    "answerPresentPct": 65.6,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 3.1,
+    "embeddingFailed": 0,
+    "tokensMean": 85,
+    "tokensMedian": 67,
+    "tokensP90": 194,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.25,
+        "mrr": 0.188,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 1,
+        "mrr": 1,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0.313,
+        "mrr": 0.313,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 0.875,
+        "mrr": 0.813,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.75,
+        "mrr": 0.719,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      }
+    }
+  },
+  "paraphrase/evaluation/dense/limit-10": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.656,
+    "recallAt10": 0.656,
+    "ndcgAt10": 0.639,
+    "mrr": 0.633,
+    "answerPresentPct": 65.6,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 3.1,
+    "embeddingFailed": 0,
+    "tokensMean": 96,
+    "tokensMedian": 67,
+    "tokensP90": 194,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.25,
+        "mrr": 0.188,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 1,
+        "mrr": 1,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0.313,
+        "mrr": 0.313,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 0.875,
+        "mrr": 0.813,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.75,
+        "mrr": 0.719,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      }
+    }
+  },
+  "paraphrase/evaluation/hybrid/limit-5": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.719,
+    "recallAt10": null,
+    "ndcgAt10": null,
+    "mrr": 0.571,
+    "answerPresentPct": 71.9,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 4.7,
+    "embeddingFailed": 0,
+    "tokensMean": 165,
+    "tokensMedian": 119,
+    "tokensP90": 326,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.5,
+        "mrr": 0.438,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 1,
+        "mrr": 0.969,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0.313,
+        "mrr": 0.172,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 1,
+        "mrr": 0.838,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.813,
+        "mrr": 0.505,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      }
+    }
+  },
+  "paraphrase/evaluation/hybrid/limit-10": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.719,
+    "recallAt10": 0.719,
+    "ndcgAt10": 0.609,
+    "mrr": 0.571,
+    "answerPresentPct": 71.9,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 4.7,
+    "embeddingFailed": 0,
+    "tokensMean": 205,
+    "tokensMedian": 119,
+    "tokensP90": 514,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.5,
+        "mrr": 0.438,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 1,
+        "mrr": 0.969,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0.313,
+        "mrr": 0.172,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 1,
+        "mrr": 0.838,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 12.5
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.813,
+        "mrr": 0.505,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      }
+    }
+  },
+  "paraphrase/evaluation/old/limit-5": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.328,
+    "recallAt10": null,
+    "ndcgAt10": null,
+    "mrr": 0.279,
+    "answerPresentPct": 35.9,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 4.7,
+    "tokensMean": 339,
+    "tokensMedian": 137,
+    "tokensP90": 909,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.125,
+        "mrr": 0.063,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 0.875,
+        "mrr": 0.771,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0,
+        "mrr": 0,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 0.625,
+        "mrr": 0.49,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 25
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.063,
+        "mrr": 0.069,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      }
+    }
+  },
+  "paraphrase/evaluation/old/limit-10": {
+    "questions": 64,
+    "errors": 0,
+    "recallAt5": 0.328,
+    "recallAt10": 0.344,
+    "ndcgAt10": 0.293,
+    "mrr": 0.279,
+    "answerPresentPct": 35.9,
+    "evidenceShownPct": null,
+    "distractorFirstPct": 4.7,
+    "tokensMean": 339,
+    "tokensMedian": 137,
+    "tokensP90": 909,
+    "by_type": {
+      "date": {
+        "questions": 8,
+        "recallAt5": 0.125,
+        "mrr": 0.063,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "lexical": {
+        "questions": 16,
+        "recallAt5": 0.875,
+        "mrr": 0.771,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 6.3
+      },
+      "low-overlap": {
+        "questions": 16,
+        "recallAt5": 0,
+        "mrr": 0,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      },
+      "negation": {
+        "questions": 8,
+        "recallAt5": 0.625,
+        "mrr": 0.49,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 25
+      },
+      "synonym": {
+        "questions": 16,
+        "recallAt5": 0.063,
+        "mrr": 0.069,
+        "evidenceShownPct": null,
+        "distractorFirstPct": 0
+      }
+    }
+  }
+}

@@ -12,7 +12,12 @@
 // Kinds:
 //   retrieval <benchmark> <split>   the latest clean run of bench/runs/<benchmark>/ with that split: one row per
 //                                   system and number of results
+//   retrieval-by <benchmark> <split> <results>
+//                                   the same run, broken down by question type: Recall@5 per system, with its 95%
+//                                   interval, for the groups with that number of results
 //   books <group> [<group> ...]     the latest clean run of bench/runs/books/: one row per named group
+//   tokens <file> [<file> ...]      the token benchmark's committed results (bench/results/<file>.json, written by
+//                                   bench/run.ts): a short chat per test set, with keyword searches
 // "Clean" means the folder name does not end in -dirty (the code was exactly the commit it names).
 import { existsSync } from "node:fs";
 import { readFile, readdir, writeFile } from "node:fs/promises";
@@ -76,22 +81,68 @@ async function retrievalTable(benchmark: string, split: string): Promise<string>
       `| ${system} | ${about.limit} | ${fmt(s.questions)} | ${fmt(s.recallAt5)} | ${interval(ci)} | ${fmt(s.recallAt10)} | ${fmt(s.ndcgAt10)} | ${fmt(s.mrr)} | ${pctCell(s.evidenceShownPct)} | ${pctCell(s.answerPresentPct)} |${hasDistractors ? ` ${pctCell(s.distractorFirstPct)} |` : ""} ${fmt(s.embeddingFailed ?? "")} | ${fmt(s.tokensMean)} | ${fmt(t.msMean, 1)} | ${fmt(cold, 0)} |`,
     );
   }
-  // Paired differences from keyword search, on the same questions and number of results.
+  // Paired differences on the same questions and number of results: each system against keyword search, and
+  // hybrid against vectors alone.
   const diffs: string[] = [];
-  for (const group of run.meta.plan) {
-    const about = group.about;
-    if (about.system === "bm25" || group.name.endsWith("/abstention")) continue;
-    const base = run.meta.plan.find((g) => g.about.system === "bm25" && g.about.limit === about.limit && !g.name.endsWith("/abstention"));
-    if (!base) continue;
-    const mine = new Map((byGroup.get(group.name) ?? []).map((r) => [r.id, (r.correct.recallAt5 as number | null) ?? 0]));
-    const theirs = new Map((byGroup.get(base.name) ?? []).map((r) => [r.id, (r.correct.recallAt5 as number | null) ?? 0]));
-    const ids = [...mine.keys()].filter((id) => theirs.has(id)).sort();
-    if (ids.length < 2) continue;
-    const d = bootstrapPairedDifference(ids.map((id) => mine.get(id)!), ids.map((id) => theirs.get(id)!));
-    diffs.push(`| ${about.system} minus bm25 | ${about.limit} | ${ids.length} | ${d.mean >= 0 ? "+" : ""}${d.mean.toFixed(3)} | ${interval(d.interval)} |`);
+  const valueOf = (r: QueryRecord, key: string) => (r.correct[key] as number | null) ?? 0;
+  const pairs: [string, string][] = [
+    ["dense", "bm25"],
+    ["hybrid", "bm25"],
+    ["hybrid", "dense"],
+    ["old", "bm25"],
+  ];
+  for (const limit of [...new Set(run.meta.plan.map((g) => g.about.limit))]) {
+    for (const [a, b] of pairs) {
+      const find = (system: string) => run.meta.plan.find((g) => g.about.system === system && g.about.limit === limit && !g.name.endsWith("/abstention"));
+      const ga = find(a);
+      const gb = find(b);
+      if (!ga || !gb) continue;
+      const mine = new Map((byGroup.get(ga.name) ?? []).map((r) => [r.id, r]));
+      const theirs = new Map((byGroup.get(gb.name) ?? []).map((r) => [r.id, r]));
+      const ids = [...mine.keys()].filter((id) => theirs.has(id)).sort();
+      if (ids.length < 2) continue;
+      const cells = ["recallAt5", "reciprocalRank"].map((key) => {
+        const d = bootstrapPairedDifference(ids.map((id) => valueOf(mine.get(id)!, key)), ids.map((id) => valueOf(theirs.get(id)!, key)));
+        return `${d.mean >= 0 ? "+" : ""}${d.mean.toFixed(3)} | ${interval(d.interval)}`;
+      });
+      diffs.push(`| ${a} minus ${b} | ${limit} | ${ids.length} | ${cells.join(" | ")} |`);
+    }
   }
   if (diffs.length) {
-    lines.push("", "| Recall@5 difference | Results | Same questions | Mean | 95% interval |", "|---|---:|---:|---:|---:|", ...diffs);
+    lines.push(
+      "",
+      "Paired differences on the same questions (95% bootstrap interval of the mean difference, 2,000 resamples, seed 1). An interval that includes 0 means the difference may be chance.",
+      "",
+      "| Difference | Results | Same questions | Recall@5 | Recall@5, 95% interval | MRR | MRR, 95% interval |",
+      "|---|---:|---:|---:|---:|---:|---:|",
+      ...diffs,
+    );
+  }
+  return lines.join("\n");
+}
+
+async function breakdownTable(benchmark: string, split: string, limit: string): Promise<string> {
+  const run = (await runs(benchmark)).filter((r) => r.meta.config.split === split).at(-1);
+  if (!run) return `_No clean run of ${benchmark} (${split}) yet._`;
+  const records = await readRecords(run.dir);
+  const groups = run.meta.plan.filter((g) => String(g.about.limit) === limit && !g.name.endsWith("/abstention"));
+  if (groups.length === 0) throw new Error(`${run.id} has no groups with ${limit} results`);
+  const types = [...new Set(records.map((r) => r.tags.type).filter((t): t is string => Boolean(t)))].sort();
+  const lines = [
+    `Recall@5 by question type, ${limit} results per search, same run. 95% bootstrap interval over that type's questions (2,000 resamples, seed 1).`,
+    "",
+    `| Question type | Questions | ${groups.map((g) => `${g.about.system} Recall@5`).join(" | ")} |`,
+    `|---|---:|${groups.map(() => "---:").join("|")}|`,
+  ];
+  for (const type of types) {
+    const cells = groups.map((g) => {
+      const xs = records.filter((r) => r.group === g.name && r.tags.type === type).map((r) => (r.correct.recallAt5 as number | null) ?? 0);
+      const ci = bootstrapMean(xs);
+      const m = xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
+      return `${m.toFixed(3)}${ci ? ` (${ci[0].toFixed(2)} to ${ci[1].toFixed(2)})` : ""}`;
+    });
+    const n = records.filter((r) => r.group === groups[0].name && r.tags.type === type).length;
+    lines.push(`| ${type} | ${n} | ${cells.join(" | ")} |`);
   }
   return lines.join("\n");
 }
@@ -114,10 +165,49 @@ async function booksTable(groups: string[]): Promise<string> {
   return lines.join("\n");
 }
 
+interface TokenSummary {
+  quickChatTokens: number;
+  answerableLookups: number;
+  answered: number;
+  answeredBySearchAlone: number;
+}
+
+// The README's short-chat table. "Answered" by search alone is the realistic measure; the row after it assumes the
+// AI then opens the right listed note, which the benchmark knows and an AI does not, so it is an upper bound.
+async function tokensTable(files: string[]): Promise<string> {
+  const sets = await Promise.all(
+    files.map(async (f) => {
+      const results = JSON.parse(await readFile(path.join(BENCH, "results", `${f}.json`), "utf8")) as { variant: string; style: string; summary: TokenSummary }[];
+      const pick = (variant: string) => {
+        const r = results.find((x) => x.variant === variant && x.style === "keyword");
+        if (!r) throw new Error(`${f}.json has no ${variant} keyword result`);
+        return r.summary;
+      };
+      return { paste: pick("fullcontext"), old: pick("baseline"), current: pick("current") };
+    }),
+  );
+  const n = (v: number) => v.toLocaleString("en-US");
+  const saving = (a: number, b: number) => `${a < b ? "\u2212" : "+"}${Math.abs((100 * (a - b)) / b).toFixed(1)}%`;
+  const row = (label: string, cells: string[]) => `| ${label} | ${cells.join(" | ")} |`;
+  return [
+    `| A short chat | ${files.map((_, i) => `Set ${i + 1}`).join(" | ")} |`,
+    `|---|${files.map(() => "---:").join("|")}|`,
+    row("Paste every note", sets.map((s) => `${n(s.paste.quickChatTokens)} tokens`)),
+    row("Old server", sets.map((s) => n(s.old.quickChatTokens))),
+    row("**This server**", sets.map((s) => `**${n(s.current.quickChatTokens)}**`)),
+    row("Saving against pasting every note", sets.map((s) => saving(s.current.quickChatTokens, s.paste.quickChatTokens))),
+    row("Saving against the old server", sets.map((s) => saving(s.current.quickChatTokens, s.old.quickChatTokens))),
+    row("Answer in this server's search results", sets.map((s) => `${s.current.answeredBySearchAlone} of ${s.current.answerableLookups}`)),
+    row("... if the AI then opens the right listed note (upper bound)", sets.map((s) => `${s.current.answered} of ${s.current.answerableLookups}`)),
+  ].join("\n");
+}
+
 async function generate(spec: string): Promise<string> {
   const [kind, ...args] = spec.trim().split(/\s+/);
   if (kind === "retrieval") return retrievalTable(args[0], args[1]);
+  if (kind === "retrieval-by") return breakdownTable(args[0], args[1], args[2]);
   if (kind === "books") return booksTable(args);
+  if (kind === "tokens") return tokensTable(args);
   throw new Error(`unknown generated block: ${spec}`);
 }
 

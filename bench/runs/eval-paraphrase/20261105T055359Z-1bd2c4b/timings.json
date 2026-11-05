@@ -1,0 +1,47 @@
+{
+  "groups": {
+    "paraphrase/evaluation/bm25/limit-5": {
+      "msMean": 21,
+      "msP95": 30.9
+    },
+    "paraphrase/evaluation/bm25/limit-10": {
+      "msMean": 22.1,
+      "msP95": 36.9
+    },
+    "paraphrase/evaluation/dense/limit-5": {
+      "msMean": 25.1,
+      "msP95": 40.3
+    },
+    "paraphrase/evaluation/dense/limit-10": {
+      "msMean": 24.4,
+      "msP95": 36.4
+    },
+    "paraphrase/evaluation/hybrid/limit-5": {
+      "msMean": 24.7,
+      "msP95": 33.6
+    },
+    "paraphrase/evaluation/hybrid/limit-10": {
+      "msMean": 25.7,
+      "msP95": 35.9
+    },
+    "paraphrase/evaluation/old/limit-5": {
+      "msMean": 66.3,
+      "msP95": 76
+    },
+    "paraphrase/evaluation/old/limit-10": {
+      "msMean": 67,
+      "msP95": 79.4
+    }
+  },
+  "other": {
+    "bm25/coldStartMs": 169.5,
+    "bm25/rssGrowthMBMean": 8.8,
+    "dense/coldStartMs": 499.3,
+    "dense/rssGrowthMBMean": 19.2,
+    "hybrid/coldStartMs": 455.4,
+    "hybrid/rssGrowthMBMean": -6.7,
+    "old/coldStartMs": 65.2,
+    "old/rssGrowthMBMean": 0.5,
+    "minutes": 0.3
+  }
+}
