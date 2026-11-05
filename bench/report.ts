@@ -51,7 +51,14 @@ async function runs(benchmark: string): Promise<Run[]> {
   return out;
 }
 
-const fmt = (v: unknown, digits = 3) => (v === null || v === undefined ? "" : typeof v === "number" ? (Number.isInteger(v) ? v.toLocaleString("en-US") : v.toFixed(digits)) : String(v));
+const fmt = (v: unknown, digits = 3) =>
+  v === null || v === undefined
+    ? ""
+    : typeof v === "number"
+      ? Number.isInteger(v) || digits === 0
+        ? Math.round(v).toLocaleString("en-US")
+        : v.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits, useGrouping: digits < 3 })
+      : String(v);
 const pctCell = (v: unknown) => (v === null || v === undefined ? "" : `${v}%`);
 
 const interval = (ci: [number, number] | null) => (ci ? `${ci[0].toFixed(3)} to ${ci[1].toFixed(3)}` : "");

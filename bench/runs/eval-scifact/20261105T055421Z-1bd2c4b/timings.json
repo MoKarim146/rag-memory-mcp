@@ -1,0 +1,47 @@
+{
+  "groups": {
+    "scifact/test/bm25/limit-5": {
+      "msMean": 272.3,
+      "msP95": 327.2
+    },
+    "scifact/test/bm25/limit-10": {
+      "msMean": 273.6,
+      "msP95": 344
+    },
+    "scifact/test/old/limit-5": {
+      "msMean": 1937.9,
+      "msP95": 2242.7
+    },
+    "scifact/test/old/limit-10": {
+      "msMean": 1950.9,
+      "msP95": 2300.2
+    },
+    "scifact/test/dense/limit-5": {
+      "msMean": 459.4,
+      "msP95": 566
+    },
+    "scifact/test/dense/limit-10": {
+      "msMean": 454.4,
+      "msP95": 598.2
+    },
+    "scifact/test/hybrid/limit-5": {
+      "msMean": 481.1,
+      "msP95": 572.3
+    },
+    "scifact/test/hybrid/limit-10": {
+      "msMean": 481.4,
+      "msP95": 564.6
+    }
+  },
+  "other": {
+    "bm25/coldStartMs": 6179,
+    "bm25/rssGrowthMBMean": 53,
+    "old/coldStartMs": 2028.3,
+    "old/rssGrowthMBMean": 0.5,
+    "dense/coldStartMs": 517815.9,
+    "dense/rssGrowthMBMean": 173.6,
+    "hybrid/coldStartMs": 17257.4,
+    "hybrid/rssGrowthMBMean": 99.8,
+    "minutes": 40.9
+  }
+}

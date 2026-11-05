@@ -99,7 +99,33 @@ for hybrid was also already cached from the dense run, so hybrid's search times 
 ### BEIR SciFact, test split (300 claims)
 
 <!-- generated: retrieval eval-scifact test -->
-_No clean run of eval-scifact (test) yet._
+Run `bench/runs/eval-scifact/20261105T055421Z-1bd2c4b` (commit `1bd2c4b`). Recall@5 interval: 95% bootstrap over questions (2,000 resamples, seed 1). Warm search: one search once the index is built. Cold start: building the index, with embedding for dense and hybrid. Memory: growth of the benchmark process's resident memory while the index was built, a rough reading that garbage collection can make negative.
+
+| System | Results | Questions | Recall@5 | Recall@5, 95% interval | Recall@10 | nDCG@10 | MRR | Evidence shown | Answer present | Without vectors | Tokens (mean) | Warm search ms (mean) | Cold start ms (mean) | Memory MB (rough) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| bm25 | 5 | 300 | 0.707 | 0.659 to 0.754 |  |  | 0.624 |  |  | 0 | 390 | 272.3 | 6,179 | 53 |
+| bm25 | 10 | 300 | 0.720 | 0.671 to 0.768 | 0.750 | 0.655 | 0.632 |  |  | 0 | 649 | 273.6 | 6,179 | 53 |
+| old | 5 | 300 | 0.410 | 0.353 to 0.464 |  |  | 0.313 |  |  |  | 1,080 | 1,937.9 | 2,028 | 0.5 |
+| old | 10 | 300 | 0.410 | 0.353 to 0.464 | 0.480 | 0.349 | 0.313 |  |  |  | 1,080 | 1,950.9 | 2,028 | 0.5 |
+| dense | 5 | 300 | 0.719 | 0.669 to 0.770 |  |  | 0.629 |  |  | 0 | 359 | 459.4 | 517,816 | 173.6 |
+| dense | 10 | 300 | 0.738 | 0.692 to 0.787 | 0.753 | 0.660 | 0.636 |  |  | 0 | 647 | 454.4 | 517,816 | 173.6 |
+| hybrid | 5 | 300 | 0.765 | 0.717 to 0.810 |  |  | 0.677 |  |  | 0 | 418 | 481.1 | 17,257 | 99.8 |
+| hybrid | 10 | 300 | 0.806 | 0.762 to 0.847 | 0.818 | 0.712 | 0.687 |  |  | 0 | 762 | 481.4 | 17,257 | 99.8 |
+
+Index: bm25 5,188 notes, 27,691 passages, 0 vectors; dense 5,188 notes, 27,691 passages, 27,691 vectors; hybrid 5,188 notes, 27,691 passages, 27,691 vectors. The notes include the server's five main notes, which it creates with only a heading.
+
+Paired differences on the same questions (95% bootstrap interval of the mean difference, 2,000 resamples, seed 1). An interval that includes 0 means the difference may be chance.
+
+| Difference | Results | Same questions | Recall@5 | Recall@5, 95% interval | MRR | MRR, 95% interval |
+|---|---:|---:|---:|---:|---:|---:|
+| dense minus bm25 | 5 | 300 | +0.012 | -0.035 to 0.059 | +0.005 | -0.038 to 0.048 |
+| hybrid minus bm25 | 5 | 300 | +0.058 | 0.030 to 0.089 | +0.053 | 0.027 to 0.079 |
+| hybrid minus dense | 5 | 300 | +0.046 | 0.011 to 0.083 | +0.048 | 0.017 to 0.079 |
+| old minus bm25 | 5 | 300 | -0.297 | -0.356 to -0.238 | -0.311 | -0.358 to -0.263 |
+| dense minus bm25 | 10 | 300 | +0.018 | -0.026 to 0.063 | +0.003 | -0.039 to 0.044 |
+| hybrid minus bm25 | 10 | 300 | +0.085 | 0.056 to 0.117 | +0.054 | 0.030 to 0.079 |
+| hybrid minus dense | 10 | 300 | +0.067 | 0.035 to 0.101 | +0.051 | 0.022 to 0.082 |
+| old minus bm25 | 10 | 300 | -0.310 | -0.368 to -0.251 | -0.319 | -0.366 to -0.272 |
 <!-- /generated -->
 
 ### LongMemEval-S, evaluation split (402 questions), keyword search and the old server
