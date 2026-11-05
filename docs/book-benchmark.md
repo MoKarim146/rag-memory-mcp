@@ -4,8 +4,13 @@ The other benchmarks in this project use small fake vaults and questions written
 asks a harder question: **with real books and questions written by other people, does the search give the AI
 the answer as reliably as pasting the whole text, and at what cost?**
 
-Everything here comes from `bench/results/books.json`, made by `bench/books.ts`. It was run once; nothing in it
-was used to tune the search. Percentages are rounded to one decimal.
+Every number here comes from the run folder `bench/runs/books/20261105T050800Z-7cb61de` (commit `7cb61de`, one
+record per query; check it with `npm run bench:verify`), made by `bench/books.ts`. Nothing in it was used to tune
+the search. Percentages are rounded to one decimal. The first publication of this benchmark
+(`bench/results/books.json`, commit `09766a6`) gave the same quality numbers except for the optional `ngram`
+vectors, which changed when vectors became per passage (see section 1).
+
+How to run it and what the records contain: [docs/benchmarks.md](benchmarks.md).
 
 ## The short version
 
@@ -17,8 +22,8 @@ was used to tune the search. Percentages are rounded to one decimal.
   words from the fact: **20 of 20** found, at 75 tokens per search. Asked in other words that keep a name: 8 of
   10. Asked in words the fact does not contain at all: **0 of 10**. Keyword search cannot match meaning.
 - **A library of 18 books and the 48 articles** (3,157,635 tokens, far beyond any chat window). Still 20 of 20
-  planted facts with keywords; SQuAD accuracy dropped by 1.4 points. On one CPU core the first search took 3.2
-  seconds to build the index, later searches 43 ms on average.
+  planted facts with keywords; SQuAD accuracy dropped by 1.4 points. On one CPU core the first search took 3.4
+  seconds to build the index, later searches 47 ms on average.
 - **Two bugs found and fixed:** a whole book in one note over 1 MB was silently left out of search, and the
   check for orders to an AI flagged ordinary dialogue ("you are now going to leave me") in 5 of 587 chapters.
 - **Not measured yet:** whether an AI then *answers* correctly. That needs a model and an API key (see "How to
@@ -70,7 +75,7 @@ would answer correctly, but the expected answer is "Denver Broncos", so it count
 | This server, the question without common words | 185 per search | 82.3% | 78.1% |
 | Same, on a 1,000-question sample (used below) | 185 per search | 82.4% | 77.7% |
 | Same sample, 10 results instead of 5 | 214 per search | 83.4% | 78.2% |
-| Same sample, with `ngram` vectors | 209 per search | 77.2% | 72.6% |
+| Same sample, with `ngram` vectors (per-passage vectors since commit `a7664c5`) | 223 per search | 75.9% | 71.2% |
 | This server, one word (the question's rarest word) | 215 per search | 43.6% | 38.8% |
 | Old server, one word (the question's rarest word) | 839 per search | 60.2% | 54.3% |
 | Old server, the question as asked (1,000-question sample) | 25 per search | 1.0% | 0.1% |
@@ -88,7 +93,8 @@ What the numbers say:
 - **One word alone is much worse** (43.6%): in a big text, one word matches too many places. Use several
   specific words.
 - **10 results instead of 5 barely helps** (+1.0 point for 16% more tokens). **The `ngram` vectors make it
-  worse** (−5.2 points), so they stay off by default.
+  worse** (−6.5 points; −5.2 when vectors were per section, in the first publication), so they stay off by
+  default.
 - **It depends on wording, not on the kind of question.** "Who" and "which" questions: 85%; "why": 77.4%; the
   rest between 79.7% and 82.2%. The big difference is how many of the question's words appear in the sentence
   with the answer:
@@ -112,7 +118,7 @@ fire assembly point for the Saltmarsh office is the bench beside the bakery").
 | As much as fits in 200,000 tokens | 200,000 per chat | 13/20 (by depth) | | |
 | As much as fits in 128,000 tokens | 128,000 per chat | 8/20 (by depth) | | |
 | **This server** | **75 per search** (reworded: 189) | **20/20** | **8/10** | **0/10** |
-| This server with `ngram` vectors | 80 (reworded: 309) | 20/20 | 8/10 | 0/10 |
+| This server with `ngram` vectors | 92 (reworded: 329) | 20/20 | 8/10 | 0/10 |
 | Old server, one rare word from the fact (`boathouse`) | 284 | 20/20 | | |
 | Old server, the same words as this server | 29 | 5/20 | | |
 
@@ -148,11 +154,11 @@ search that finds nothing name such notes and say to split them, and the server 
 | Planted facts, words from the fact | 20/20 (book alone) | 20/20 |
 | Planted facts, reworded with a name | 8/10 (book alone) | 8/10 |
 | Tokens per search (SQuAD) | 185 | 198 |
-| First search, which builds the index (one CPU core) | 0.4 s | 3.2 s |
-| Later searches, average (95% under) | 13.2 ms (21.6 ms) | 43.0 ms (72.5 ms) |
+| First search, which builds the index (one CPU core) | 0.4 s | 3.4 s |
+| Later searches, average (95% under) | 13.8 ms (23.2 ms) | 47.0 ms (79.7 ms) |
 
 The old server, given one rare word, found 19 of 20 planted facts in the library but returned 698 tokens per
-search on average, 3,718 or more for one search in ten, and took 128 ms per search.
+search on average, 3,718 or more for one search in ten, and took 125 ms per search.
 
 ## 5. Questions about whole stories
 
@@ -214,5 +220,5 @@ npx tsx bench/books.ts
 ```
 
 It downloads about 21 MB once into `bench/.cache/books/` (not committed), checks every file's SHA-256 sum, and
-writes `bench/results/books.json`. It takes about 14 minutes on one core. `--quick` runs 200 SQuAD
-questions instead of 10,570.
+writes a new run folder under `bench/runs/books/`. It takes about 16 minutes on one core. `npm run
+bench:books:quick` runs 200 SQuAD questions instead of 10,570.

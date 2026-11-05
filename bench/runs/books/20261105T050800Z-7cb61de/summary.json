@@ -1,0 +1,3946 @@
+{
+  "squad/current/squad-all/keywords/limit-5": {
+    "questions": 10570,
+    "errors": 0,
+    "found": 8703,
+    "foundPct": 82.3,
+    "evidencePct": 78.1,
+    "goldListedPct": 98.3,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.781,
+    "tokensMean": 185,
+    "tokensMedian": 166,
+    "tokensP90": 291,
+    "by_type": {
+      "how": {
+        "questions": 1225,
+        "found": 1007,
+        "foundPct": 82.2,
+        "evidencePct": 77.6
+      },
+      "other": {
+        "questions": 169,
+        "found": 137,
+        "foundPct": 81.1,
+        "evidencePct": 73.4
+      },
+      "what": {
+        "questions": 6022,
+        "found": 4934,
+        "foundPct": 81.9,
+        "evidencePct": 78.2
+      },
+      "when": {
+        "questions": 713,
+        "found": 585,
+        "foundPct": 82,
+        "evidencePct": 80.1
+      },
+      "where": {
+        "questions": 478,
+        "found": 381,
+        "foundPct": 79.7,
+        "evidencePct": 74.5
+      },
+      "which": {
+        "questions": 699,
+        "found": 594,
+        "foundPct": 85,
+        "evidencePct": 79.1
+      },
+      "who": {
+        "questions": 1109,
+        "found": 945,
+        "foundPct": 85.2,
+        "evidencePct": 79.3
+      },
+      "why": {
+        "questions": 155,
+        "found": 120,
+        "foundPct": 77.4,
+        "evidencePct": 74.2
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 4543,
+        "found": 4299,
+        "foundPct": 94.6,
+        "evidencePct": 92.8
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 1918,
+        "found": 1064,
+        "foundPct": 55.5,
+        "evidencePct": 45.8
+      },
+      "medium": {
+        "questions": 4109,
+        "found": 3340,
+        "foundPct": 81.3,
+        "evidencePct": 77
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.1
+      },
+      {
+        "window": 32000,
+        "pct": 8.6
+      },
+      {
+        "window": 128000,
+        "pct": 34.6
+      },
+      {
+        "window": 200000,
+        "pct": 54.7
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/current/squad-all/question/limit-5": {
+    "questions": 10570,
+    "errors": 0,
+    "found": 8694,
+    "foundPct": 82.3,
+    "evidencePct": 78.1,
+    "goldListedPct": 98.2,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.781,
+    "tokensMean": 186,
+    "tokensMedian": 167,
+    "tokensP90": 293,
+    "by_type": {
+      "how": {
+        "questions": 1225,
+        "found": 1003,
+        "foundPct": 81.9,
+        "evidencePct": 77.5
+      },
+      "other": {
+        "questions": 169,
+        "found": 137,
+        "foundPct": 81.1,
+        "evidencePct": 73.4
+      },
+      "what": {
+        "questions": 6022,
+        "found": 4929,
+        "foundPct": 81.8,
+        "evidencePct": 78.1
+      },
+      "when": {
+        "questions": 713,
+        "found": 585,
+        "foundPct": 82,
+        "evidencePct": 80.1
+      },
+      "where": {
+        "questions": 478,
+        "found": 382,
+        "foundPct": 79.9,
+        "evidencePct": 74.7
+      },
+      "which": {
+        "questions": 699,
+        "found": 594,
+        "foundPct": 85,
+        "evidencePct": 79.1
+      },
+      "who": {
+        "questions": 1109,
+        "found": 945,
+        "foundPct": 85.2,
+        "evidencePct": 79.3
+      },
+      "why": {
+        "questions": 155,
+        "found": 119,
+        "foundPct": 76.8,
+        "evidencePct": 73.5
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 4543,
+        "found": 4300,
+        "foundPct": 94.7,
+        "evidencePct": 92.8
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 1918,
+        "found": 1067,
+        "foundPct": 55.6,
+        "evidencePct": 46
+      },
+      "medium": {
+        "questions": 4109,
+        "found": 3327,
+        "foundPct": 81,
+        "evidencePct": 76.8
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.1
+      },
+      {
+        "window": 32000,
+        "pct": 8.6
+      },
+      {
+        "window": 128000,
+        "pct": 34.6
+      },
+      {
+        "window": 200000,
+        "pct": 54.7
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/current/squad-all/oneword/limit-5": {
+    "questions": 10570,
+    "errors": 0,
+    "found": 4607,
+    "foundPct": 43.6,
+    "evidencePct": 38.8,
+    "goldListedPct": 74.6,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.332,
+    "tokensMean": 215,
+    "tokensMedian": 234,
+    "tokensP90": 299,
+    "by_type": {
+      "how": {
+        "questions": 1225,
+        "found": 525,
+        "foundPct": 42.9,
+        "evidencePct": 37.1
+      },
+      "other": {
+        "questions": 169,
+        "found": 88,
+        "foundPct": 52.1,
+        "evidencePct": 39.6
+      },
+      "what": {
+        "questions": 6022,
+        "found": 2581,
+        "foundPct": 42.9,
+        "evidencePct": 38.4
+      },
+      "when": {
+        "questions": 713,
+        "found": 340,
+        "foundPct": 47.7,
+        "evidencePct": 45.7
+      },
+      "where": {
+        "questions": 478,
+        "found": 225,
+        "foundPct": 47.1,
+        "evidencePct": 42.9
+      },
+      "which": {
+        "questions": 699,
+        "found": 294,
+        "foundPct": 42.1,
+        "evidencePct": 37.3
+      },
+      "who": {
+        "questions": 1109,
+        "found": 497,
+        "foundPct": 44.8,
+        "evidencePct": 38.4
+      },
+      "why": {
+        "questions": 155,
+        "found": 57,
+        "foundPct": 36.8,
+        "evidencePct": 31.6
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 4543,
+        "found": 2417,
+        "foundPct": 53.2,
+        "evidencePct": 48.9
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 1918,
+        "found": 510,
+        "foundPct": 26.6,
+        "evidencePct": 19.8
+      },
+      "medium": {
+        "questions": 4109,
+        "found": 1680,
+        "foundPct": 40.9,
+        "evidencePct": 36.5
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.1
+      },
+      {
+        "window": 32000,
+        "pct": 8.6
+      },
+      {
+        "window": 128000,
+        "pct": 34.6
+      },
+      {
+        "window": 200000,
+        "pct": 54.7
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/current/squad-sample/keywords/limit-5": {
+    "questions": 1000,
+    "errors": 0,
+    "found": 824,
+    "foundPct": 82.4,
+    "evidencePct": 77.7,
+    "goldListedPct": 98.2,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.785,
+    "tokensMean": 185,
+    "tokensMedian": 167,
+    "tokensP90": 292,
+    "by_type": {
+      "how": {
+        "questions": 130,
+        "found": 107,
+        "foundPct": 82.3,
+        "evidencePct": 80.8
+      },
+      "other": {
+        "questions": 19,
+        "found": 15,
+        "foundPct": 78.9,
+        "evidencePct": 63.2
+      },
+      "what": {
+        "questions": 565,
+        "found": 463,
+        "foundPct": 81.9,
+        "evidencePct": 77
+      },
+      "when": {
+        "questions": 65,
+        "found": 54,
+        "foundPct": 83.1,
+        "evidencePct": 81.5
+      },
+      "where": {
+        "questions": 44,
+        "found": 35,
+        "foundPct": 79.5,
+        "evidencePct": 77.3
+      },
+      "which": {
+        "questions": 65,
+        "found": 56,
+        "foundPct": 86.2,
+        "evidencePct": 83.1
+      },
+      "who": {
+        "questions": 105,
+        "found": 89,
+        "foundPct": 84.8,
+        "evidencePct": 76.2
+      },
+      "why": {
+        "questions": 7,
+        "found": 5,
+        "foundPct": 71.4,
+        "evidencePct": 57.1
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 399,
+        "found": 371,
+        "foundPct": 93,
+        "evidencePct": 90.5
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 194,
+        "found": 111,
+        "foundPct": 57.2,
+        "evidencePct": 47.9
+      },
+      "medium": {
+        "questions": 407,
+        "found": 342,
+        "foundPct": 84,
+        "evidencePct": 79.4
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.2
+      },
+      {
+        "window": 32000,
+        "pct": 9
+      },
+      {
+        "window": 128000,
+        "pct": 34.8
+      },
+      {
+        "window": 200000,
+        "pct": 56.4
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/current/squad-sample/keywords/limit-10": {
+    "questions": 1000,
+    "errors": 0,
+    "found": 834,
+    "foundPct": 83.4,
+    "evidencePct": 78.2,
+    "goldListedPct": 98.7,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.786,
+    "tokensMean": 214,
+    "tokensMedian": 167,
+    "tokensP90": 438,
+    "by_type": {
+      "how": {
+        "questions": 130,
+        "found": 109,
+        "foundPct": 83.8,
+        "evidencePct": 81.5
+      },
+      "other": {
+        "questions": 19,
+        "found": 15,
+        "foundPct": 78.9,
+        "evidencePct": 63.2
+      },
+      "what": {
+        "questions": 565,
+        "found": 467,
+        "foundPct": 82.7,
+        "evidencePct": 77.5
+      },
+      "when": {
+        "questions": 65,
+        "found": 55,
+        "foundPct": 84.6,
+        "evidencePct": 83.1
+      },
+      "where": {
+        "questions": 44,
+        "found": 36,
+        "foundPct": 81.8,
+        "evidencePct": 77.3
+      },
+      "which": {
+        "questions": 65,
+        "found": 57,
+        "foundPct": 87.7,
+        "evidencePct": 83.1
+      },
+      "who": {
+        "questions": 105,
+        "found": 90,
+        "foundPct": 85.7,
+        "evidencePct": 76.2
+      },
+      "why": {
+        "questions": 7,
+        "found": 5,
+        "foundPct": 71.4,
+        "evidencePct": 57.1
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 399,
+        "found": 375,
+        "foundPct": 94,
+        "evidencePct": 91
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 194,
+        "found": 114,
+        "foundPct": 58.8,
+        "evidencePct": 48.5
+      },
+      "medium": {
+        "questions": 407,
+        "found": 345,
+        "foundPct": 84.8,
+        "evidencePct": 79.9
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.2
+      },
+      {
+        "window": 32000,
+        "pct": 9
+      },
+      {
+        "window": 128000,
+        "pct": 34.8
+      },
+      {
+        "window": 200000,
+        "pct": 56.4
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/current-ngram/squad-sample/keywords/limit-5": {
+    "questions": 1000,
+    "errors": 0,
+    "found": 759,
+    "foundPct": 75.9,
+    "evidencePct": 71.2,
+    "goldListedPct": 97.8,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.7,
+    "tokensMean": 223,
+    "tokensMedian": 233,
+    "tokensP90": 306,
+    "by_type": {
+      "how": {
+        "questions": 130,
+        "found": 99,
+        "foundPct": 76.2,
+        "evidencePct": 74.6
+      },
+      "other": {
+        "questions": 19,
+        "found": 14,
+        "foundPct": 73.7,
+        "evidencePct": 63.2
+      },
+      "what": {
+        "questions": 565,
+        "found": 427,
+        "foundPct": 75.6,
+        "evidencePct": 70.6
+      },
+      "when": {
+        "questions": 65,
+        "found": 50,
+        "foundPct": 76.9,
+        "evidencePct": 76.9
+      },
+      "where": {
+        "questions": 44,
+        "found": 33,
+        "foundPct": 75,
+        "evidencePct": 68.2
+      },
+      "which": {
+        "questions": 65,
+        "found": 55,
+        "foundPct": 84.6,
+        "evidencePct": 78.5
+      },
+      "who": {
+        "questions": 105,
+        "found": 76,
+        "foundPct": 72.4,
+        "evidencePct": 65.7
+      },
+      "why": {
+        "questions": 7,
+        "found": 5,
+        "foundPct": 71.4,
+        "evidencePct": 57.1
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 399,
+        "found": 356,
+        "foundPct": 89.2,
+        "evidencePct": 87.7
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 194,
+        "found": 84,
+        "foundPct": 43.3,
+        "evidencePct": 33.5
+      },
+      "medium": {
+        "questions": 407,
+        "found": 319,
+        "foundPct": 78.4,
+        "evidencePct": 73
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.2
+      },
+      {
+        "window": 32000,
+        "pct": 9
+      },
+      {
+        "window": 128000,
+        "pct": 34.8
+      },
+      {
+        "window": 200000,
+        "pct": 56.4
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/current-ngram/squad-sample/question/limit-5": {
+    "questions": 1000,
+    "errors": 0,
+    "found": 766,
+    "foundPct": 76.6,
+    "evidencePct": 72,
+    "goldListedPct": 97.3,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.713,
+    "tokensMean": 278,
+    "tokensMedian": 288,
+    "tokensP90": 323,
+    "by_type": {
+      "how": {
+        "questions": 130,
+        "found": 105,
+        "foundPct": 80.8,
+        "evidencePct": 79.2
+      },
+      "other": {
+        "questions": 19,
+        "found": 14,
+        "foundPct": 73.7,
+        "evidencePct": 63.2
+      },
+      "what": {
+        "questions": 565,
+        "found": 434,
+        "foundPct": 76.8,
+        "evidencePct": 71.2
+      },
+      "when": {
+        "questions": 65,
+        "found": 50,
+        "foundPct": 76.9,
+        "evidencePct": 76.9
+      },
+      "where": {
+        "questions": 44,
+        "found": 27,
+        "foundPct": 61.4,
+        "evidencePct": 61.4
+      },
+      "which": {
+        "questions": 65,
+        "found": 51,
+        "foundPct": 78.5,
+        "evidencePct": 75.4
+      },
+      "who": {
+        "questions": 105,
+        "found": 80,
+        "foundPct": 76.2,
+        "evidencePct": 69.5
+      },
+      "why": {
+        "questions": 7,
+        "found": 5,
+        "foundPct": 71.4,
+        "evidencePct": 57.1
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 399,
+        "found": 362,
+        "foundPct": 90.7,
+        "evidencePct": 88.5
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 194,
+        "found": 90,
+        "foundPct": 46.4,
+        "evidencePct": 38.1
+      },
+      "medium": {
+        "questions": 407,
+        "found": 314,
+        "foundPct": 77.1,
+        "evidencePct": 72
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.2
+      },
+      {
+        "window": 32000,
+        "pct": 9
+      },
+      {
+        "window": 128000,
+        "pct": 34.8
+      },
+      {
+        "window": 200000,
+        "pct": 56.4
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/baseline/squad-all/oneword/limit-old": {
+    "questions": 10570,
+    "errors": 0,
+    "found": 6368,
+    "foundPct": 60.2,
+    "evidencePct": 54.3,
+    "goldListedPct": 84.5,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.324,
+    "tokensMean": 839,
+    "tokensMedian": 387,
+    "tokensP90": 2576,
+    "by_type": {
+      "how": {
+        "questions": 1225,
+        "found": 798,
+        "foundPct": 65.1,
+        "evidencePct": 58.6
+      },
+      "other": {
+        "questions": 169,
+        "found": 102,
+        "foundPct": 60.4,
+        "evidencePct": 51.5
+      },
+      "what": {
+        "questions": 6022,
+        "found": 3533,
+        "foundPct": 58.7,
+        "evidencePct": 52.8
+      },
+      "when": {
+        "questions": 713,
+        "found": 469,
+        "foundPct": 65.8,
+        "evidencePct": 62
+      },
+      "where": {
+        "questions": 478,
+        "found": 312,
+        "foundPct": 65.3,
+        "evidencePct": 58.8
+      },
+      "which": {
+        "questions": 699,
+        "found": 392,
+        "foundPct": 56.1,
+        "evidencePct": 49.1
+      },
+      "who": {
+        "questions": 1109,
+        "found": 697,
+        "foundPct": 62.8,
+        "evidencePct": 56.7
+      },
+      "why": {
+        "questions": 155,
+        "found": 65,
+        "foundPct": 41.9,
+        "evidencePct": 38.1
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 4543,
+        "found": 3412,
+        "foundPct": 75.1,
+        "evidencePct": 70.2
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 1918,
+        "found": 708,
+        "foundPct": 36.9,
+        "evidencePct": 28.1
+      },
+      "medium": {
+        "questions": 4109,
+        "found": 2248,
+        "foundPct": 54.7,
+        "evidencePct": 49
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.1
+      },
+      {
+        "window": 32000,
+        "pct": 8.6
+      },
+      {
+        "window": 128000,
+        "pct": 34.6
+      },
+      {
+        "window": 200000,
+        "pct": 54.7
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "squad/baseline/squad-sample/question/limit-old": {
+    "questions": 1000,
+    "errors": 0,
+    "found": 10,
+    "foundPct": 1,
+    "evidencePct": 0.1,
+    "goldListedPct": 0,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0,
+    "tokensMean": 25,
+    "tokensMedian": 24,
+    "tokensP90": 30,
+    "by_type": {
+      "how": {
+        "questions": 130,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "other": {
+        "questions": 19,
+        "found": 4,
+        "foundPct": 21.1,
+        "evidencePct": 5.3
+      },
+      "what": {
+        "questions": 565,
+        "found": 5,
+        "foundPct": 0.9,
+        "evidencePct": 0
+      },
+      "when": {
+        "questions": 65,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "where": {
+        "questions": 44,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "which": {
+        "questions": 65,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "who": {
+        "questions": 105,
+        "found": 1,
+        "foundPct": 1,
+        "evidencePct": 0
+      },
+      "why": {
+        "questions": 7,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 399,
+        "found": 5,
+        "foundPct": 1.3,
+        "evidencePct": 0.3
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 194,
+        "found": 1,
+        "foundPct": 0.5,
+        "evidencePct": 0
+      },
+      "medium": {
+        "questions": 407,
+        "found": 4,
+        "foundPct": 1,
+        "evidencePct": 0
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 3.2
+      },
+      {
+        "window": 32000,
+        "pct": 9
+      },
+      {
+        "window": 128000,
+        "pct": 34.8
+      },
+      {
+        "window": 200000,
+        "pct": 56.4
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-chapters/current/needles/keyword/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 20,
+    "foundPct": 100,
+    "evidencePct": 100,
+    "goldListedPct": 100,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 1,
+    "tokensMean": 75,
+    "tokensMedian": 75,
+    "tokensP90": 105,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "none": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "11%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "37%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "42%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "47%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "63%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-chapters/current/needles/question/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 8,
+    "foundPct": 40,
+    "evidencePct": 40,
+    "goldListedPct": 50,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.4,
+    "tokensMean": 189,
+    "tokensMedian": 155,
+    "tokensP90": 388,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 8,
+        "foundPct": 80,
+        "evidencePct": 80
+      },
+      "none": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-chapters/current-ngram/needles/keyword/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 20,
+    "foundPct": 100,
+    "evidencePct": 100,
+    "goldListedPct": 100,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 1,
+    "tokensMean": 92,
+    "tokensMedian": 75,
+    "tokensP90": 146,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "none": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "11%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "37%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "42%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "47%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "63%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-chapters/current-ngram/needles/question/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 8,
+    "foundPct": 40,
+    "evidencePct": 40,
+    "goldListedPct": 50,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.4,
+    "tokensMean": 329,
+    "tokensMedian": 347,
+    "tokensP90": 410,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 8,
+        "foundPct": 80,
+        "evidencePct": 80
+      },
+      "none": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-chapters/baseline/needles/oneword/limit-old": {
+    "questions": 20,
+    "errors": 0,
+    "found": 20,
+    "foundPct": 100,
+    "evidencePct": 100,
+    "goldListedPct": 100,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.831,
+    "tokensMean": 284,
+    "tokensMedian": 65,
+    "tokensP90": 300,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "none": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "11%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "37%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "42%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "47%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "63%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-chapters/baseline/needles/keyword/limit-old": {
+    "questions": 20,
+    "errors": 0,
+    "found": 5,
+    "foundPct": 25,
+    "evidencePct": 25,
+    "goldListedPct": 25,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.25,
+    "tokensMean": 29,
+    "tokensMedian": 18,
+    "tokensP90": 68,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 4,
+        "foundPct": 40,
+        "evidencePct": 40
+      },
+      "none": {
+        "questions": 10,
+        "found": 1,
+        "foundPct": 10,
+        "evidencePct": 10
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "74%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-one-note/current/needles/keyword/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 0,
+    "foundPct": 0,
+    "evidencePct": 0,
+    "goldListedPct": 0,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0,
+    "tokensMean": 35,
+    "tokensMedian": 35,
+    "tokensP90": 35,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "none": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "53%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "74%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "moby-one-note/current/needles/question/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 0,
+    "foundPct": 0,
+    "evidencePct": 0,
+    "goldListedPct": 0,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0,
+    "tokensMean": 35,
+    "tokensMedian": 35,
+    "tokensP90": 35,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "none": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "53%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "74%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 15
+      },
+      {
+        "window": 128000,
+        "pct": 40
+      },
+      {
+        "window": 200000,
+        "pct": 65
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "emma-chapters/current/needles/keyword/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 20,
+    "foundPct": 100,
+    "evidencePct": 100,
+    "goldListedPct": 100,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 1,
+    "tokensMean": 69,
+    "tokensMedian": 61,
+    "tokensP90": 114,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "none": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "11%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "37%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "42%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "47%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "63%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 20
+      },
+      {
+        "window": 128000,
+        "pct": 65
+      },
+      {
+        "window": 200000,
+        "pct": 95
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "emma-chapters/current/needles/question/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 8,
+    "foundPct": 40,
+    "evidencePct": 40,
+    "goldListedPct": 45,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.4,
+    "tokensMean": 139,
+    "tokensMedian": 112,
+    "tokensP90": 353,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 8,
+        "foundPct": 80,
+        "evidencePct": 80
+      },
+      "none": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 20
+      },
+      {
+        "window": 128000,
+        "pct": 65
+      },
+      {
+        "window": 200000,
+        "pct": 95
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "emma-one-note/current/needles/keyword/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 20,
+    "foundPct": 100,
+    "evidencePct": 100,
+    "goldListedPct": 100,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 1,
+    "tokensMean": 59,
+    "tokensMedian": 53,
+    "tokensP90": 104,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "none": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "11%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "37%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "42%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "47%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "63%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 20
+      },
+      {
+        "window": 128000,
+        "pct": 65
+      },
+      {
+        "window": 200000,
+        "pct": 95
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "emma-one-note/current/needles/question/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 8,
+    "foundPct": 40,
+    "evidencePct": 40,
+    "goldListedPct": 100,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.4,
+    "tokensMean": 94,
+    "tokensMedian": 92,
+    "tokensP90": 162,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 8,
+        "foundPct": 80,
+        "evidencePct": 80
+      },
+      "none": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 5
+      },
+      {
+        "window": 32000,
+        "pct": 20
+      },
+      {
+        "window": 128000,
+        "pct": 65
+      },
+      {
+        "window": 200000,
+        "pct": 95
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "library/current/squad-sample/keywords/limit-5": {
+    "questions": 1000,
+    "errors": 0,
+    "found": 810,
+    "foundPct": 81,
+    "evidencePct": 76.6,
+    "goldListedPct": 97.1,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.767,
+    "tokensMean": 198,
+    "tokensMedian": 173,
+    "tokensP90": 309,
+    "by_type": {
+      "how": {
+        "questions": 130,
+        "found": 107,
+        "foundPct": 82.3,
+        "evidencePct": 80.8
+      },
+      "other": {
+        "questions": 19,
+        "found": 14,
+        "foundPct": 73.7,
+        "evidencePct": 57.9
+      },
+      "what": {
+        "questions": 565,
+        "found": 459,
+        "foundPct": 81.2,
+        "evidencePct": 76.8
+      },
+      "when": {
+        "questions": 65,
+        "found": 54,
+        "foundPct": 83.1,
+        "evidencePct": 81.5
+      },
+      "where": {
+        "questions": 44,
+        "found": 33,
+        "foundPct": 75,
+        "evidencePct": 72.7
+      },
+      "which": {
+        "questions": 65,
+        "found": 54,
+        "foundPct": 83.1,
+        "evidencePct": 78.5
+      },
+      "who": {
+        "questions": 105,
+        "found": 84,
+        "foundPct": 80,
+        "evidencePct": 72.4
+      },
+      "why": {
+        "questions": 7,
+        "found": 5,
+        "foundPct": 71.4,
+        "evidencePct": 57.1
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 399,
+        "found": 372,
+        "foundPct": 93.2,
+        "evidencePct": 91
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 194,
+        "found": 103,
+        "foundPct": 53.1,
+        "evidencePct": 44.8
+      },
+      "medium": {
+        "questions": 407,
+        "found": 335,
+        "foundPct": 82.3,
+        "evidencePct": 77.6
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 0
+      },
+      {
+        "window": 32000,
+        "pct": 0
+      },
+      {
+        "window": 128000,
+        "pct": 0
+      },
+      {
+        "window": 200000,
+        "pct": 0
+      },
+      {
+        "window": 1000000,
+        "pct": 0
+      }
+    ]
+  },
+  "library/current/squad-sample/question/limit-5": {
+    "questions": 1000,
+    "errors": 0,
+    "found": 808,
+    "foundPct": 80.8,
+    "evidencePct": 76.4,
+    "goldListedPct": 97.1,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.765,
+    "tokensMean": 198,
+    "tokensMedian": 174,
+    "tokensP90": 309,
+    "by_type": {
+      "how": {
+        "questions": 130,
+        "found": 105,
+        "foundPct": 80.8,
+        "evidencePct": 79.2
+      },
+      "other": {
+        "questions": 19,
+        "found": 14,
+        "foundPct": 73.7,
+        "evidencePct": 57.9
+      },
+      "what": {
+        "questions": 565,
+        "found": 459,
+        "foundPct": 81.2,
+        "evidencePct": 76.8
+      },
+      "when": {
+        "questions": 65,
+        "found": 54,
+        "foundPct": 83.1,
+        "evidencePct": 81.5
+      },
+      "where": {
+        "questions": 44,
+        "found": 33,
+        "foundPct": 75,
+        "evidencePct": 72.7
+      },
+      "which": {
+        "questions": 65,
+        "found": 54,
+        "foundPct": 83.1,
+        "evidencePct": 78.5
+      },
+      "who": {
+        "questions": 105,
+        "found": 84,
+        "foundPct": 80,
+        "evidencePct": 72.4
+      },
+      "why": {
+        "questions": 7,
+        "found": 5,
+        "foundPct": 71.4,
+        "evidencePct": 57.1
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 399,
+        "found": 372,
+        "foundPct": 93.2,
+        "evidencePct": 91
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 194,
+        "found": 103,
+        "foundPct": 53.1,
+        "evidencePct": 44.8
+      },
+      "medium": {
+        "questions": 407,
+        "found": 333,
+        "foundPct": 81.8,
+        "evidencePct": 77.1
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 0
+      },
+      {
+        "window": 32000,
+        "pct": 0
+      },
+      {
+        "window": 128000,
+        "pct": 0
+      },
+      {
+        "window": 200000,
+        "pct": 0
+      },
+      {
+        "window": 1000000,
+        "pct": 0
+      }
+    ]
+  },
+  "library/current/needles/keyword/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 20,
+    "foundPct": 100,
+    "evidencePct": 100,
+    "goldListedPct": 100,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 1,
+    "tokensMean": 86,
+    "tokensMedian": 75,
+    "tokensP90": 132,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "none": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "11%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "37%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "42%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "47%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "63%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 0
+      },
+      {
+        "window": 32000,
+        "pct": 0
+      },
+      {
+        "window": 128000,
+        "pct": 0
+      },
+      {
+        "window": 200000,
+        "pct": 0
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "library/current/needles/question/limit-5": {
+    "questions": 20,
+    "errors": 0,
+    "found": 8,
+    "foundPct": 40,
+    "evidencePct": 40,
+    "goldListedPct": 40,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.4,
+    "tokensMean": 220,
+    "tokensMedian": 244,
+    "tokensP90": 372,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 8,
+        "foundPct": 80,
+        "evidencePct": 80
+      },
+      "none": {
+        "questions": 10,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "100%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "11%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "37%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "42%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "63%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 0
+      },
+      {
+        "window": 32000,
+        "pct": 0
+      },
+      {
+        "window": 128000,
+        "pct": 0
+      },
+      {
+        "window": 200000,
+        "pct": 0
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "library/baseline/needles/oneword/limit-old": {
+    "questions": 20,
+    "errors": 0,
+    "found": 19,
+    "foundPct": 95,
+    "evidencePct": 95,
+    "goldListedPct": 95,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.754,
+    "tokensMean": 698,
+    "tokensMedian": 68,
+    "tokensP90": 3718,
+    "by_overlap": {
+      "name": {
+        "questions": 10,
+        "found": 10,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "none": {
+        "questions": 10,
+        "found": 9,
+        "foundPct": 90,
+        "evidencePct": 90
+      }
+    },
+    "by_depth": {
+      "0%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "100%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "11%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "16%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "21%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "26%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "32%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "37%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "42%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "47%": {
+        "questions": 1,
+        "found": 0,
+        "foundPct": 0,
+        "evidencePct": 0
+      },
+      "5%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "53%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "58%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "63%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "68%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "74%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "79%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "84%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "89%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      },
+      "95%": {
+        "questions": 1,
+        "found": 1,
+        "foundPct": 100,
+        "evidencePct": 100
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 0
+      },
+      {
+        "window": 32000,
+        "pct": 0
+      },
+      {
+        "window": 128000,
+        "pct": 0
+      },
+      {
+        "window": 200000,
+        "pct": 0
+      },
+      {
+        "window": 1000000,
+        "pct": 100
+      }
+    ]
+  },
+  "library/baseline/squad-sample/oneword/limit-old": {
+    "questions": 300,
+    "errors": 0,
+    "found": 162,
+    "foundPct": 54,
+    "evidencePct": 47.3,
+    "goldListedPct": 78.3,
+    "topRightBookPct": null,
+    "rightBookSharePct": null,
+    "mrr": 0.235,
+    "tokensMean": 1299,
+    "tokensMedian": 650,
+    "tokensP90": 3688,
+    "by_type": {
+      "how": {
+        "questions": 46,
+        "found": 22,
+        "foundPct": 47.8,
+        "evidencePct": 39.1
+      },
+      "other": {
+        "questions": 8,
+        "found": 5,
+        "foundPct": 62.5,
+        "evidencePct": 62.5
+      },
+      "what": {
+        "questions": 156,
+        "found": 87,
+        "foundPct": 55.8,
+        "evidencePct": 50.6
+      },
+      "when": {
+        "questions": 20,
+        "found": 12,
+        "foundPct": 60,
+        "evidencePct": 55
+      },
+      "where": {
+        "questions": 12,
+        "found": 4,
+        "foundPct": 33.3,
+        "evidencePct": 25
+      },
+      "which": {
+        "questions": 20,
+        "found": 8,
+        "foundPct": 40,
+        "evidencePct": 35
+      },
+      "who": {
+        "questions": 36,
+        "found": 23,
+        "foundPct": 63.9,
+        "evidencePct": 50
+      },
+      "why": {
+        "questions": 2,
+        "found": 1,
+        "foundPct": 50,
+        "evidencePct": 50
+      }
+    },
+    "by_overlap": {
+      "high (2/3 or more)": {
+        "questions": 119,
+        "found": 78,
+        "foundPct": 65.5,
+        "evidencePct": 57.1
+      },
+      "low (under 1/3 of words in the answer sentence)": {
+        "questions": 67,
+        "found": 23,
+        "foundPct": 34.3,
+        "evidencePct": 23.9
+      },
+      "medium": {
+        "questions": 114,
+        "found": 61,
+        "foundPct": 53.5,
+        "evidencePct": 50.9
+      }
+    },
+    "pasteTruncation": [
+      {
+        "window": 8000,
+        "pct": 0
+      },
+      {
+        "window": 32000,
+        "pct": 0
+      },
+      {
+        "window": 128000,
+        "pct": 0
+      },
+      {
+        "window": 200000,
+        "pct": 0
+      },
+      {
+        "window": 1000000,
+        "pct": 0
+      }
+    ]
+  },
+  "library/current/narrativeqa/keywords/limit-5": {
+    "questions": 146,
+    "errors": 0,
+    "found": 18,
+    "foundPct": 12.3,
+    "evidencePct": null,
+    "goldListedPct": null,
+    "topRightBookPct": 73.3,
+    "rightBookSharePct": 69.2,
+    "mrr": 0.077,
+    "tokensMean": 327,
+    "tokensMedian": 333,
+    "tokensP90": 387,
+    "by_book": {
+      "Emma": {
+        "questions": 29,
+        "found": 4,
+        "foundPct": 13.8,
+        "evidencePct": null
+      },
+      "Paradise Lost": {
+        "questions": 29,
+        "found": 3,
+        "foundPct": 10.3,
+        "evidencePct": null
+      },
+      "Persuasion": {
+        "questions": 29,
+        "found": 3,
+        "foundPct": 10.3,
+        "evidencePct": null
+      },
+      "Sense and Sensibility": {
+        "questions": 30,
+        "found": 3,
+        "foundPct": 10,
+        "evidencePct": null
+      },
+      "The Man Who Was Thursday": {
+        "questions": 29,
+        "found": 5,
+        "foundPct": 17.2,
+        "evidencePct": null
+      }
+    }
+  },
+  "library/current/narrativeqa/question/limit-5": {
+    "questions": 146,
+    "errors": 0,
+    "found": 18,
+    "foundPct": 12.3,
+    "evidencePct": null,
+    "goldListedPct": null,
+    "topRightBookPct": 73.3,
+    "rightBookSharePct": 68.5,
+    "mrr": 0.075,
+    "tokensMean": 329,
+    "tokensMedian": 335,
+    "tokensP90": 389,
+    "by_book": {
+      "Emma": {
+        "questions": 29,
+        "found": 4,
+        "foundPct": 13.8,
+        "evidencePct": null
+      },
+      "Paradise Lost": {
+        "questions": 29,
+        "found": 3,
+        "foundPct": 10.3,
+        "evidencePct": null
+      },
+      "Persuasion": {
+        "questions": 29,
+        "found": 3,
+        "foundPct": 10.3,
+        "evidencePct": null
+      },
+      "Sense and Sensibility": {
+        "questions": 30,
+        "found": 3,
+        "foundPct": 10,
+        "evidencePct": null
+      },
+      "The Man Who Was Thursday": {
+        "questions": 29,
+        "found": 5,
+        "foundPct": 17.2,
+        "evidencePct": null
+      }
+    }
+  }
+}

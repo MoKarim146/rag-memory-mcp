@@ -1,0 +1,134 @@
+{
+  "groups": {
+    "squad/current/squad-all/keywords/limit-5": {
+      "msMean": 13.8,
+      "msP95": 23.6
+    },
+    "squad/current/squad-all/question/limit-5": {
+      "msMean": 14.4,
+      "msP95": 24.9
+    },
+    "squad/current/squad-all/oneword/limit-5": {
+      "msMean": 2.9,
+      "msP95": 5.7
+    },
+    "squad/current/squad-sample/keywords/limit-5": {
+      "msMean": 13.8,
+      "msP95": 23.2
+    },
+    "squad/current/squad-sample/keywords/limit-10": {
+      "msMean": 14.4,
+      "msP95": 24.3
+    },
+    "squad/current-ngram/squad-sample/keywords/limit-5": {
+      "msMean": 49.7,
+      "msP95": 66.5
+    },
+    "squad/current-ngram/squad-sample/question/limit-5": {
+      "msMean": 50.5,
+      "msP95": 70
+    },
+    "squad/baseline/squad-all/oneword/limit-old": {
+      "msMean": 19.6,
+      "msP95": 27.5
+    },
+    "squad/baseline/squad-sample/question/limit-old": {
+      "msMean": 19,
+      "msP95": 25.3
+    },
+    "moby-chapters/current/needles/keyword/limit-5": {
+      "msMean": 5,
+      "msP95": 8.7
+    },
+    "moby-chapters/current/needles/question/limit-5": {
+      "msMean": 13.1,
+      "msP95": 24.5
+    },
+    "moby-chapters/current-ngram/needles/keyword/limit-5": {
+      "msMean": 49.6,
+      "msP95": 399.5
+    },
+    "moby-chapters/current-ngram/needles/question/limit-5": {
+      "msMean": 50.8,
+      "msP95": 77.5
+    },
+    "moby-chapters/baseline/needles/oneword/limit-old": {
+      "msMean": 30.1,
+      "msP95": 47.9
+    },
+    "moby-chapters/baseline/needles/keyword/limit-old": {
+      "msMean": 26.1,
+      "msP95": 36
+    },
+    "moby-one-note/current/needles/keyword/limit-5": {
+      "msMean": 1.7,
+      "msP95": 5.1
+    },
+    "moby-one-note/current/needles/question/limit-5": {
+      "msMean": 2.1,
+      "msP95": 10.2
+    },
+    "emma-chapters/current/needles/keyword/limit-5": {
+      "msMean": 3.1,
+      "msP95": 6.5
+    },
+    "emma-chapters/current/needles/question/limit-5": {
+      "msMean": 13.9,
+      "msP95": 27.3
+    },
+    "emma-one-note/current/needles/keyword/limit-5": {
+      "msMean": 2.6,
+      "msP95": 7.7
+    },
+    "emma-one-note/current/needles/question/limit-5": {
+      "msMean": 6.3,
+      "msP95": 13.4
+    },
+    "library/current/squad-sample/keywords/limit-5": {
+      "msMean": 47,
+      "msP95": 79.7
+    },
+    "library/current/squad-sample/question/limit-5": {
+      "msMean": 50,
+      "msP95": 82.9
+    },
+    "library/current/needles/keyword/limit-5": {
+      "msMean": 21.7,
+      "msP95": 37.2
+    },
+    "library/current/needles/question/limit-5": {
+      "msMean": 50.4,
+      "msP95": 88.4
+    },
+    "library/baseline/needles/oneword/limit-old": {
+      "msMean": 125.1,
+      "msP95": 144.9
+    },
+    "library/baseline/squad-sample/oneword/limit-old": {
+      "msMean": 140,
+      "msP95": 193.9
+    },
+    "library/current/narrativeqa/keywords/limit-5": {
+      "msMean": 45.2,
+      "msP95": 72.2
+    },
+    "library/current/narrativeqa/question/limit-5": {
+      "msMean": 46.8,
+      "msP95": 74.2
+    }
+  },
+  "other": {
+    "squad/current/firstSearchMs": 434.3,
+    "squad/current-ngram/firstSearchMs": 711.4,
+    "squad/baseline/firstSearchMs": 22,
+    "moby-chapters/current/firstSearchMs": 439.1,
+    "moby-chapters/current-ngram/firstSearchMs": 490.9,
+    "moby-chapters/baseline/firstSearchMs": 31.1,
+    "moby-one-note/current/firstSearchMs": 3.1,
+    "emma-chapters/current/firstSearchMs": 226.9,
+    "emma-one-note/current/firstSearchMs": 154.4,
+    "library/current/firstSearchMs": 3398.7,
+    "library/baseline/firstSearchMs": 195.9,
+    "minutes": 15.6
+  }
+}

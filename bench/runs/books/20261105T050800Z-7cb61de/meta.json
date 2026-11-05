@@ -1,0 +1,978 @@
+{
+  "benchmark": "books",
+  "runId": "20261105T050800Z-7cb61de",
+  "startedAt": "2026-11-05T05:08:00.446Z",
+  "git": {
+    "commit": "7cb61dec431051be2acc1f9b63ce17f842af111b",
+    "dirty": false,
+    "dirtyFiles": []
+  },
+  "environment": {
+    "node": "v22.23.4",
+    "platform": "linux 6.18.44-fc-v236",
+    "arch": "x64",
+    "cpuModel": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "logicalCpus": 4,
+    "cpuAffinity": "0",
+    "memoryGB": 16.9,
+    "timeZone": "UTC",
+    "TZ": "UTC",
+    "packageLockSha256": "f124fefbec3ac18e0ba2d6cda1887b5950d28ecd10d71549a67716feb92aa549"
+  },
+  "config": {
+    "about": "Long-text benchmark (bench/books.ts). Run once per change; nothing here is used to tune the search.",
+    "quick": false,
+    "squadSampleSize": 1000,
+    "squadSampleSeed": 1,
+    "pasteWindows": [
+      8000,
+      32000,
+      128000,
+      200000,
+      1000000
+    ],
+    "defaultLimit": 5,
+    "tokenizer": "o200k_base",
+    "timeZone": "UTC",
+    "systems": {
+      "current": {
+        "AI_MEMORY_DIR": "<vault>",
+        "MCP_MAX_CALLS_PER_MINUTE": "1000000000"
+      },
+      "current-ngram": {
+        "AI_MEMORY_DIR": "<vault>",
+        "MCP_MAX_CALLS_PER_MINUTE": "1000000000",
+        "RAG_EMBEDDINGS": "ngram"
+      },
+      "baseline": {
+        "AI_MEMORY_DIR": "<vault>",
+        "MCP_MAX_CALLS_PER_MINUTE": "1000000000"
+      }
+    }
+  },
+  "data": {
+    "sources": {
+      "gutenberg": {
+        "url": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/gutenberg.zip",
+        "sha256": "2d3c3ab548c653944310f37f536443ec85d0a0ad855fcae217a0c9efdce2d611",
+        "about": "18 public-domain books from Project Gutenberg, as packaged by NLTK",
+        "license": "Public domain in the USA (Project Gutenberg texts); NLTK packaging under Apache 2.0"
+      },
+      "squad": {
+        "url": "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/master/dataset/dev-v1.1.json",
+        "sha256": "95aa6a52d5d6a735563366753ca50492a658031da74f301ac5238b03966972c9",
+        "about": "SQuAD 1.1 development set: 10,570 questions on 48 Wikipedia articles (CC BY-SA 4.0)",
+        "license": "CC BY-SA 4.0"
+      },
+      "narrativeqaQuestions": {
+        "url": "https://raw.githubusercontent.com/google-deepmind/narrativeqa/master/qaps.csv",
+        "sha256": "990b02af0b5280de210f0e6b80f43b3fab80dc6de630c4d5059a1b7131c26e38",
+        "about": "NarrativeQA questions about whole books (Apache 2.0)",
+        "license": "Apache 2.0"
+      },
+      "narrativeqaDocuments": {
+        "url": "https://raw.githubusercontent.com/google-deepmind/narrativeqa/master/documents.csv",
+        "sha256": "6dffa4cc0b5c9963fe3a097c87f04aa7767da36627500cc7a0d69e2405e1144a",
+        "about": "NarrativeQA list of books",
+        "license": "Apache 2.0"
+      }
+    },
+    "plantedFacts": [
+      {
+        "id": "n01",
+        "fact": "The spare key for the boathouse padlock is taped under the third step of the cellar stairs.",
+        "answer": "third step of the cellar stairs",
+        "keyword": "boathouse padlock",
+        "question": "Where do we hide the backup way into the shed by the river?",
+        "overlap": "none"
+      },
+      {
+        "id": "n02",
+        "fact": "Doctor Ilsa Marrow's clinic in Portsmouth closes at 4:45 on Thursdays.",
+        "answer": "4:45",
+        "keyword": "Marrow clinic",
+        "question": "What time does Ilsa Marrow stop seeing patients late in the week?",
+        "overlap": "name"
+      },
+      {
+        "id": "n03",
+        "fact": "The guest network code for the Kestrel Street office is written on the back of the green kettle.",
+        "answer": "back of the green kettle",
+        "keyword": "Kestrel Street network",
+        "question": "How can visitors get online at our workplace?",
+        "overlap": "none"
+      },
+      {
+        "id": "n04",
+        "fact": "Our accountant, Bertram Quill, charges 85 pounds an hour for tax returns.",
+        "answer": "85 pounds",
+        "keyword": "Bertram Quill",
+        "question": "How much does Bertram Quill bill us for his time?",
+        "overlap": "name"
+      },
+      {
+        "id": "n05",
+        "fact": "The backup generator at Fenwick Farm runs for 31 hours on a full tank of diesel.",
+        "answer": "31 hours",
+        "keyword": "Fenwick generator",
+        "question": "How long can the emergency power unit keep going before it needs refuelling?",
+        "overlap": "none"
+      },
+      {
+        "id": "n06",
+        "fact": "Rosalind Achebe was promoted to head of logistics on 12 March.",
+        "answer": "12 March",
+        "keyword": "Rosalind Achebe",
+        "question": "When did Rosalind Achebe take charge of shipping and deliveries?",
+        "overlap": "name"
+      },
+      {
+        "id": "n07",
+        "fact": "The Vantor ticketing system must be renewed before 30 September or support lapses.",
+        "answer": "30 September",
+        "keyword": "Vantor renewal",
+        "question": "By what date do we have to pay again for the help desk software?",
+        "overlap": "none"
+      },
+      {
+        "id": "n08",
+        "fact": "The quarterly budget review moved from Monday to Wednesday at 10:30 in room Larch.",
+        "answer": "Wednesday at 10:30",
+        "keyword": "budget review Larch",
+        "question": "When is the meeting in Larch about money now held?",
+        "overlap": "name"
+      },
+      {
+        "id": "n09",
+        "fact": "Pelham, the office parrot, eats only sunflower seeds and sliced mango.",
+        "answer": "sunflower seeds",
+        "keyword": "Pelham parrot",
+        "question": "What food does the bird at work get?",
+        "overlap": "none"
+      },
+      {
+        "id": "n10",
+        "fact": "The van's tyre pressure should be 3.4 bar at the front and 3.8 bar at the back.",
+        "answer": "3.4 bar",
+        "keyword": "van tyre pressure",
+        "question": "How hard should we pump the lorry's leading wheels?",
+        "overlap": "none"
+      },
+      {
+        "id": "n11",
+        "fact": "Ottoline Brack prefers to be contacted by letter, never by telephone.",
+        "answer": "by letter",
+        "keyword": "Ottoline Brack",
+        "question": "How does Ottoline Brack want us to get in touch?",
+        "overlap": "name"
+      },
+      {
+        "id": "n12",
+        "fact": "The staging server for Project Halyard is switched off every Friday at 18:00 to save money.",
+        "answer": "every Friday at 18:00",
+        "keyword": "Halyard staging server",
+        "question": "When does Halyard's test machine get shut down?",
+        "overlap": "name"
+      },
+      {
+        "id": "n13",
+        "fact": "Grandma Wren's lemon cake needs 220 grams of caster sugar.",
+        "answer": "220 grams",
+        "keyword": "Wren lemon cake",
+        "question": "How much sweetener goes into the citrus bake from our family recipe?",
+        "overlap": "none"
+      },
+      {
+        "id": "n14",
+        "fact": "The shared car park permit number for the Elm Court building is QX-5512.",
+        "answer": "QX-5512",
+        "keyword": "Elm Court permit",
+        "question": "What is the parking pass reference for Elm Court?",
+        "overlap": "name"
+      },
+      {
+        "id": "n15",
+        "fact": "Thaddeus Okoro is allergic to peanuts and to penicillin.",
+        "answer": "penicillin",
+        "keyword": "Thaddeus Okoro allergic",
+        "question": "Which medicine must Thaddeus Okoro never be given?",
+        "overlap": "name"
+      },
+      {
+        "id": "n16",
+        "fact": "The cold store in warehouse B must stay below minus 18 degrees Celsius.",
+        "answer": "minus 18 degrees",
+        "keyword": "cold store warehouse",
+        "question": "What temperature limit applies to the freezer room?",
+        "overlap": "none"
+      },
+      {
+        "id": "n17",
+        "fact": "Membership of the Corvid Rowing Club costs 240 pounds a year, paid in January.",
+        "answer": "240 pounds",
+        "keyword": "Corvid Rowing Club",
+        "question": "What is the yearly fee for the Corvid club?",
+        "overlap": "name"
+      },
+      {
+        "id": "n18",
+        "fact": "The fire assembly point for the Saltmarsh office is the bench beside the bakery.",
+        "answer": "bench beside the bakery",
+        "keyword": "Saltmarsh assembly point",
+        "question": "Where should staff gather if the alarm goes off?",
+        "overlap": "none"
+      },
+      {
+        "id": "n19",
+        "fact": "Imogen Sallow signed the lease for the new studio on 3 June for five years.",
+        "answer": "five years",
+        "keyword": "Imogen Sallow lease",
+        "question": "How long is Imogen Sallow's rental agreement for the studio?",
+        "overlap": "name"
+      },
+      {
+        "id": "n20",
+        "fact": "The printer on the second floor jams unless you use 80 gsm paper.",
+        "answer": "80 gsm",
+        "keyword": "printer jams",
+        "question": "Which kind of sheets stop the upstairs copier from getting stuck?",
+        "overlap": "none"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "name": "squad/current/squad-all/keywords/limit-5",
+      "queries": 10570,
+      "about": {
+        "scope": "squad",
+        "system": "current",
+        "set": "squad-all",
+        "style": "keywords",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/current/squad-all/question/limit-5",
+      "queries": 10570,
+      "about": {
+        "scope": "squad",
+        "system": "current",
+        "set": "squad-all",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/current/squad-all/oneword/limit-5",
+      "queries": 10570,
+      "about": {
+        "scope": "squad",
+        "system": "current",
+        "set": "squad-all",
+        "style": "oneword",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/current/squad-sample/keywords/limit-5",
+      "queries": 1000,
+      "about": {
+        "scope": "squad",
+        "system": "current",
+        "set": "squad-sample",
+        "style": "keywords",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/current/squad-sample/keywords/limit-10",
+      "queries": 1000,
+      "about": {
+        "scope": "squad",
+        "system": "current",
+        "set": "squad-sample",
+        "style": "keywords",
+        "limit": 10
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/current-ngram/squad-sample/keywords/limit-5",
+      "queries": 1000,
+      "about": {
+        "scope": "squad",
+        "system": "current-ngram",
+        "set": "squad-sample",
+        "style": "keywords",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/current-ngram/squad-sample/question/limit-5",
+      "queries": 1000,
+      "about": {
+        "scope": "squad",
+        "system": "current-ngram",
+        "set": "squad-sample",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/baseline/squad-all/oneword/limit-old",
+      "queries": 10570,
+      "about": {
+        "scope": "squad",
+        "system": "baseline",
+        "set": "squad-all",
+        "style": "oneword",
+        "limit": "old server"
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "squad/baseline/squad-sample/question/limit-old",
+      "queries": 1000,
+      "about": {
+        "scope": "squad",
+        "system": "baseline",
+        "set": "squad-sample",
+        "style": "question",
+        "limit": "old server"
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-chapters/current/needles/keyword/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "moby-chapters",
+        "system": "current",
+        "set": "needles",
+        "style": "keyword",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-chapters/current/needles/question/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "moby-chapters",
+        "system": "current",
+        "set": "needles",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-chapters/current-ngram/needles/keyword/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "moby-chapters",
+        "system": "current-ngram",
+        "set": "needles",
+        "style": "keyword",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-chapters/current-ngram/needles/question/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "moby-chapters",
+        "system": "current-ngram",
+        "set": "needles",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-chapters/baseline/needles/oneword/limit-old",
+      "queries": 20,
+      "about": {
+        "scope": "moby-chapters",
+        "system": "baseline",
+        "set": "needles",
+        "style": "oneword",
+        "limit": "old server"
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-chapters/baseline/needles/keyword/limit-old",
+      "queries": 20,
+      "about": {
+        "scope": "moby-chapters",
+        "system": "baseline",
+        "set": "needles",
+        "style": "keyword",
+        "limit": "old server"
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-one-note/current/needles/keyword/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "moby-one-note",
+        "system": "current",
+        "set": "needles",
+        "style": "keyword",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "moby-one-note/current/needles/question/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "moby-one-note",
+        "system": "current",
+        "set": "needles",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "emma-chapters/current/needles/keyword/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "emma-chapters",
+        "system": "current",
+        "set": "needles",
+        "style": "keyword",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "emma-chapters/current/needles/question/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "emma-chapters",
+        "system": "current",
+        "set": "needles",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "emma-one-note/current/needles/keyword/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "emma-one-note",
+        "system": "current",
+        "set": "needles",
+        "style": "keyword",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "emma-one-note/current/needles/question/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "emma-one-note",
+        "system": "current",
+        "set": "needles",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "library/current/squad-sample/keywords/limit-5",
+      "queries": 1000,
+      "about": {
+        "scope": "library",
+        "system": "current",
+        "set": "squad-sample",
+        "style": "keywords",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "library/current/squad-sample/question/limit-5",
+      "queries": 1000,
+      "about": {
+        "scope": "library",
+        "system": "current",
+        "set": "squad-sample",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "library/current/needles/keyword/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "library",
+        "system": "current",
+        "set": "needles",
+        "style": "keyword",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "library/current/needles/question/limit-5",
+      "queries": 20,
+      "about": {
+        "scope": "library",
+        "system": "current",
+        "set": "needles",
+        "style": "question",
+        "limit": 5
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "library/baseline/needles/oneword/limit-old",
+      "queries": 20,
+      "about": {
+        "scope": "library",
+        "system": "baseline",
+        "set": "needles",
+        "style": "oneword",
+        "limit": "old server"
+      },
+      "breakdowns": [
+        "overlap",
+        "depth"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "library/baseline/squad-sample/oneword/limit-old",
+      "queries": 300,
+      "about": {
+        "scope": "library",
+        "system": "baseline",
+        "set": "squad-sample",
+        "style": "oneword",
+        "limit": "old server"
+      },
+      "breakdowns": [
+        "type",
+        "overlap"
+      ],
+      "truncationWindows": [
+        8000,
+        32000,
+        128000,
+        200000,
+        1000000
+      ]
+    },
+    {
+      "name": "library/current/narrativeqa/keywords/limit-5",
+      "queries": 146,
+      "about": {
+        "scope": "library",
+        "system": "current",
+        "set": "narrativeqa",
+        "style": "keywords",
+        "limit": 5,
+        "note": "Answer found is not meaningful here: NarrativeQA answers are free text written from plot summaries, and many are not in the book word for word. Use the right-book numbers."
+      },
+      "breakdowns": [
+        "book"
+      ]
+    },
+    {
+      "name": "library/current/narrativeqa/question/limit-5",
+      "queries": 146,
+      "about": {
+        "scope": "library",
+        "system": "current",
+        "set": "narrativeqa",
+        "style": "question",
+        "limit": 5,
+        "note": "Answer found is not meaningful here: NarrativeQA answers are free text written from plot summaries, and many are not in the book word for word. Use the right-book numbers."
+      },
+      "breakdowns": [
+        "book"
+      ]
+    }
+  ],
+  "finishedAt": "2026-11-05T05:26:56.926Z",
+  "facts": {
+    "squad": {
+      "about": "48 Wikipedia articles, one note each (SQuAD 1.1 development set)",
+      "notes": 48,
+      "megabytes": 1.6,
+      "largestNoteBytes": 85639,
+      "pasteEverythingTokens": 330795,
+      "answerCeilingPct": 100,
+      "rightArticleTokensMean": 6885,
+      "currentDefinitionTokens": 583,
+      "currentStartTokens": 92,
+      "current-ngramDefinitionTokens": 583,
+      "current-ngramStartTokens": 92,
+      "baselineDefinitionTokens": 886,
+      "baselineStartTokens": 136
+    },
+    "moby-chapters": {
+      "about": "Moby Dick, one note per chapter, 20 facts planted",
+      "notes": 137,
+      "megabytes": 1.2,
+      "largestNoteBytes": 39660,
+      "pasteEverythingTokens": 291728,
+      "currentDefinitionTokens": 583,
+      "currentStartTokens": 92,
+      "current-ngramDefinitionTokens": 583,
+      "current-ngramStartTokens": 92,
+      "baselineDefinitionTokens": 886,
+      "baselineStartTokens": 136
+    },
+    "moby-one-note": {
+      "about": "Moby Dick as a single note, 20 facts planted",
+      "notes": 1,
+      "megabytes": 1.2,
+      "largestNoteBytes": 1221138,
+      "pasteEverythingTokens": 289940,
+      "currentDefinitionTokens": 583,
+      "currentStartTokens": 123
+    },
+    "emma-chapters": {
+      "about": "Emma, one note per chapter, 20 facts planted",
+      "notes": 56,
+      "megabytes": 0.9,
+      "largestNoteBytes": 35951,
+      "pasteEverythingTokens": 202905,
+      "currentDefinitionTokens": 583,
+      "currentStartTokens": 92
+    },
+    "emma-one-note": {
+      "about": "Emma as a single note, 20 facts planted",
+      "notes": 1,
+      "megabytes": 0.9,
+      "largestNoteBytes": 888002,
+      "pasteEverythingTokens": 202349,
+      "currentDefinitionTokens": 583,
+      "currentStartTokens": 92
+    },
+    "library": {
+      "about": "Everything together: 18 books by chapter (facts in Moby Dick) and the 48 articles",
+      "notes": 587,
+      "megabytes": 13.3,
+      "largestNoteBytes": 85639,
+      "pasteEverythingTokens": 3157635,
+      "bookTokens": {
+        "Emma": 201979,
+        "Persuasion": 103353,
+        "Sense and Sensibility": 149104,
+        "The King James Bible": 1089810,
+        "Poems of William Blake": 8980,
+        "Stories to Tell to Children": 57306,
+        "The Adventures of Buster Bear": 19476,
+        "Alice's Adventures in Wonderland": 34390,
+        "The Ball and the Cross": 104356,
+        "The Wisdom of Father Brown": 90984,
+        "The Man Who Was Thursday": 72058,
+        "The Parent's Assistant": 220313,
+        "Moby Dick": 289568,
+        "Paradise Lost": 107568,
+        "Julius Caesar": 31136,
+        "Hamlet": 44752,
+        "Macbeth": 27960,
+        "Leaves of Grass": 165428
+      },
+      "currentDefinitionTokens": 583,
+      "currentStartTokens": 92,
+      "baselineDefinitionTokens": 886,
+      "baselineStartTokens": 136
+    },
+    "safety": {
+      "notes": 587,
+      "flaggedAsInstructions": 0,
+      "withSecretsMasked": 1,
+      "withPersonalDataMasked": 1,
+      "withHiddenTextRemoved": 0,
+      "examples": [
+        {
+          "kind": "mask",
+          "note": "Books/The Ball and the Cross/012.md",
+          "text": "Produced by Ben Crowder <crowderb@blankslate.net> => Produced by Ben Crowder <[email removed]>"
+        },
+        {
+          "kind": "mask",
+          "note": "Books/Paradise Lost/012.md",
+          "text": "00482129 If answerable style I can obtain Of my celestial patroness, who deigns Her nightly visitation unimplor'd, And dictates to me slumbering; or inspires Easy my unpremeditated verse: Since first  => 00482129 If answerable style I can obtain Of my celestial patroness, who deigns Her nightly visitation unimplor'd, And dictates to me slumbering; or inspires Easy my unpremeditated verse: Since first "
+        }
+      ],
+      "squadAnswersHiddenByMasking": 0
+    }
+  }
+}

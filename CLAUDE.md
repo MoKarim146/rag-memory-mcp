@@ -18,7 +18,9 @@ npm test                     # build + fast tests (tests/*.test.ts)
 npm run test:heavy           # fuzz and stress tests (tests/heavy/), a few minutes
 npm run bench                # token benchmark on set 1 (npm run bench -- --set holdout, or --set test3)
 npm run charts               # redraw docs/charts/*.svg from bench/results and security/
-npx tsx bench/books.ts       # real books and 10,570 SQuAD questions (downloads ~21 MB to bench/.cache/)
+npm run bench:books          # real books and 10,570 SQuAD questions, one run folder (bench:books:quick: 200)
+npm run bench:verify         # recompute every committed run from its per-query records
+npm run bench:smoke          # free CI check: set 1 through the record-and-verify pipeline
 npm run audit                # npm audit, production packages, high and above
 ```
 
@@ -62,7 +64,8 @@ Run one test file: `npx vitest run tests/retrieval.test.ts`.
 - `tests/quality.test.ts` fails if a change loses answers or adds more than 5% tokens on sets 1 and 2. Do not
   loosen it without writing the reason in `RAG_RESULTS.md`.
 - Never edit result files by hand; regenerate them. Report numbers exactly as measured, including anything that
-  got worse.
+  got worse. Published numbers come from clean run folders (`bench/runs/`, not `-dirty`) that pass
+  `npm run bench:verify`; see docs/benchmarks.md.
 
 ## Writing docs
 

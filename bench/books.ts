@@ -267,10 +267,13 @@ export async function connect(system: System, vault: string, extraEnv: Record<st
 }
 
 // The first search builds the index. With embeddings on, the server embeds for at most 10 seconds per search
-// and continues on the next one, so warm up until a search no longer has embedding work to do.
+// and continues on the next one, so it warms up until a search no longer has embedding work to do. Without
+// embeddings one search is enough (repeating would never end on a server whose every search is slow, such as the
+// old server on a large vault).
 export async function warmUp(server: Server): Promise<number> {
   const started = performance.now();
-  for (let i = 0; i < 1000; i++) {
+  const embeds = Boolean(server.env.RAG_EMBEDDINGS);
+  for (let i = 0; i < (embeds ? 1000 : 1); i++) {
     const { ms } = await server.search("index warm-up");
     if (ms < 1500) break;
   }
