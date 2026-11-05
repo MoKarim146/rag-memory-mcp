@@ -43,7 +43,7 @@ const countTokens = (text: string) => encoder.encode(text).length;
 // Facts planted in a long book ("needle in a haystack"). Half of the questions keep a name from the fact, the
 // way people usually ask; the other half share no word with it, the hardest case for keyword search.
 
-interface Needle {
+export interface Needle {
   id: string;
   fact: string;
   answer: string;
@@ -52,7 +52,7 @@ interface Needle {
   overlap: "name" | "none";
 }
 
-const NEEDLES: Needle[] = [
+export const NEEDLES: Needle[] = [
   { id: "n01", fact: "The spare key for the boathouse padlock is taped under the third step of the cellar stairs.", answer: "third step of the cellar stairs", keyword: "boathouse padlock", question: "Where do we hide the backup way into the shed by the river?", overlap: "none" },
   { id: "n02", fact: "Doctor Ilsa Marrow's clinic in Portsmouth closes at 4:45 on Thursdays.", answer: "4:45", keyword: "Marrow clinic", question: "What time does Ilsa Marrow stop seeing patients late in the week?", overlap: "name" },
   { id: "n03", fact: "The guest network code for the Kestrel Street office is written on the back of the green kettle.", answer: "back of the green kettle", keyword: "Kestrel Street network", question: "How can visitors get online at our workplace?", overlap: "none" },
@@ -76,11 +76,11 @@ const NEEDLES: Needle[] = [
 ];
 
 // Plants needle i after the paragraph at depth i/(n-1) of the book, from the first paragraph to the last.
-function plantNeedles(raw: string): string {
+export function plantNeedles(raw: string, needles: Needle[] = NEEDLES): string {
   const paragraphs = paragraphsOf(raw);
-  const positions = NEEDLES.map((_, i) => Math.round((i / (NEEDLES.length - 1)) * (paragraphs.length - 1)));
-  for (let i = NEEDLES.length - 1; i >= 0; i--) {
-    paragraphs.splice(positions[i] + 1, 0, NEEDLES[i].fact);
+  const positions = needles.map((_, i) => Math.round((i / (needles.length - 1)) * (paragraphs.length - 1)));
+  for (let i = needles.length - 1; i >= 0; i--) {
+    paragraphs.splice(positions[i] + 1, 0, needles[i].fact);
   }
   return paragraphs.join("\n\n");
 }
@@ -98,7 +98,7 @@ function normalise(text: string): string {
     .join(" ")} `;
 }
 
-function containsAnswer(text: string, answer: string): boolean {
+export function containsAnswer(text: string, answer: string): boolean {
   const a = normalise(answer);
   return a.trim().length > 0 && normalise(text).includes(a);
 }
@@ -119,7 +119,7 @@ function words(text: string): string[] {
 }
 
 // What an AI that follows the skill would type: the question without question words and stopwords.
-function keywordsOf(question: string): string {
+export function keywordsOf(question: string): string {
   const kept = words(question).filter((w) => !STOPWORDS.has(w.toLowerCase()));
   return kept.join(" ") || question;
 }
@@ -139,7 +139,7 @@ function rarestWord(question: string, df: Map<string, number>): string {
   return best;
 }
 
-function documentFrequency(notes: Note[]): Map<string, number> {
+export function documentFrequency(notes: Note[]): Map<string, number> {
   const df = new Map<string, number>();
   for (const note of notes) {
     for (const paragraph of note.text.split("\n\n")) {
@@ -167,7 +167,7 @@ function goldSentence(paragraph: string, answerStart: number): string {
   return paragraph;
 }
 
-function seededShuffle<T>(items: T[], seed = 1): T[] {
+export function seededShuffle<T>(items: T[], seed = 1): T[] {
   const out = [...items];
   let s = seed >>> 0;
   const random = () => {
@@ -187,21 +187,21 @@ function seededShuffle<T>(items: T[], seed = 1): T[] {
 // ---------------------------------------------------------------------------------------------------------
 // Servers
 
-type System = "current" | "current-ngram" | "baseline";
+export type System = "current" | "current-ngram" | "current-ollama" | "baseline";
 
 interface Hit {
   path: string;
   text: string;
 }
 
-interface Server {
+export interface Server {
   search(query: string, limit?: number): Promise<{ text: string; hits: Hit[]; ms: number }>;
   definitionTokens: number;
   startTokens: number;
   close(): Promise<void>;
 }
 
-async function connect(system: System, vault: string): Promise<Server> {
+export async function connect(system: System, vault: string, extraEnv: Record<string, string> = {}): Promise<Server> {
   const dir = system === "baseline" ? path.join(BENCH, "baseline") : path.join(BENCH, "..", "src");
   const memory = await import(pathToFileURL(path.join(dir, "memory.ts")).href);
   const server = await import(pathToFileURL(path.join(dir, "mcpServer.ts")).href);
@@ -210,6 +210,9 @@ async function connect(system: System, vault: string): Promise<Server> {
     // The benchmark makes thousands of calls in one session; the per-session rate limit would stop it.
     MCP_MAX_CALLS_PER_MINUTE: "1000000000",
     ...(system === "current-ngram" ? { RAG_EMBEDDINGS: "ngram" } : {}),
+    // A local embedding model through the Ollama API (127.0.0.1 only), e.g. `ollama pull all-minilm`.
+    ...(system === "current-ollama" ? { RAG_EMBEDDINGS: "ollama", RAG_OLLAMA_MODEL: process.env.RAG_OLLAMA_MODEL || "all-minilm" } : {}),
+    ...extraEnv,
   });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.createObsidianMemoryMcpServer(config).connect(serverTransport);
@@ -242,6 +245,17 @@ async function connect(system: System, vault: string): Promise<Server> {
   };
 }
 
+// The first search builds the index. With embeddings on, the server embeds for at most 10 seconds per search
+// and continues on the next one, so warm up until a search no longer has embedding work to do.
+export async function warmUp(server: Server): Promise<number> {
+  const started = performance.now();
+  for (let i = 0; i < 1000; i++) {
+    const { ms } = await server.search("index warm-up");
+    if (ms < 1500) break;
+  }
+  return performance.now() - started;
+}
+
 function parseHits(text: string): Hit[] {
   if (text.trimStart().startsWith("{")) {
     try {
@@ -257,7 +271,7 @@ function parseHits(text: string): Hit[] {
 // ---------------------------------------------------------------------------------------------------------
 // Running a question set
 
-interface Query {
+export interface Query {
   id: string;
   query: string;
   answers: string[];
@@ -267,7 +281,7 @@ interface Query {
   tags: Record<string, string>;
 }
 
-interface QueryResult {
+export interface QueryResult {
   id: string;
   found: boolean;
   evidence: boolean | null;
@@ -280,7 +294,7 @@ interface QueryResult {
   tags: Record<string, string>;
 }
 
-async function runQueries(server: Server, queries: Query[], limit?: number): Promise<QueryResult[]> {
+export async function runQueries(server: Server, queries: Query[], limit?: number): Promise<QueryResult[]> {
   const out: QueryResult[] = [];
   for (const q of queries) {
     const { text, hits, ms } = await server.search(q.query, limit);
@@ -312,7 +326,7 @@ function percentile(values: number[], p: number): number {
 const round1 = (n: number) => Math.round(n * 10) / 10;
 const pct = (part: number, whole: number) => (whole ? round1((100 * part) / whole) : 0);
 
-function summarise(results: QueryResult[]) {
+export function summarise(results: QueryResult[]) {
   const n = results.length;
   const count = (f: (r: QueryResult) => boolean | null) => results.filter((r) => f(r) === true).length;
   const has = (f: (r: QueryResult) => unknown) => results.some((r) => f(r) !== null);
@@ -335,7 +349,7 @@ function summarise(results: QueryResult[]) {
   };
 }
 
-function breakdown(results: QueryResult[], tag: string) {
+export function breakdown(results: QueryResult[], tag: string) {
   const groups = new Map<string, QueryResult[]>();
   for (const r of results) {
     const key = r.tags[tag] ?? "other";
@@ -377,7 +391,7 @@ function truncationRecall(stream: PasteStream, keys: string[]) {
 
 // ---------------------------------------------------------------------------------------------------------
 
-async function writeVault(dir: string, notes: Note[]): Promise<void> {
+export async function writeVault(dir: string, notes: Note[]): Promise<void> {
   for (const note of notes) {
     const file = path.join(dir, note.path);
     await mkdir(path.dirname(file), { recursive: true });
@@ -385,14 +399,14 @@ async function writeVault(dir: string, notes: Note[]): Promise<void> {
   }
 }
 
-function needleQueries(notes: Note[], style: "keyword" | "question" | "oneword", df: Map<string, number>): Query[] {
-  return NEEDLES.map((n, i) => ({
+export function needleQueries(notes: Note[], style: "keyword" | "question" | "oneword", df: Map<string, number>, needles: Needle[] = NEEDLES): Query[] {
+  return needles.map((n, i) => ({
     id: n.id,
     query: style === "keyword" ? n.keyword : style === "question" ? n.question : rarestWord(n.keyword, df),
     answers: [n.answer],
     goldPath: notes.find((note) => note.text.includes(n.fact))?.path,
     evidence: [],
-    tags: { overlap: n.overlap, depth: `${Math.round((100 * i) / (NEEDLES.length - 1))}%` },
+    tags: { overlap: n.overlap, depth: `${Math.round((100 * i) / (needles.length - 1))}%` },
   }));
 }
 
@@ -405,7 +419,7 @@ function needleKeys(notes: Note[]): string[] {
 
 const QUESTION_TYPES = ["what", "who", "when", "where", "why", "how", "which"];
 
-function squadQueries(questions: SquadQuestion[], style: "question" | "keywords" | "oneword", df: Map<string, number>): Query[] {
+export function squadQueries(questions: SquadQuestion[], style: "question" | "keywords" | "oneword", df: Map<string, number>): Query[] {
   return questions.map((q) => {
     const first = q.question.toLowerCase().match(/\b(what|who|when|where|why|how|which)\b/)?.[1];
     const sentence = goldSentence(q.paragraph, q.answerStart);
@@ -463,7 +477,11 @@ async function main(): Promise<void> {
     node: process.version,
     cpuModel: os.cpus()[0]?.model,
     tokenizer: "o200k_base",
-    sources: Object.fromEntries(Object.entries(SOURCES).map(([k, s]) => [k, { url: s.url, sha256: s.sha256, about: s.about }])),
+    sources: Object.fromEntries(
+      Object.entries(SOURCES)
+        .filter(([k]) => k !== "squadTrain")
+        .map(([k, s]) => [k, { url: s.url, sha256: s.sha256, about: s.about }]),
+    ),
     sample: { squadSampleSize: SAMPLE, seed: 1 },
     scopes: [] as unknown[],
   };
@@ -548,9 +566,8 @@ async function main(): Promise<void> {
         if (!server) {
           server = await connect(run.system, vault);
           servers.set(run.system, server);
-          // The first search builds the index; time it on its own.
-          const first = await server.search("index warm-up");
-          entry[`${run.system}FirstSearchMs`] = round1(first.ms);
+          // The first search builds the index (and, with embeddings, every vector); time it on its own.
+          entry[`${run.system}FirstSearchMs`] = round1(await warmUp(server));
           entry[`${run.system}DefinitionTokens`] = server.definitionTokens;
           entry[`${run.system}StartTokens`] = server.startTokens;
         }
@@ -634,7 +651,10 @@ async function main(): Promise<void> {
   console.log(`\nWrote ${path.relative(process.cwd(), file)} in ${report.minutes} minutes`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+// Runs only when this file is executed, not when bench/books-tune.ts imports its helpers.
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

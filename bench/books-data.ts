@@ -30,13 +30,21 @@ export const SOURCES = {
     sha256: "6dffa4cc0b5c9963fe3a097c87f04aa7767da36627500cc7a0d69e2405e1144a",
     about: "NarrativeQA list of books",
   },
+  // Only for tuning (bench/books-tune.ts): 442 other Wikipedia articles, none of them in the development set.
+  squadTrain: {
+    url: "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/master/dataset/train-v1.1.json",
+    sha256: "3527663986b8295af4f7fcdff1ba1ff3f72d07d61a20f487cb238a6ef92fd955",
+    about: "SQuAD 1.1 training set: 87,599 questions on 442 other Wikipedia articles (CC BY-SA 4.0)",
+  },
 } as const;
 export type SourceName = keyof typeof SOURCES;
+const REPORT_SOURCES: SourceName[] = ["gutenberg", "squad", "narrativeqaQuestions", "narrativeqaDocuments"];
 
-export async function fetchSources(cacheDir: string): Promise<Record<SourceName, Buffer>> {
+export async function fetchSources(cacheDir: string, names: SourceName[] = REPORT_SOURCES): Promise<Record<SourceName, Buffer>> {
   await mkdir(cacheDir, { recursive: true });
   const out = {} as Record<SourceName, Buffer>;
-  for (const [name, source] of Object.entries(SOURCES) as [SourceName, (typeof SOURCES)[SourceName]][]) {
+  for (const name of names) {
+    const source = SOURCES[name];
     const file = path.join(cacheDir, path.basename(source.url));
     let data: Buffer;
     if (existsSync(file)) {
